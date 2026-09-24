@@ -1,0 +1,120 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "nanostack-design-system",
+  "homepage": "https://github.com/nanostack-dev/nanostack-design-system",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "system",
+      "title": "Nanostack design system",
+      "description": "Composable React blocks with finite variants and no consumer CSS overrides. Requires React 19.2+.",
+      "dependencies": [
+        "@base-ui/react@^1.8.0"
+      ],
+      "files": [
+        {
+          "path": "src/blocks/activity-list.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/activity-list.tsx"
+        },
+        {
+          "path": "src/blocks/app-shell.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/app-shell.tsx"
+        },
+        {
+          "path": "src/blocks/empty-state.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/empty-state.tsx"
+        },
+        {
+          "path": "src/blocks/metric.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/metric.tsx"
+        },
+        {
+          "path": "src/blocks/page-header.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/page-header.tsx"
+        },
+        {
+          "path": "src/blocks/section.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/section.tsx"
+        },
+        {
+          "path": "src/components/badge.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/badge.tsx"
+        },
+        {
+          "path": "src/components/button.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/button.tsx"
+        },
+        {
+          "path": "src/components/dialog.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/dialog.tsx"
+        },
+        {
+          "path": "src/components/field.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/field.tsx"
+        },
+        {
+          "path": "src/components/input.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/input.tsx"
+        },
+        {
+          "path": "src/components/layout.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/layout.tsx"
+        },
+        {
+          "path": "src/components/select.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/select.tsx"
+        },
+        {
+          "path": "src/components/skeleton.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/skeleton.tsx"
+        },
+        {
+          "path": "src/components/tabs.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/tabs.tsx"
+        },
+        {
+          "path": "src/components/typography.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/typography.tsx"
+        },
+        {
+          "path": "src/index.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/index.ts"
+        },
+        {
+          "path": "src/internal/props.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/props.ts"
+        },
+        {
+          "path": "src/styles.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles.css"
+        },
+        {
+          "path": "src/theme.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/theme.tsx"
+        }
+      ],
+      "docs": "Import src/components/nanostack/styles.css once; wrap your composition in Theme. All public APIs forbid custom CSS. Keep modifications in the library; regenerate the registry from source.",
+      "type": "registry:block"
+    }
+  ]
+}

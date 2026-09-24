@@ -63,7 +63,7 @@ The application supplies `createFlow`, `flowCount`, `runnerCount`, permissions a
 | --- | --- |
 | Scope | Theme: brand, colorScheme, density |
 | Layout | Stack, Cluster, Grid, Surface, Divider |
-| Controls | Button, Input, Field parts, Tabs parts, Dialog parts |
+| Controls | Button, Input, Select, Field parts, Tabs parts, Dialog parts |
 | Content | Text, Heading, Badge, Skeleton |
 | Navigation | AppShell, Sidebar, Brand, Nav, NavLink, Header, Main, Footer |
 | Page | PageHeader and Section with title, description, actions, body |
@@ -73,15 +73,25 @@ Import compound parts by their full exported names, such as `AppShellSidebar` an
 
 Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `render`, and `asChild`. Compile-time checks and runtime sanitization enforce this component contract. This is not browser CSS isolation: a host stylesheet can still target DOM elements. Product teams agree to evolve variants here instead of overriding selectors or CSS variables.
 
+## shadcn source distribution
+
+`pnpm registry:build` generates schema-validated `registry.json` and `public/r/system.json` from the same source as the package. The `system` block targets `src/components/nanostack/` and preserves relative imports. Import its `styles.css` and use its `index.ts` exports. The package remains the preferred transport for synchronized upgrades; source installation is for deliberate ownership, with the same closed API policy.
+
+```sh
+# From a configured React 19.2+ shadcn consumer; point to your cloned payload:
+pnpm dlx shadcn@latest add /path/to/nanostack-design-system/public/r/system.json
+```
+
+The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. Private remote registry hosting is not required for the package beta and has not been deployed.
+
 ## Verify and evolve
 
 ```sh
 pnpm check
 pnpm test:browser
+pnpm test:package
 ```
 
-The checks cover rejected API props, native/ref behavior, keyboard interaction, modal focus, theme portals, contrast pairs, mobile/landscape overflow, browser axe scans, native ESM exports. Automated checks are not a WCAG certification.
+The checks cover rejected API props, native/ref behavior, keyboard interaction, modal focus, theme portals, contrast pairs, mobile/landscape overflow, browser axe scans, generated registry freshness and an installed package consumer. Automated checks are not a WCAG certification.
 
 Read [research](docs/research.md) for official Airbnb, Stripe, Linear, React, Base UI and shadcn evidence; [contribution rules](docs/contributing.md) for changes; [design decisions](DESIGN.md) for the visual language; and [AGENTS.md](AGENTS.md) for agent invariants.
-
-Source registry generation, artifact-installation checks and CI follow in the next stacked pull request.

@@ -43,7 +43,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:browser": "playwright test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:docs",
+    "check": "pnpm registry:build && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:docs",
+    "registry:build": "node scripts/build-registry.mjs",
+    "test:package": "pnpm build && node scripts/test-package.mjs",
     "prepack": "pnpm build"
   },
   "peerDependencies": {
