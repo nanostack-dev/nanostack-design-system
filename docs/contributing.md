@@ -2,19 +2,31 @@
 
 ## Choose the correct layer
 
-A foundation defines a shared visual decision. A primitive provides one interaction or semantic element. A block combines primitives into a reusable workflow structure. Applications own routes, requests, permissions, domain state, and product copy.
+A foundation defines a shared visual decision. A primitive provides one interaction or semantic element. A block combines primitives into a reusable workflow structure. Applications own routes, requests, permissions, domain state, product copy, and assemblies of exported library parts.
 
 Before introducing an abstraction, demonstrate its use in a real consumer or documented example. Prefer a small composition of parts over a component whose many booleans select unrelated layouts. Keep state near its owner and expose conventional controlled/uncontrolled behavior only when consumers need it.
 
+### Assembly or common component
+
+An application assembly selects and composes existing parts, passes content and behavior, and chooses supported variants. It can be a React function, route, or feature module. Its JSX is made from library components and other such assemblies, with React fragments/providers for behavior. It owns no DOM/SVG markup, CSS, visual third-party dependency, or copied library implementation. The same rule applies inside children, render callbacks and named content slots.
+
+For example, an Echopoint run summary can combine `Section`, `SectionHeader`, `SectionTitle`, `SectionBody`, `ActivityList`, `ActivityItem` and `Badge`. The application maps its run status to a supported badge tone, supplies links and copy, and fetches the runs. It does not implement a second badge or attach CSS to a row.
+
+When that composition needs a missing visual capability, add the smallest common primitive or block here and give it finite semantic variants. A generic progress indicator belongs here; an Echopoint hook that queries run progress belongs in Echopoint. Icons, images, forms, tables, editors, charts, navigation and third-party widget adapters follow the same ownership boundary. Keep domain-aware data preparation outside their visual API.
+
+Consumers import the package's public entry point or documented subpaths and its stylesheet once. Generated registry sources are a distribution artifact of this repository, not a consumer customization surface. Change the canonical source and update the dependency when a new variant is needed.
+
 ## Public API contract
 
-Consumers customize through finite typed variants, named parts, children, behavior properties, and approved theme presets. Public APIs never expose `className`, `style`, `css`, `classNames`, `unstyled`, arbitrary CSS tokens, `render`, `asChild`, or a generic styling/slot-props object. Add a shared variant when a justified consumer requirement cannot be expressed today.
+Consumers customize appearance only through finite typed variants and approved theme presets. Named parts and children compose existing visual units; behavior properties carry events and state. Public APIs reject the styling and replacement keys defined by `NoCustomStyle`, including CSS aliases, generic slot bags, raw HTML and library-owned CSS attributes. Add a shared variant when a justified consumer requirement cannot be expressed today.
 
 Derive internal adapter types from native or Base UI types, then explicitly exclude unsupported properties from exported types. Preserve relevant native semantics, refs, accessible names, events, and form attributes. Avoid `any`, broad index signatures, and casts that bypass the public contract. Arbitrary properties from JavaScript or spread objects must not silently reopen styling escape hatches; keep DOM forwarding deliberate and test it.
 
 Separate appearance from behavior. A disabled control must have native disabled semantics, a selected navigation item must expose its current state, and a link must remain a link. Give icon-only controls accessible names. Keep Base UI's focus and keyboard behavior intact when wrapping it.
 
-Tokens and stylesheet rules belong to this repository. Change token values alongside the representative compositions they affect. Product apps choose supported presets without reaching into internal selectors. This restriction governs supported APIs; it cannot prevent a host website from applying global CSS.
+Tokens and stylesheet rules belong to this repository. Change token values alongside the representative compositions they affect. Product apps choose supported presets without reaching into internal selectors. Ordinary accessibility attributes, native events, form semantics, refs and consumer telemetry attributes remain available. `data-ns-*` and the library's CSS state attributes are implementation details and are stripped at forwarding boundaries.
+
+The package contract is enforced in two layers: compile-time checks cover every public component's props (including structural spreads), and runtime forwarding removes forbidden keys from JavaScript callers. Consumer source checks enforce the assembly boundary. These are maintainability guarantees, not a sandbox: a host stylesheet, imperative DOM mutation through a ref, or arbitrary JSX children cannot be prevented by a React prop type. Enforce their ownership in application CI instead of claiming the library can isolate hostile host code.
 
 ## Validate the change
 

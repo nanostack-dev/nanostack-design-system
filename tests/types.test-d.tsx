@@ -1,25 +1,28 @@
 /** Compile-only public API contract. Checked by `pnpm typecheck`, never executed. */
 import { createRef, type ComponentProps, type ElementType } from 'react';
 import * as DS from '../src/index.js';
+import type { NoCustomStyle } from '../src/internal/props.js';
 
 type Assert<T extends true> = T;
 type IsNever<T> = [T] extends [never] ? true : false;
-type StylingKey = 'className' | 'style' | 'css' | 'classNames' | 'unstyled' | 'render' | 'asChild';
+type StylingKey = keyof NoCustomStyle;
 type ComponentName = {
   [Name in keyof typeof DS]: Name extends Capitalize<Name> ? Name : never;
 }[keyof typeof DS];
 type PublicProps<Name extends ComponentName> = ComponentProps<
   Extract<(typeof DS)[Name], ElementType>
 >;
-type OpenStylingKeys<Props> = {
-  [Key in StylingKey]: Key extends keyof Props
-    ? IsNever<Exclude<Props[Key], undefined>> extends true
-      ? never
-      : Key
-    : Key;
-}[StylingKey];
+type ForbidsCustomStyle<Props> = [Props] extends [NoCustomStyle]
+  ? Exclude<StylingKey, keyof Props> extends never
+    ? true
+    : false
+  : false;
 type ComponentsAcceptingCSS = {
-  [Name in ComponentName]: IsNever<OpenStylingKeys<PublicProps<Name>>> extends true ? never : Name;
+  [Name in ComponentName]: string extends keyof PublicProps<Name>
+    ? Name
+    : ForbidsCustomStyle<PublicProps<Name>> extends true
+      ? never
+      : Name;
 }[ComponentName];
 
 // This automatically includes every new component exported by the public entry point.
@@ -184,6 +187,13 @@ const classNamesSpread = { classNames: { root: 'custom' } };
 const unstyledSpread = { unstyled: true };
 const renderSpread = { render: <div /> };
 const asChildSpread = { asChild: true };
+const htmlSpread = { dangerouslySetInnerHTML: { __html: '<style>*{display:none}</style>' } };
+const legacyColorSpread = { color: 'red' };
+const systemPropsSpread = { sx: { margin: 10 } };
+const slotPropsSpread = { slotProps: { root: { style: { color: 'red' } } } };
+const componentSpread = { component: 'a' };
+const internalVariantSpread = { 'data-tone': 'warning' };
+const internalTokenSpread = { 'data-ns-theme': 'dark' };
 // @ts-expect-error Explicit never properties also reject structural spread escapes.
 <DS.Stack {...classSpread} />;
 // @ts-expect-error Inline styles cannot enter through spread props.
@@ -198,6 +208,20 @@ const asChildSpread = { asChild: true };
 <DS.DialogTrigger {...renderSpread} />;
 // @ts-expect-error Slot replacement cannot enter through spread props.
 <DS.DialogClose {...asChildSpread} />;
+// @ts-expect-error Raw HTML cannot bypass owned children through a structural spread.
+<DS.Surface {...htmlSpread} />;
+// @ts-expect-error Legacy DOM colors cannot bypass semantic tones through a spread.
+<DS.Text {...legacyColorSpread} />;
+// @ts-expect-error CSS system aliases cannot enter through a spread.
+<DS.Stack {...systemPropsSpread} />;
+// @ts-expect-error Slot bags cannot carry arbitrary styling to nested elements.
+<DS.DialogPopup {...slotPropsSpread} />;
+// @ts-expect-error Consumers cannot replace the library-owned element.
+<DS.Button {...componentSpread} />;
+// @ts-expect-error CSS state attributes are internal, not a second variant API.
+<DS.Badge {...internalVariantSpread} />;
+// @ts-expect-error Theme attributes are internal; use the Theme settings API.
+<DS.Surface {...internalTokenSpread} />;
 
 // @ts-expect-error Visual decisions use a finite variant set.
 <DS.Button variant="rainbow" />;

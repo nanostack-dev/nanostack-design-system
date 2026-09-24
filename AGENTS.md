@@ -1,15 +1,16 @@
 # Nanostack design system
 
-This library owns presentation; Anchor and Echopoint own routes, permissions, server state, and product concepts. Read `docs/research.md` when changing architecture and `docs/contributing.md` when adding a public API or preparing a release.
+This library owns every visual component; Anchor and Echopoint own routes, permissions, server state, product copy, and assemblies of library parts. Read `docs/research.md` when changing architecture and `docs/contributing.md` when adding a public API, moving UI from an application, or preparing a release.
 
 ## Public contract
 
-- Components **never accept consumer CSS**. Derive DOM props through `ElementProps`, or omit styling keys from Base UI props and intersect `NoCustomStyle`. Use `safeProps` at the DOM boundary for untyped consumers. Keep `className`, `style`, `css`, `classNames`, `unstyled`, `render`, `asChild`, and arbitrary token values out of public APIs. Add negative type tests for every new styling bypass.
+- Components **never accept consumer CSS**. Derive DOM props through `ElementProps`, or omit `keyof NoCustomStyle` from Base UI props and intersect `NoCustomStyle`. Use `safeProps` at every DOM/Base UI forwarding boundary for untyped consumers. Styling aliases, replacement/slot objects and internal CSS state attributes stay private; the authoritative forbidden keys live in `src/internal/props.ts`. Add negative type tests for new bypasses.
 - Variations use closed semantic unions. A new variation starts with a real consumer use case, is implemented centrally, and is demonstrated in the playground. Layout comes from Stack, Cluster, Grid, Surface and block parts.
 - Compose children and named parts rather than adding page-sized configuration objects. Shared blocks have no API clients, auth providers, router dependencies, domain enums, or application strings.
+- Applications assemble exported library parts. A missing visual element becomes a common primitive or block here; a product-specific arrangement stays an assembly in the application. Raw DOM/SVG markup, third-party visual components and styling belong here, including inside child and named-part content. A React function containing business state and library JSX is an assembly, not permission to create a local visual primitive.
 - React refs are props. Preserve native accessibility attributes and event handlers. Interaction belongs to Base UI; simple semantics belong to native HTML. Each new complex control must preserve keyboard behavior and focus return.
 - Theme is a finite combination of brand, color scheme, and density. Overlays must inherit its scope through portals. CSS selectors are namespaced; importing the library must not reset the host app or change its global theme.
-- `src/styles.css` is the single visual source. Public source and generated package/registry output share it; publish no alternate component implementation. New source modules use `.js` relative specifiers so emitted ESM runs outside Vite.
+- `src/styles.css` is the single visual source. Public source and generated package/registry output share it; publish no alternate component implementation. Export every public component subpath from `src/index.ts` so the complete catalog passes the automatic prop contract. New source modules use `.js` relative specifiers so emitted ESM runs outside Vite.
 
 ## Validation boundaries
 
