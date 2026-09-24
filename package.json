@@ -1,0 +1,84 @@
+{
+  "name": "@nanostack/design-system",
+  "version": "0.1.0-beta.1",
+  "description": "Typed, accessible UI building blocks for Nanostack products",
+  "type": "module",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components/*": {
+      "types": "./dist/components/*.d.ts",
+      "import": "./dist/components/*.js"
+    },
+    "./blocks/*": {
+      "types": "./dist/blocks/*.d.ts",
+      "import": "./dist/blocks/*.js"
+    },
+    "./theme": {
+      "types": "./dist/theme.d.ts",
+      "import": "./dist/theme.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-styles.mjs",
+    "build:docs": "vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:docs",
+    "prepack": "pnpm build"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.60.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.5.0",
+    "jsdom": "^29.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "shadcn": "^4.7.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1",
+    "vite": "^7.3.1",
+    "vitest": "^4.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/nanostack-dev/nanostack-design-system.git"
+  }
+}

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+site/
+coverage/
+playwright-report/
+test-results/
+.ui-craft/
+worktrees/
+*.tgz
