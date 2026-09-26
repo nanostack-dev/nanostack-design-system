@@ -2,7 +2,7 @@
 
 Composable React building blocks for Echopoint and Anchor. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
-Status: **0.2.0-beta.1**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
+Status: **0.2.0-beta.2**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
 ## Try it
 
@@ -21,7 +21,7 @@ The first release is an intentionally private, versioned package artifact. There
 pnpm build
 pnpm pack --pack-destination artifacts
 # Copy the resulting archive into the consumer's vendor/ directory, then:
-pnpm add ./vendor/nanostack-design-system-0.2.0-beta.1.tgz
+pnpm add ./vendor/nanostack-design-system-0.2.0-beta.2.tgz
 ```
 
 Commit the artifact and consumer lockfile together, with its source commit and SHA-256 recorded alongside it. Echopoint's beta follows this model. Keep archives immutable once reviewed; later changes receive a new beta version. Package registry publishing can replace the dependency transport when configured without changing imports.
