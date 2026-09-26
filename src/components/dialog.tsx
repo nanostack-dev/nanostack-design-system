@@ -37,18 +37,29 @@ export function DialogTrigger({
 }
 
 export type DialogPopupProps = ElementProps<'div'> & {
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
+  placement?: 'center' | 'search' | 'side' | 'bottom';
   initialFocus?: BaseDialog.Popup.Props['initialFocus'];
 };
 
 /** Include DialogTitle inside every popup so assistive technology can name it. */
-export function DialogPopup({ size = 'md', children, ...props }: DialogPopupProps) {
+export function DialogPopup({
+  size = 'md',
+  placement = 'center',
+  children,
+  ...props
+}: DialogPopupProps) {
   const theme = useThemeSettings();
   return (
     <BaseDialog.Portal>
       <Theme {...theme}>
         <BaseDialog.Backdrop className="ns-dialog-backdrop" />
-        <BaseDialog.Popup {...safeProps(props)} className="ns-dialog-popup" data-size={size}>
+        <BaseDialog.Popup
+          {...safeProps(props)}
+          className="ns-dialog-popup"
+          data-size={size}
+          data-ns-placement={placement}
+        >
           {children}
           <BaseDialog.Close
             nativeButton

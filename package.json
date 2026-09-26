@@ -1,6 +1,6 @@
 {
   "name": "@nanostack/design-system",
-  "version": "0.1.0-beta.1",
+  "version": "0.2.0-beta.1",
   "description": "Typed, accessible UI building blocks for Nanostack products",
   "type": "module",
   "license": "UNLICENSED",
@@ -33,7 +33,11 @@
       "types": "./dist/theme.d.ts",
       "import": "./dist/theme.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./adapters/*": {
+      "types": "./dist/adapters/*.d.ts",
+      "import": "./dist/adapters/*.js"
+    }
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -49,14 +53,33 @@
     "prepack": "pnpm build"
   },
   "peerDependencies": {
+    "@clerk/clerk-react": "^5.61.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "dependencies": {
-    "@base-ui/react": "^1.8.0"
+    "@base-ui/react": "^1.8.0",
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-html": "^6.4.12",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-xml": "^6.1.0",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.13",
+    "@lezer/highlight": "^1.2.4",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.14.13",
+    "@xyflow/react": "^12.12.0",
+    "cmdk": "^1.1.1",
+    "react-resizable-panels": "^4.13.3",
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
+    "@clerk/clerk-react": "^5.61.3",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -82,5 +105,10 @@
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/nanostack-dev/nanostack-design-system.git"
+  },
+  "peerDependenciesMeta": {
+    "@clerk/clerk-react": {
+      "optional": true
+    }
   }
 }

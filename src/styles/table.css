@@ -1,0 +1,34 @@
+.ns-simple-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--ns-border);
+  border-radius: 8px;
+}
+.ns-simple-table-scroll .ns-simple-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ns-simple-table-scroll .ns-simple-table :where(th, td) {
+  padding: 12px;
+  border-block-end: 1px solid var(--ns-border);
+  text-align: start;
+  vertical-align: top;
+}
+.ns-simple-table-scroll .ns-simple-table th {
+  background: var(--ns-subtle);
+  color: var(--ns-muted);
+  font-size: 12px;
+  font-weight: 550;
+}
+.ns-simple-table-scroll .ns-simple-table tr:last-child td {
+  border-block-end: 0;
+}
+.ns-simple-table :where(th, td)[data-align='end'] {
+  text-align: end;
+}
+.ns-simple-table :where(th, td)[data-align='center'] {
+  text-align: center;
+}
+.ns-simple-table-scroll .ns-simple-table tr[data-ns-selected='true'] {
+  background: var(--ns-accent-soft);
+}

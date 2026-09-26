@@ -118,7 +118,7 @@ describe('native primitives', () => {
         <Heading level={1} size="lg">
           Overview
         </Heading>
-        <Text as="span" tone="muted">
+        <Text display="inline" tone="muted">
           Activity today
         </Text>
       </>,

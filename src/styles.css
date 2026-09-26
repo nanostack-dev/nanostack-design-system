@@ -1,3 +1,12 @@
+@import './styles/breadcrumb.css';
+@import './styles/activity.css';
+@import './styles/popover.css';
+@import './styles/worker-avatar.css';
+@import './styles/data-visualization.css';
+@import './styles/table.css';
+@import './styles/composition.css';
+@import './styles/catalog.css';
+@import './styles/controls.css';
 /* All selectors belong to Nanostack. No reset or host theme mutations. */
 .ns-theme {
   --ns-canvas: #f7f8fa;
@@ -19,6 +28,8 @@
   --ns-danger: #b3293a;
   --ns-danger-soft: #fcebed;
   --ns-shadow: 0 18px 64px #18243b24;
+  --ns-radius-sm: 4px;
+  --ns-radius-pill: 999px;
   --ns-space-none: 0;
   --ns-space-xs: 4px;
   --ns-space-sm: 8px;
@@ -357,6 +368,10 @@
 .ns-input[data-size='sm'] {
   min-height: 32px;
   font-size: 12px;
+}
+.ns-select[data-ns-width='content'] {
+  width: auto;
+  max-width: 100%;
 }
 .ns-input::placeholder {
   color: var(--ns-muted);

@@ -18,7 +18,9 @@ function run(command, args, cwd, capture = false) {
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(' ')} failed (${result.status})\n${result.stdout ?? ''}\n${result.stderr ?? ''}`);
+    throw new Error(
+      `${command} ${args.join(' ')} failed (${result.status})\n${result.stdout ?? ''}\n${result.stderr ?? ''}`,
+    );
   }
   return result.stdout;
 }
@@ -26,35 +28,77 @@ function run(command, args, cwd, capture = false) {
 try {
   // Build before calling this script. Packing with scripts disabled proves that the
   // published package needs neither a prepare hook nor the source checkout.
-  const packResult = JSON.parse(run('npm', ['pack', '--json', '--ignore-scripts', '--pack-destination', scratch], projectRoot, true));
+  const packResult = JSON.parse(
+    run(
+      'npm',
+      ['pack', '--json', '--ignore-scripts', '--pack-destination', scratch],
+      projectRoot,
+      true,
+    ),
+  );
   const packed = packResult[0];
   assert(packed?.filename, 'npm pack did not produce an archive');
   const paths = packed.files.map((file) => file.path);
-  for (const required of ['dist/index.js', 'dist/index.d.ts', 'dist/styles.css', 'dist/theme.js', 'THIRD_PARTY_NOTICES.md']) {
-    assert(paths.includes(required), `Packed artifact is missing ${required}; run pnpm build first`);
+  for (const required of [
+    'dist/index.js',
+    'dist/index.d.ts',
+    'dist/styles.css',
+    'dist/theme.js',
+    'THIRD_PARTY_NOTICES.md',
+  ]) {
+    assert(
+      paths.includes(required),
+      `Packed artifact is missing ${required}; run pnpm build first`,
+    );
   }
-  assert(!paths.some((path) => /^(src|tests|playground|node_modules|\.ui-craft)\//.test(path)), 'The artifact includes source, tests, dependencies or screenshots');
+  assert(
+    !paths.some((path) => /^(src|tests|playground|node_modules|\.ui-craft)\//.test(path)),
+    'The artifact includes source, tests, dependencies or screenshots',
+  );
 
-  await writeFile(join(scratch, 'package.json'), JSON.stringify({
-    name: 'nanostack-artifact-consumer', private: true, type: 'module',
-    dependencies: {
-      [manifest.name]: `file:./${packed.filename}`,
-      react: '19.2.0', 'react-dom': '19.2.0',
-      '@base-ui/react': manifest.dependencies['@base-ui/react'],
-    },
-    devDependencies: {
-      vite: manifest.devDependencies.vite,
-      typescript: manifest.devDependencies.typescript,
-      '@types/react': '19.2.14',
-      '@types/react-dom': '19.2.3',
-    },
-  }, null, 2));
+  await writeFile(
+    join(scratch, 'package.json'),
+    JSON.stringify(
+      {
+        name: 'nanostack-artifact-consumer',
+        private: true,
+        type: 'module',
+        dependencies: {
+          [manifest.name]: `file:./${packed.filename}`,
+          react: '19.2.0',
+          'react-dom': '19.2.0',
+          '@base-ui/react': manifest.dependencies['@base-ui/react'],
+        },
+        devDependencies: {
+          vite: manifest.devDependencies.vite,
+          typescript: manifest.devDependencies.typescript,
+          '@types/react': '19.2.14',
+          '@types/react-dom': '19.2.3',
+        },
+      },
+      null,
+      2,
+    ),
+  );
 
   // npm reuses its download cache across runs; this consumer is intentionally new
   // each time so workspace node_modules, symlinks and source aliases cannot help it.
-  run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', '--package-lock=false', '--prefer-offline'], scratch);
+  run(
+    'npm',
+    [
+      'install',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      '--package-lock=false',
+      '--prefer-offline',
+    ],
+    scratch,
+  );
 
-  await writeFile(join(scratch, 'smoke.mjs'), `
+  await writeFile(
+    join(scratch, 'smoke.mjs'),
+    `
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -98,10 +142,13 @@ const output = renderToString(h(library.Theme, { brand: 'anchor' },
 assert(output.includes('Tested button') && output.includes('Consumer content'), 'SSR did not render composed public components');
 assert(output.includes('ns-button') && output.includes('data-ns-brand="anchor"'), 'SSR lost owned style hooks');
 console.log('Packed ESM exports, stylesheet, declarations, client boundaries and React ' + version + ' SSR passed.');
-`);
+`,
+  );
   run(process.execPath, ['smoke.mjs'], scratch);
 
-  await writeFile(join(scratch, 'consumer.tsx'), `
+  await writeFile(
+    join(scratch, 'consumer.tsx'),
+    `
 import { createRef } from 'react';
 import { Theme, Button, Input, AppShell, AppShellMain, Grid } from '@nanostack/design-system';
 import { Button as SubpathButton } from '@nanostack/design-system/components/button';
@@ -116,28 +163,50 @@ export const invalidVariant = <Button variant="custom" />;
 const escaped = { className: 'custom' };
 // @ts-expect-error Spread objects must not reopen CSS customization.
 export const invalidSpread = <Button {...escaped} />;
-`);
-  await writeFile(join(scratch, 'tsconfig.json'), JSON.stringify({ compilerOptions: {
-    target: 'ES2022', module: 'ESNext', moduleResolution: 'Bundler', jsx: 'react-jsx',
-    strict: true, exactOptionalPropertyTypes: true, noEmit: true, skipLibCheck: false,
-    lib: ['ES2022', 'DOM', 'DOM.Iterable'],
-  }, include: ['consumer.tsx'] }));
+`,
+  );
+  await writeFile(
+    join(scratch, 'tsconfig.json'),
+    JSON.stringify({
+      compilerOptions: {
+        target: 'ES2022',
+        module: 'ESNext',
+        moduleResolution: 'Bundler',
+        jsx: 'react-jsx',
+        strict: true,
+        exactOptionalPropertyTypes: true,
+        noEmit: true,
+        skipLibCheck: false,
+        lib: ['ES2022', 'DOM', 'DOM.Iterable'],
+      },
+      include: ['consumer.tsx'],
+    }),
+  );
   run(process.execPath, ['node_modules/typescript/bin/tsc'], scratch);
 
-  await writeFile(join(scratch, 'index.html'), '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Package consumer</title></head><body><div id="root"></div><script type="module" src="/main.mjs"></script></body></html>');
-  await writeFile(join(scratch, 'main.mjs'), `
+  await writeFile(
+    join(scratch, 'index.html'),
+    '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Package consumer</title></head><body><div id="root"></div><script type="module" src="/main.mjs"></script></body></html>',
+  );
+  await writeFile(
+    join(scratch, 'main.mjs'),
+    `
 import { createElement as h } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Theme, Button, Stack, Heading } from '@nanostack/design-system';
 import '@nanostack/design-system/styles.css';
 createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null, h(Heading, { level: 1 }, 'Package consumer'), h(Button, null, 'Ready'))));
-`);
+`,
+  );
   // This is a browser-only consumer, so Rollup legitimately removes client
   // directives. Their preservation in the published ESM was asserted above.
-  await writeFile(join(scratch, 'vite.config.mjs'), `export default { build: { rollupOptions: { onwarn(warning, warn) {
+  await writeFile(
+    join(scratch, 'vite.config.mjs'),
+    `export default { build: { rollupOptions: { onwarn(warning, warn) {
     if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && warning.message.includes('use client')) return;
     warn(warning);
-  } } } };`);
+  } } } };`,
+  );
   run(process.execPath, ['node_modules/vite/bin/vite.js', 'build'], scratch);
   console.log('Clean consumer typecheck and production CSS/JavaScript bundle passed.');
 } finally {

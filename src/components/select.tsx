@@ -11,12 +11,18 @@ export type SelectOption = Readonly<{
 export type SelectProps = Omit<ElementProps<'select'>, 'size' | 'children'> & {
   options: readonly SelectOption[];
   size?: 'sm' | 'md';
+  width?: 'fill' | 'content';
 };
 
 /** Native selection preserves browser keyboard behavior and the mobile option picker. */
-export function Select({ options, size = 'md', ...props }: SelectProps) {
+export function Select({ options, size = 'md', width = 'fill', ...props }: SelectProps) {
   return (
-    <select {...safeProps(props)} className="ns-input ns-select" data-size={size}>
+    <select
+      {...safeProps(props)}
+      className="ns-input ns-select"
+      data-size={size}
+      data-ns-width={width}
+    >
       {options.map((option) => (
         <option key={option.value} value={option.value} disabled={option.disabled}>
           {option.label}

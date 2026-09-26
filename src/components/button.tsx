@@ -4,7 +4,7 @@ import { Button as BaseButton } from '@base-ui/react/button';
 import { safeProps, type ElementProps } from '../internal/props.js';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type ButtonSize = 'sm' | 'md';
+export type ButtonSize = 'sm' | 'md' | 'icon';
 export type ButtonProps = ElementProps<'button'> & {
   variant?: ButtonVariant;
   size?: ButtonSize;

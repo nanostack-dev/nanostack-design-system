@@ -4,12 +4,13 @@ import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { safeProps, type ElementProps } from '../internal/props.js';
 
 export type TabsProps = Omit<ElementProps<'div'>, 'defaultValue'> & {
+  height?: 'content' | 'fill';
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
 };
 /** String IDs make tab state serializable and preserve a narrow public contract. */
-export function Tabs({ onValueChange, ...props }: TabsProps) {
+export function Tabs({ onValueChange, height = 'content', ...props }: TabsProps) {
   return (
     <BaseTabs.Root
       {...safeProps(props)}
@@ -18,6 +19,7 @@ export function Tabs({ onValueChange, ...props }: TabsProps) {
       }}
       orientation="horizontal"
       className="ns-tabs"
+      data-height={height}
     />
   );
 }

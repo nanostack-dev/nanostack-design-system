@@ -74,7 +74,7 @@ export const supportedComposition = (
           <DS.Text ref={paragraphRef} size="sm" weight="medium" tone="muted">
             Today
           </DS.Text>
-          <DS.Text as="span">Inline text</DS.Text>
+          <DS.Text display="inline">Inline text</DS.Text>
           <DS.Cluster justify="between" gap="sm">
             <DS.Badge tone="success">Ready</DS.Badge>
           </DS.Cluster>
@@ -269,6 +269,8 @@ const internalTokenSpread = { 'data-ns-theme': 'dark' };
 <DS.Input size={30} />;
 // @ts-expect-error Select sizes are visual variants, not native row counts.
 <DS.Select options={[]} size={5} />;
+// @ts-expect-error Select widths are finite composition options, not CSS lengths.
+<DS.Select options={[]} width="240px" />;
 // @ts-expect-error Select option values are strings.
 <DS.Select options={[{ value: 42, label: 'Unsupported' }]} />;
 // @ts-expect-error Every option needs visible text.
@@ -295,3 +297,11 @@ const internalTokenSpread = { 'data-ns-theme': 'dark' };
 <DS.Input ref={buttonRef} />;
 // @ts-expect-error A navigation link requires a real link destination.
 <DS.AppShellNavLink>Missing destination</DS.AppShellNavLink>;
+
+// Library-owned CSS states are not alternate public variants.
+// @ts-expect-error The orientation comes from the component, never raw CSS state.
+export const ownedOrientation = <DS.Button data-orientation="vertical" />;
+// @ts-expect-error Token styling stays inside syntax/variable adapters.
+export const ownedToken = <DS.Text data-token="comment" />;
+// @ts-expect-error Graph overlay state is private.
+export const ownedInert = <DS.Surface data-inert="false" />;

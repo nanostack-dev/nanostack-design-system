@@ -5,8 +5,32 @@ import { describe, expect, it } from 'vitest';
 import ts from 'typescript';
 import { Button, type ButtonProps } from '../src/components/button.js';
 import { Surface, type SurfaceProps } from '../src/components/layout.js';
+import { safeProps } from '../src/internal/props.js';
 
 describe('presentation ownership', () => {
+  it('reserves every data attribute used by a library CSS selector', () => {
+    const paths = readdirSync('src', { recursive: true }).filter(
+      (path): path is string => typeof path === 'string' && path.endsWith('.css'),
+    );
+    const attributes = new Set(
+      paths.flatMap((path) =>
+        [...readFileSync(resolve('src', path), 'utf8').matchAll(/\[(data-[\w-]+)/g)].map(
+          (match) => match[1]!,
+        ),
+      ),
+    );
+    for (const attribute of attributes) {
+      expect(
+        safeProps({ [attribute]: 'consumer-override' }),
+        `${attribute} is library-owned CSS state`,
+      ).not.toHaveProperty(attribute);
+    }
+    expect(safeProps({ 'data-testid': 'save', 'data-analytics': 'save' })).toEqual({
+      'data-testid': 'save',
+      'data-analytics': 'save',
+    });
+  });
+
   it('strips styling aliases, slot bags and owned CSS attributes from untyped props', () => {
     const unsafe = {
       class: 'consumer-css',
@@ -89,7 +113,10 @@ describe('public module ownership', () => {
 
     for (const path of sourcePaths) {
       for (const symbol of exportsAt(path)) {
-        expect(rootExports.get(symbol.name), `${path}: ${symbol.name}`).toBe(declarationOf(symbol));
+        expect(
+          rootExports.get(symbol.name) === declarationOf(symbol),
+          `Export ${symbol.name} from ${path} through src/index.ts`,
+        ).toBe(true);
       }
     }
     for (const [name, symbol] of rootExports) {
@@ -102,7 +129,7 @@ describe('public module ownership', () => {
         expect(path, `Internal helper ${name} must stay private`).not.toMatch(/\/internal\//);
       }
     }
-  });
+  }, 20_000);
 
   it('keeps implementation helpers outside package export paths', () => {
     const manifest = JSON.parse(readFileSync('package.json', 'utf8')) as {

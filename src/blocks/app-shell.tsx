@@ -37,6 +37,7 @@ function useShell() {
 }
 
 export type AppShellProps = ElementProps<'div'> & {
+  layout?: 'page' | 'workspace';
   mainId?: string;
   navigationLabel?: string;
   skipLabel?: string;
@@ -44,6 +45,7 @@ export type AppShellProps = ElementProps<'div'> & {
 
 export function AppShell({
   children,
+  layout = 'page',
   mainId: providedMainId,
   navigationLabel = 'Workspace navigation',
   skipLabel = 'Skip to main content',
@@ -71,7 +73,7 @@ export function AppShell({
       value={{ mobile, mainId, navigationLabel, closeNavigation: () => setOpen(false) }}
     >
       <Dialog.Root open={mobile && open} onOpenChange={setOpen}>
-        <div {...safeProps(props)} className="ns-shell">
+        <div {...safeProps(props)} className="ns-shell" data-layout={layout}>
           <a className="ns-shell-skip" href={`#${mainId}`}>
             {skipLabel}
           </a>
@@ -218,4 +220,13 @@ export function AppShellNavLink({
 
 export function AppShellFooter(props: ElementProps<'footer'>) {
   return <footer {...safeProps(props)} className="ns-shell-footer" />;
+}
+
+export type AppShellBodyProps = ElementProps<'div'>;
+export function AppShellBody(props: AppShellBodyProps) {
+  return <div {...safeProps(props)} className="ns-shell-body" />;
+}
+export type AppShellDockProps = ElementProps<'div'>;
+export function AppShellDock(props: AppShellDockProps) {
+  return <div {...safeProps(props)} className="ns-shell-dock" />;
 }

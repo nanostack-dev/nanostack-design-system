@@ -4,10 +4,9 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Brand, ColorScheme, Density } from '../src/theme.js';
 
-const stylesheet = readFileSync(resolve(import.meta.dirname, '../src/styles.css'), 'utf8').replace(
-  /\/\*[\s\S]*?\*\//g,
-  '',
-);
+const stylesheet = readFileSync(resolve(import.meta.dirname, '../src/styles.css'), 'utf8')
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .replace(/@import\s+[^;]+;/g, '');
 type Theme = { brand: Brand; colorScheme: ColorScheme; density: Density };
 type TokenPair = readonly [foreground: string, background: string];
 
