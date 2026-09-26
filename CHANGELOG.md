@@ -7,7 +7,7 @@
 - Add capacity segments and selectable resource tiles. WorkerAvatar gains a liquid Pebble variant with observed heartbeat freshness and activity signals; its robot variant remains available.
 - Preserve current Echopoint webhook-wait, choreographed execution and fleet behavior while keeping visual ownership in this library.
 
-Upgrade: replace the beta package and keep existing imports. Use `WorkerAvatar variant="pebble"` for capacity-sensitive resources, compose `ResourceTile` parts around product data, and pass a neutral `presentationStore` to GraphCanvas when visual state updates independently of the document. Existing robot avatars and static graph models remain supported.
+Upgrade: replace the beta package and keep existing imports. Use `WorkerAvatar variant="pebble"` for capacity-sensitive resources, compose `ResourceTile` parts around product data, and pass a neutral store through GraphCanvas's `presentation` prop when visual state updates independently of the document. Existing robot avatars and static graph models remain supported.
 
 ## 0.2.0-beta.1
 
