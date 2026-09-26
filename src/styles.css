@@ -1,5 +1,7 @@
-@import './styles/capacity-meter.css';
+@import './styles/timeline-range.css';
+@import './styles/node-presentation.css';
 @import './styles/resource-tile.css';
+@import './styles/capacity-meter.css';
 @import './styles/breadcrumb.css';
 @import './styles/activity.css';
 @import './styles/dock.css';

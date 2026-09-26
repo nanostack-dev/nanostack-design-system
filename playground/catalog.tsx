@@ -164,7 +164,10 @@ function Controls() {
         <UI.Stack>
           <UI.Cluster>
             <UI.Button onClick={() => setNotice('Primary action selected.')}>Primary</UI.Button>
-            <UI.Button variant="secondary" onClick={() => setNotice('Secondary action selected.')}>
+            <UI.Button
+              variant="secondary"
+              onClick={() => setNotice('Secondary action selected.')}
+            >
               Secondary
             </UI.Button>
             <UI.Button variant="ghost" onClick={() => setNotice('Quiet action selected.')}>
@@ -183,8 +186,8 @@ function Controls() {
                 <UI.DialogHeader>
                   <UI.DialogTitle>A composed dialog</UI.DialogTitle>
                   <UI.DialogDescription>
-                    The library owns focus, dismissal, theme and spacing. The application supplies
-                    content.
+                    The library owns focus, dismissal, theme and spacing. The application
+                    supplies content.
                   </UI.DialogDescription>
                 </UI.DialogHeader>
                 <UI.Field name="catalog-dialog-name">
@@ -217,7 +220,8 @@ function Controls() {
               <UI.PopoverContent>
                 <UI.PopoverTitle>Closed appearance API</UI.PopoverTitle>
                 <UI.PopoverDescription>
-                  Choose a named variant. CSS, replacement elements and styling bags are rejected.
+                  Choose a named variant. CSS, replacement elements and styling bags are
+                  rejected.
                 </UI.PopoverDescription>
               </UI.PopoverContent>
             </UI.Popover>
@@ -241,8 +245,14 @@ function Controls() {
             <UI.Stack gap="lg">
               <UI.Field name="catalog-record-name">
                 <UI.FieldLabel>Record name</UI.FieldLabel>
-                <UI.Input value={name} onChange={(event) => setName(event.target.value)} required />
-                <UI.FieldDescription>A short name that describes the outcome.</UI.FieldDescription>
+                <UI.Input
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  required
+                />
+                <UI.FieldDescription>
+                  A short name that describes the outcome.
+                </UI.FieldDescription>
               </UI.Field>
               <UI.Field name="catalog-environment">
                 <UI.FieldLabel htmlFor="catalog-environment">Environment</UI.FieldLabel>
@@ -714,8 +724,85 @@ function Graph() {
             onNodesChange={(changes) =>
               setNodes((current) => UI.applyGraphNodeChanges(changes, current))
             }
-            onNodeActivate={(node) => setSelection(`Selected node: ${node.ariaLabel ?? node.id}`)}
+            onNodeActivate={(node) =>
+              setSelection(`Selected node: ${node.ariaLabel ?? node.id}`)
+            }
             controls={<UI.GraphViewportControls />}
+          />
+        </UI.Stack>
+      </Example>
+      <Example
+        title="Node presentation parts"
+        description="Compact checks, values, progress and outcomes share named anatomy without importing an application node type."
+      >
+        <UI.Grid columns={2}>
+          <UI.GraphNodeFrame family="logic" phase="success">
+            <UI.GraphNodeHeader>
+              <UI.NodeHeading
+                icon={<UI.NodeIcon glyph={CheckCircle} />}
+                title="Verify conditions"
+                subtitle="Two checks"
+              />
+            </UI.GraphNodeHeader>
+            <UI.GraphNodeBody>
+              <UI.NodeSection label="Checks">
+                <UI.NodeChecks
+                  items={[
+                    { label: 'Status is accepted', state: 'passed' },
+                    { label: 'Identifier is present', state: 'passed' },
+                  ]}
+                />
+              </UI.NodeSection>
+            </UI.GraphNodeBody>
+            <UI.GraphNodeFooter>
+              <UI.NodeRunGlyph phase="success" />
+              <UI.NodeCaption tone="success">Passed</UI.NodeCaption>
+            </UI.GraphNodeFooter>
+          </UI.GraphNodeFrame>
+          <UI.GraphNodeFrame family="data">
+            <UI.GraphNodeHeader>
+              <UI.NodeHeading
+                icon={<UI.NodeIcon glyph={Cube} />}
+                title="Prepare values"
+                subtitle="Named inputs"
+              />
+            </UI.GraphNodeHeader>
+            <UI.GraphNodeBody>
+              <UI.NodeSection label="Values">
+                <UI.NodeValueList
+                  items={[
+                    { name: 'environment', value: 'staging' },
+                    { name: 'verified', value: 'true' },
+                  ]}
+                />
+              </UI.NodeSection>
+              <UI.NodeSection label="Progress">
+                <UI.NodeMeter label="Preparation" value={0.75} />
+              </UI.NodeSection>
+            </UI.GraphNodeBody>
+          </UI.GraphNodeFrame>
+        </UI.Grid>
+      </Example>
+      <Example
+        title="Shared time axis"
+        description="Numeric start, end and total values place each interval; consumers choose only a semantic tone and size."
+      >
+        <UI.Stack gap="sm">
+          <UI.Text size="sm">Receive event · 0–200 ms</UI.Text>
+          <UI.TimelineRange
+            start={0}
+            end={200}
+            total={1000}
+            label="Receive event, 0 to 200 milliseconds"
+            tone="info"
+          />
+          <UI.Text size="sm">Verify response · 200–900 ms</UI.Text>
+          <UI.TimelineRange
+            start={200}
+            end={900}
+            total={1000}
+            label="Verify response, 200 to 900 milliseconds"
+            tone="success"
           />
         </UI.Stack>
       </Example>
@@ -784,14 +871,12 @@ function History() {
               <UI.Heading level={3}>Duration by run</UI.Heading>
               <UI.BarStrip
                 label="Example run durations"
-                points={historyRows
-                  .slice(0, 8)
-                  .map((row) => ({
-                    id: row.id,
-                    value: row.duration,
-                    label: `${row.name}, ${row.duration} milliseconds`,
-                    tone: row.failed ? 'danger' : 'success',
-                  }))}
+                points={historyRows.slice(0, 8).map((row) => ({
+                  id: row.id,
+                  value: row.duration,
+                  label: `${row.name}, ${row.duration} milliseconds`,
+                  tone: row.failed ? 'danger' : 'success',
+                }))}
                 reference={300}
                 selectedId={selected}
                 onSelect={setSelected}
@@ -875,7 +960,8 @@ export function Catalog() {
                 <UI.PageEyebrow>Nanostack / 0.2 beta</UI.PageEyebrow>
                 <UI.PageHeaderTitle>The block catalog</UI.PageHeaderTitle>
                 <UI.PageHeaderDescription>
-                  Inspect the parts, exercise their behavior, and compose them without custom CSS.
+                  Inspect the parts, exercise their behavior, and compose them without custom
+                  CSS.
                 </UI.PageHeaderDescription>
               </UI.PageHeaderContent>
               <UI.PageHeaderActions>
@@ -925,7 +1011,10 @@ export function Catalog() {
                 </UI.Field>
               </UI.Grid>
             </UI.Surface>
-            <UI.Tabs value={section} onValueChange={(value) => setSection(value as CatalogSection)}>
+            <UI.Tabs
+              value={section}
+              onValueChange={(value) => setSection(value as CatalogSection)}
+            >
               <UI.TabsList aria-label="Catalog sections">
                 {sections.map((name) => (
                   <UI.TabsTab key={name} value={name}>
@@ -954,8 +1043,8 @@ export function Catalog() {
             </UI.Tabs>
             <UI.Divider />
             <UI.Text size="sm" tone="muted">
-              This catalog uses exported library parts and local sample data. The API reference in
-              docs/components.md documents the full vocabulary and its composition rules.
+              This catalog uses exported library parts and local sample data. The API reference
+              in docs/components.md documents the full vocabulary and its composition rules.
             </UI.Text>
           </UI.Stack>
         </UI.Page>

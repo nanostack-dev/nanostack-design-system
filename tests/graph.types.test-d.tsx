@@ -36,3 +36,8 @@ export const engineProps = (
 );
 // @ts-expect-error internal state is not a second variant API
 export const internalStyle = <GraphNodeFrame {...{ 'data-ns-emphasis': 'critical' }} />;
+
+// @ts-expect-error node phases are semantic values, not CSS strings
+export const invalidPhase = <GraphNodeFrame phase="glowing" />;
+// @ts-expect-error custom stroke patterns are library-owned
+export const invalidPattern: GraphEdge = { ...edge, pattern: '2 8' };

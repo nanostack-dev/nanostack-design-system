@@ -2,10 +2,12 @@
 
 ## 0.2.0-beta.2
 
-- Add capacity segments and selectable resource tiles with named parts and finite health states.
-- WorkerAvatar gains a liquid Pebble variant with observed heartbeat freshness and activity signals; its robot variant remains available.
+- Add neutral graph presentation-store subscriptions and finite family/run-phase variants. Streamed changes update affected elements without rebuilding graph arrays; historical arrivals and reduced motion avoid replaying animations.
+- Add compact node presentation parts and numeric timeline ranges for live activity and stored outcomes.
+- Add capacity segments and selectable resource tiles. WorkerAvatar gains a liquid Pebble variant with observed heartbeat freshness and activity signals; its robot variant remains available.
+- Preserve current Echopoint webhook-wait, choreographed execution and fleet behavior while keeping visual ownership in this library.
 
-Upgrade: existing imports keep working. Choose `WorkerAvatar variant="pebble"` for capacity-sensitive resources and compose `ResourceTile` parts around product data. The Collections catalog demonstrates keyboard selection and resource health.
+Upgrade: replace the beta package and keep existing imports. Use `WorkerAvatar variant="pebble"` for capacity-sensitive resources, compose `ResourceTile` parts around product data, and pass a neutral `presentationStore` to GraphCanvas when visual state updates independently of the document. Existing robot avatars and static graph models remain supported.
 
 ## 0.2.0-beta.1
 

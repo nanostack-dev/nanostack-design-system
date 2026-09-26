@@ -100,6 +100,11 @@
           "target": "~/src/components/nanostack/blocks/metric.tsx"
         },
         {
+          "path": "src/blocks/node-presentation.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/node-presentation.tsx"
+        },
+        {
           "path": "src/blocks/page-header.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/page-header.tsx"
@@ -300,6 +305,11 @@
           "target": "~/src/components/nanostack/components/menu.tsx"
         },
         {
+          "path": "src/components/motion-preference.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/motion-preference.ts"
+        },
+        {
           "path": "src/components/popover.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/popover.tsx"
@@ -343,6 +353,11 @@
           "path": "src/components/textarea.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/textarea.tsx"
+        },
+        {
+          "path": "src/components/timeline-range.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/timeline-range.tsx"
         },
         {
           "path": "src/components/toast.tsx",
@@ -390,6 +405,11 @@
           "target": "~/src/components/nanostack/internal/editor/variables.ts"
         },
         {
+          "path": "src/internal/graph/annotation.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/annotation.tsx"
+        },
+        {
           "path": "src/internal/graph/connection-line.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/internal/graph/connection-line.tsx"
@@ -423,6 +443,11 @@
           "path": "src/internal/graph/node.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/internal/graph/node.tsx"
+        },
+        {
+          "path": "src/internal/graph/presentation.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/presentation.tsx"
         },
         {
           "path": "src/internal/graph/use-edge-settle.ts",
@@ -500,6 +525,11 @@
           "target": "~/src/components/nanostack/styles/graph.css"
         },
         {
+          "path": "src/styles/node-presentation.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/node-presentation.css"
+        },
+        {
           "path": "src/styles/popover.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/popover.css"
@@ -513,6 +543,11 @@
           "path": "src/styles/table.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/table.css"
+        },
+        {
+          "path": "src/styles/timeline-range.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/timeline-range.css"
         },
         {
           "path": "src/styles/worker-avatar.css",

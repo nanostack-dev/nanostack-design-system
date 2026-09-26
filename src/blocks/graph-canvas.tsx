@@ -22,6 +22,7 @@ import {
 
 import { GraphConnectionLine } from '../internal/graph/connection-line.js';
 import { GraphEdgeRenderer } from '../internal/graph/edge.js';
+import { GraphPresentationContext } from '../internal/graph/presentation.js';
 import { GraphNodeRenderer } from '../internal/graph/node.js';
 import { GraphGestureProvider, useGraphGestureStore } from '../internal/graph/context.js';
 import { getNearestBorderSide } from '../internal/graph/geometry.js';
@@ -536,7 +537,9 @@ export function GraphCanvas<NodeType extends GraphNode, EdgeType extends GraphEd
   return (
     <ReactFlowProvider>
       <GraphGestureProvider>
-        <GraphCanvasInner {...props} />
+        <GraphPresentationContext.Provider value={props.presentation}>
+          <GraphCanvasInner {...props} />
+        </GraphPresentationContext.Provider>
       </GraphGestureProvider>
     </ReactFlowProvider>
   );

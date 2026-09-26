@@ -125,7 +125,7 @@ for (const folder of ['components', 'blocks']) {
 }
 const theme = await import('@nanostack/design-system/theme');
 assert.equal(theme.Theme, library.Theme);
-for (const path of ['theme.js', 'components/button.js', 'components/input.js', 'components/field.js', 'components/tabs.js', 'components/dialog.js', 'blocks/app-shell.js']) {
+for (const path of ['theme.js', 'components/button.js', 'components/input.js', 'components/field.js', 'components/tabs.js', 'components/dialog.js', 'blocks/app-shell.js', 'blocks/graph-node.js', 'blocks/node-presentation.js', 'components/motion-preference.js']) {
   assert(/^['"]use client['"];/.test(readFileSync(join(packageRoot, 'dist', path), 'utf8')), path + ' lost its React client boundary');
 }
 
@@ -141,6 +141,14 @@ const output = renderToString(h(library.Theme, { brand: 'anchor' },
       h(library.AppShellMain, null, 'Consumer content')))));
 assert(output.includes('Tested button') && output.includes('Consumer content'), 'SSR did not render composed public components');
 assert(output.includes('ns-button') && output.includes('data-ns-brand="anchor"'), 'SSR lost owned style hooks');
+const graphOutput = renderToString(h(library.Theme, null,
+  h(library.GraphNodeFrame, { family: 'logic', phase: 'running' },
+    h(library.GraphNodeBody, null, 'Server-rendered node'),
+    h(library.NodeTelemetry, { phase: 'running' }, 'Live annotation')),
+  h(library.NodeElapsedTime, { elapsedMs: 1000, format: value => String(value) })));
+assert(graphOutput.includes('Server-rendered node'), 'SSR lost graph content');
+assert(!graphOutput.includes('Live annotation'), 'A portal must wait for its browser host');
+
 console.log('Packed ESM exports, stylesheet, declarations, client boundaries and React ' + version + ' SSR passed.');
 `,
   );

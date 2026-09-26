@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { Handle, Position, useConnection, type NodeProps } from '@xyflow/react';
 import { GraphNodeFrame } from '../../blocks/graph-node.js';
+import { useGraphNodePresentation } from './presentation.js';
 import type { EngineNode } from './model.js';
 
 const borders = [Position.Top, Position.Right, Position.Bottom, Position.Left];
@@ -50,6 +51,7 @@ function ConnectionSurface({ id, connectable }: { id: string; connectable: boole
 
 export function GraphNodeRenderer({ id, data, selected, isConnectable }: NodeProps<EngineNode>) {
   const { model } = data;
+  const presentation = useGraphNodePresentation(id);
   const content = useRef<HTMLDivElement>(null);
   // The engine reads its no-drag marker before React's delegated handlers.
   // Register controls centrally, including controls mounted by disclosures.
@@ -71,10 +73,13 @@ export function GraphNodeRenderer({ id, data, selected, isConnectable }: NodePro
   return (
     <div ref={content} className="ns-graph-node">
       <GraphNodeFrame
-        tone={model.tone ?? 'neutral'}
+        tone={presentation?.tone ?? model.tone ?? 'neutral'}
         width={model.width ?? 'standard'}
+        family={model.family ?? 'call'}
+        phase={presentation?.phase ?? model.phase ?? 'idle'}
+        instant={presentation?.instant ?? model.instant ?? false}
         selected={selected}
-        emphasis={model.emphasis ?? 'normal'}
+        emphasis={presentation?.emphasis ?? model.emphasis ?? 'normal'}
       >
         {model.content}
       </GraphNodeFrame>

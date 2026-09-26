@@ -12,6 +12,7 @@ import {
 } from '@xyflow/react';
 
 import { getFloatingEdgeParams, getPinnedCurvature } from './geometry.js';
+import { useGraphEdgePresentation } from './presentation.js';
 import type { EngineEdge } from './model.js';
 import { lerpEdgePath, useEdgeSettle } from './use-edge-settle.js';
 
@@ -66,6 +67,7 @@ export function GraphEdgeRenderer({
   targetPosition,
 }: EdgeProps<EngineEdge>) {
   const data = engineData?.model;
+  const presentation = useGraphEdgePresentation(id);
   // Endpoints come from the two nodes' geometry, not from a handle, so the edge
   // meets whichever border faces the other node. The props are the fallback for
   // the frame before React Flow has measured them.
@@ -81,7 +83,11 @@ export function GraphEdgeRenderer({
     targetY,
     targetPosition,
   };
-  const tone = data?.tone ?? 'neutral';
+  const tone = presentation?.tone ?? data?.tone ?? 'neutral';
+  const phase = presentation?.phase;
+  const travelMs = Number.isFinite(presentation?.travelMs)
+    ? Math.max(0, Math.min(presentation!.travelMs!, 60_000))
+    : 340;
   const shouldAnimate = data?.motion === 'flow';
   const dashDuration = tone === 'danger' ? '1s' : '1.5s';
 
@@ -167,7 +173,16 @@ export function GraphEdgeRenderer({
   }, [anchors.sourceX, anchors.sourceY, anchors.targetX, anchors.targetY]);
 
   return (
-    <g ref={anchorRef} data-tone={tone} data-selected={selected} data-ns-settling={progress < 1}>
+    <g
+      ref={anchorRef}
+      data-tone={tone}
+      data-selected={selected}
+      data-ns-settling={progress < 1}
+      data-ns-phase={phase}
+      data-ns-pattern={data?.pattern ?? 'solid'}
+      data-ns-instant={presentation?.instant || undefined}
+      style={presentation ? ({ '--ns-edge-travel': `${travelMs}ms` } as CSSProperties) : undefined}
+    >
       {/* A selected edge used to differ by 0.75px of stroke width, which reads
           as nothing. The halo is the selection: it traces the same path, wide
           and faint, under the edge itself. */}
@@ -185,16 +200,26 @@ export function GraphEdgeRenderer({
         id={id}
         path={path}
         interactionWidth={28}
+        data-ns-phase={phase}
         className={
           shouldAnimate ? 'ns-graph-edge-path ns-graph-edge-animated' : 'ns-graph-edge-path'
         }
         style={
           {
-            strokeDasharray: shouldAnimate ? '12, 12' : '0',
+            ...(shouldAnimate ? { strokeDasharray: '12, 12' } : {}),
             ...(shouldAnimate ? { '--flow-edge-dash-duration': dashDuration } : {}),
           } as CSSProperties
         }
       />
+
+      {phase ? (
+        <>
+          <path d={path} pathLength={1} className="ns-graph-edge-progress" data-ns-phase={phase} />
+          {phase === 'traversed' && !presentation?.instant ? (
+            <path d={path} pathLength={1} className="ns-graph-edge-comet" data-ns-phase={phase} />
+          ) : null}
+        </>
+      ) : null}
 
       <polygon
         points="0,-4.5 9,0 0,4.5"

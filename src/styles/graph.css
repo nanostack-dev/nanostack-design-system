@@ -293,3 +293,164 @@
   z-index: 5;
   width: min(360px, calc(100% - 32px));
 }
+
+/* A completed pass releases its compositor work; settled edges stay static. */
+.ns-graph-edge-progress,
+.ns-graph-edge-comet {
+  fill: none;
+  pointer-events: none;
+  stroke: var(--ns-graph-edge-tone);
+  stroke-linecap: round;
+}
+.ns-graph-edge-progress {
+  stroke-width: 2.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.ns-graph-edge-comet {
+  stroke-width: 4;
+  stroke-dasharray: 0.08 1;
+  opacity: 0;
+}
+.ns-graph-canvas g[data-ns-phase] .ns-graph-edge-path {
+  stroke: var(--ns-muted);
+}
+.ns-graph-canvas g[data-ns-phase='idle'] .ns-graph-edge-path,
+.ns-graph-canvas g[data-ns-phase='blocked'] .ns-graph-edge-path,
+.ns-graph-canvas g[data-ns-phase='skipped'] .ns-graph-edge-path {
+  opacity: 0.4;
+}
+.ns-graph-canvas g[data-ns-phase='skipped'] .ns-graph-edge-path {
+  stroke-dasharray: 4 4;
+}
+.ns-graph-canvas g[data-ns-phase='traversed'] .ns-graph-edge-progress {
+  stroke-dashoffset: 0;
+  animation: ns-edge-travel var(--ns-edge-travel, 340ms) linear;
+}
+.ns-graph-canvas g[data-ns-phase='traversed'] .ns-graph-edge-comet {
+  animation: ns-edge-comet var(--ns-edge-travel, 340ms) linear;
+}
+.ns-graph-canvas g[data-ns-instant] .ns-graph-edge-progress {
+  animation: none;
+}
+@keyframes ns-edge-travel {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ns-edge-comet {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ns-graph-canvas g[data-ns-phase] .ns-graph-edge-progress {
+    animation: none;
+  }
+  .ns-graph-edge-comet {
+    display: none;
+    animation: none !important;
+  }
+}
+
+.ns-graph-node-shell {
+  position: relative;
+  width: fit-content;
+  --ns-node-accent: var(--ns-accent);
+  --ns-node-tint: var(--ns-accent-soft);
+  --ns-node-on-tint: var(--ns-accent);
+}
+.ns-graph-node-shell[data-ns-family='wait'] {
+  --ns-node-accent: var(--ns-warning);
+  --ns-node-tint: var(--ns-warning-soft);
+  --ns-node-on-tint: var(--ns-warning);
+}
+.ns-graph-node-shell[data-ns-family='logic'] {
+  --ns-node-accent: var(--ns-accent);
+  --ns-node-tint: var(--ns-accent-soft);
+  --ns-node-on-tint: var(--ns-accent);
+}
+.ns-graph-node-shell[data-ns-family='data'] {
+  --ns-node-accent: var(--ns-success);
+  --ns-node-tint: var(--ns-success-soft);
+  --ns-node-on-tint: var(--ns-success);
+}
+.ns-graph-node-frame[data-ns-run-phase='running'] {
+  border-color: var(--ns-node-accent);
+}
+.ns-graph-node-frame[data-ns-run-phase='idle'],
+.ns-graph-node-frame[data-ns-run-phase='skipped'] {
+  box-shadow: none;
+}
+.ns-graph-node-beam {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--ns-node-accent);
+  animation: ns-node-working 1.6s ease-in-out infinite;
+}
+.ns-graph-node-frame[data-ns-run-phase='success']:not([data-ns-run-instant]),
+.ns-graph-node-frame[data-ns-run-phase='error']:not([data-ns-run-instant]) {
+  animation: ns-node-land 220ms ease-out;
+}
+@keyframes ns-node-working {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes ns-node-land {
+  from {
+    transform: translateY(-2px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ns-graph-node-frame[data-ns-run-phase],
+  .ns-graph-node-beam {
+    animation: none;
+  }
+  .ns-graph-node-beam {
+    opacity: 0.7;
+  }
+}
+
+.ns-graph-canvas g[data-ns-pattern='dashed'] .ns-graph-edge-path {
+  stroke-dasharray: 6 4;
+}
+.ns-graph-canvas g[data-ns-phase='idle'] .ns-graph-edge-arrow,
+.ns-graph-canvas g[data-ns-phase='blocked'] .ns-graph-edge-arrow,
+.ns-graph-canvas g[data-ns-phase='skipped'] .ns-graph-edge-arrow {
+  fill: var(--ns-muted);
+  opacity: 0.4;
+}
+
+.ns-graph-node-frame {
+  position: relative;
+}
+.ns-graph-node-annotations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

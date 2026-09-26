@@ -4,6 +4,27 @@ export type EdgeAnchorSide = 'top' | 'right' | 'bottom' | 'left';
 
 export type GraphPosition = { x: number; y: number };
 export type GraphTone = 'neutral' | 'info' | 'success' | 'danger' | 'warning';
+/** Cached snapshots let live data update one element without rebuilding the graph. */
+export type GraphNodePresentation = NoCustomStyle & {
+  tone: GraphTone;
+  phase?: 'idle' | 'running' | 'success' | 'error' | 'skipped';
+  instant?: boolean;
+  emphasis?: 'normal' | 'focused' | 'critical';
+};
+export type GraphEdgePresentation = NoCustomStyle & {
+  phase: 'idle' | 'traversed' | 'blocked' | 'skipped';
+  tone: GraphTone;
+  travelMs?: number;
+  instant?: boolean;
+};
+export type GraphPresentationStore = {
+  subscribe: (listener: () => void) => () => void;
+  getNodeSnapshot: (id: string) => GraphNodePresentation | undefined;
+  getEdgeSnapshot: (id: string) => GraphEdgePresentation | undefined;
+  getServerNodeSnapshot?: (id: string) => GraphNodePresentation | undefined;
+  getServerEdgeSnapshot?: (id: string) => GraphEdgePresentation | undefined;
+};
+
 export type GraphConnection = {
   source: string;
   target: string;
@@ -24,6 +45,9 @@ export type GraphNode<
   tone?: GraphTone;
   emphasis?: 'normal' | 'focused' | 'critical';
   width?: 'compact' | 'standard';
+  family?: 'call' | 'wait' | 'logic' | 'data';
+  phase?: 'idle' | 'running' | 'success' | 'error' | 'skipped';
+  instant?: boolean;
   selected?: boolean;
   hidden?: boolean;
   draggable?: boolean;
@@ -46,6 +70,7 @@ export type GraphEdge<Data extends Record<string, unknown> = Record<string, unkn
     label?: string;
     tone?: GraphTone;
     motion?: 'static' | 'flow';
+    pattern?: 'solid' | 'dashed';
     sourceAnchor?: EdgeAnchorSide;
     targetAnchor?: EdgeAnchorSide;
     selected?: boolean;
@@ -109,6 +134,7 @@ export type GraphCanvasProps<
   ref?: Ref<GraphCanvasHandle>;
   nodes: NodeType[];
   edges: EdgeType[];
+  presentation?: GraphPresentationStore;
   mode?: 'readonly' | 'interactive';
   height?: 'panel' | 'fill';
   label: string;

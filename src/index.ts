@@ -70,3 +70,6 @@ export * from './components/activity.js';
 export * from './components/breadcrumb.js';
 export * from './components/capacity-meter.js';
 export * from './blocks/resource-tile.js';
+export * from './blocks/node-presentation.js';
+export * from './components/timeline-range.js';
+export * from './components/motion-preference.js';
