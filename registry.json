@@ -55,9 +55,39 @@
           "target": "~/src/components/nanostack/blocks/data-table.tsx"
         },
         {
+          "path": "src/blocks/dock.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/dock.tsx"
+        },
+        {
           "path": "src/blocks/empty-state.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/empty-state.tsx"
+        },
+        {
+          "path": "src/blocks/graph-canvas.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/graph-canvas.tsx"
+        },
+        {
+          "path": "src/blocks/graph-controls.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/graph-controls.tsx"
+        },
+        {
+          "path": "src/blocks/graph-node.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/graph-node.tsx"
+        },
+        {
+          "path": "src/blocks/graph-state.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/graph-state.ts"
+        },
+        {
+          "path": "src/blocks/graph-types.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/graph-types.ts"
         },
         {
           "path": "src/blocks/inspector.tsx",
@@ -350,6 +380,46 @@
           "target": "~/src/components/nanostack/internal/editor/variables.ts"
         },
         {
+          "path": "src/internal/graph/connection-line.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/connection-line.tsx"
+        },
+        {
+          "path": "src/internal/graph/context.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/context.tsx"
+        },
+        {
+          "path": "src/internal/graph/edge.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/edge.tsx"
+        },
+        {
+          "path": "src/internal/graph/geometry.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/geometry.ts"
+        },
+        {
+          "path": "src/internal/graph/gesture.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/gesture.ts"
+        },
+        {
+          "path": "src/internal/graph/model.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/model.ts"
+        },
+        {
+          "path": "src/internal/graph/node.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/node.tsx"
+        },
+        {
+          "path": "src/internal/graph/use-edge-settle.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/use-edge-settle.ts"
+        },
+        {
           "path": "src/internal/props.ts",
           "type": "registry:file",
           "target": "~/src/components/nanostack/internal/props.ts"
@@ -395,9 +465,24 @@
           "target": "~/src/components/nanostack/styles/data-visualization.css"
         },
         {
+          "path": "src/styles/dock.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/dock.css"
+        },
+        {
           "path": "src/styles/editor.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/editor.css"
+        },
+        {
+          "path": "src/styles/graph-engine.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/graph-engine.css"
+        },
+        {
+          "path": "src/styles/graph.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/graph.css"
         },
         {
           "path": "src/styles/popover.css",

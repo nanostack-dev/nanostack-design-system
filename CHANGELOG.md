@@ -4,8 +4,8 @@
 
 - Extend the closed contract to native aliases, provider appearance bags, owned state attributes, typed spreads and untyped runtime callers. Text now uses the finite `display` option; element replacement is unsupported.
 - Add named parts for forms, menus, collection rows, tables, inspectors, application shells, responsive panels, dialogs, navigation, notifications and identity widgets.
-- Add library-owned code editors, source diffs, resizable workspaces, trees, virtualized lists, duration charts and conversation logs. Applications retain domain data and callbacks.
-- Expand keyboard, focus, async clipboard, controlled state, scroll anchoring, responsive, accessibility, type and packaged-consumer coverage.
+- Add library-owned code editors, source diffs, resizable workspaces, trees, graph geometry, connection controls, virtualized lists, duration charts and conversation logs. Applications retain domain data and callbacks.
+- Expand keyboard, focus, async clipboard, controlled state, scroll anchoring, graph pointer, responsive, accessibility, type and packaged-consumer coverage.
 
 ## 0.1.0-beta.1
 
