@@ -53,6 +53,7 @@ import {
   EmptyState,
 } from '../src/index.js';
 import '../src/styles.css';
+import { Catalog } from './catalog.js';
 
 function Mark() {
   return (
@@ -498,6 +499,6 @@ const root = document.getElementById('root');
 if (root)
   createRoot(root).render(
     <StrictMode>
-      <Playground />
+      {new URLSearchParams(window.location.search).has('catalog') ? <Catalog /> : <Playground />}
     </StrictMode>,
   );

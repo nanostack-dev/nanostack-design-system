@@ -4,7 +4,7 @@
 
 A foundation defines a shared visual decision. A primitive provides one interaction or semantic element. A block combines primitives into a reusable workflow structure. Applications own routes, requests, permissions, domain state, product copy, and assemblies of exported library parts.
 
-Before introducing an abstraction, demonstrate its use in a real consumer or documented example. Prefer a small composition of parts over a component whose many booleans select unrelated layouts. Keep state near its owner and expose conventional controlled/uncontrolled behavior only when consumers need it.
+Consult [the component catalog](components.md) before adding a part. Before introducing an abstraction, demonstrate its use in a real consumer or documented example. Prefer a small composition of parts over a component whose many booleans select unrelated layouts. Keep state near its owner and expose conventional controlled/uncontrolled behavior only when consumers need it.
 
 ### Assembly or common component
 
@@ -15,6 +15,16 @@ For example, an Echopoint run summary can combine `Section`, `SectionHeader`, `S
 When that composition needs a missing visual capability, add the smallest common primitive or block here and give it finite semantic variants. A generic progress indicator belongs here; an Echopoint hook that queries run progress belongs in Echopoint. Icons, images, forms, tables, editors, charts, navigation and third-party widget adapters follow the same ownership boundary. Keep domain-aware data preparation outside their visual API.
 
 Consumers import the package's public entry point or documented subpaths and its stylesheet once. Generated registry sources are a distribution artifact of this repository, not a consumer customization surface. Change the canonical source and update the dependency when a new variant is needed.
+
+## Contribution recipe
+
+1. Write the consumer assembly with existing parts and identify the exact capability it lacks. Completion: a real use case and a second composition demonstrate a reusable boundary; domain fetching and policy remain in the app.
+2. Define the smallest public part and its finite semantic variations. Derive native/Base UI behavior types, apply `NoCustomStyle`, and preserve names, refs and events. Completion: supported examples type-check and unsupported styling/replacement props fail, including spread objects.
+3. Implement the anatomy and any visual-engine adapter inside the library. Forward props through `safeProps`; add namespaced rules to a style module imported by `src/styles.css`; export the component from `src/index.ts`. Completion: one canonical source supplies both package and registry outputs, with no application dependency.
+4. Exercise the interaction and visual states that changed. Completion: focused behavior/type tests and relevant browser checks prove labels, disabled/pending behavior, keyboard focus, portal theming, long content and responsive bounds. Test observable results instead of private CSS selectors.
+5. Integrate the packed dependency into the consumer and update this catalog, the change record and any migration example. Completion: the consumer's assembly guard, type/build checks and affected interaction tests pass against the artifact, not a source alias.
+
+If the requirement is merely a new arrangement of existing parts, stop at the application assembly. For example, mapping a monitor's status to `Badge` and placing `Progress` beside it needs no new library component. A reusable disclosure, measured virtual list, or new accessible input interaction belongs here. Product names are not variant names.
 
 ## Public API contract
 
@@ -49,7 +59,7 @@ Capture before/after pairs using the same viewport, theme, and representative da
 
 ## Version and distribute deliberately
 
-The initial `0.1.0-beta` line is an adoption pilot. Pin an exact beta release or commit in consumers; every beta can require coordinated migration. Record public API, visual, interaction, and token changes in release notes with a consumer action when needed.
+The beta line is a coordinated adoption period. Pin an exact beta release or commit in consumers; every beta can require coordinated migration. Record public API, visual, interaction, and token changes in release notes with a consumer action when needed.
 
 After 1.0, compatible additions are minor releases, compatible fixes are patches, and removals or incompatible semantics are major releases. Visual changes need review even when TypeScript still compiles. Mark deprecated APIs, provide a replacement, and allow a documented migration period before removal.
 

@@ -39,6 +39,20 @@ test('chart keyboard selection and mobile panel focus restore work in both theme
     const trigger = page.getByRole('button', { name: 'Open detail' });
     await trigger.click();
     await expect(page.getByText('Selected record slow')).toBeVisible();
+    if (isMobile && page.viewportSize()!.width < 768) {
+      const dialog = page.getByRole('dialog', { name: 'Details' });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Close detail' })).toBeFocused();
+    }
+    // Inspect the settled palette and modal scope, not a theme transition frame.
+    await page.evaluate(() =>
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+          .map((animation) => animation.finished.catch(() => undefined)),
+      ),
+    );
     expect(
       (
         await new AxeBuilder({ page })

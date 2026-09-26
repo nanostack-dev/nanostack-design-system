@@ -1,6 +1,6 @@
 # Nanostack design system
 
-This library owns every visual component; Anchor and Echopoint own routes, permissions, server state, product copy, and assemblies of library parts. Read `docs/research.md` when changing architecture and `docs/contributing.md` when adding a public API, moving UI from an application, or preparing a release.
+This library owns every visual component; Anchor and Echopoint own routes, permissions, server state, product copy, and assemblies of library parts. Read [the catalog](docs/components.md) before assembling a surface or adding a visual capability; [contributing](docs/contributing.md) when changing an API, moving UI from an app, or releasing; [research](docs/research.md) when changing architecture.
 
 ## Public contract
 
@@ -10,11 +10,15 @@ This library owns every visual component; Anchor and Echopoint own routes, permi
 - Applications assemble exported library parts. A missing visual element becomes a common primitive or block here; a product-specific arrangement stays an assembly in the application. Raw DOM/SVG markup, third-party visual components and styling belong here, including inside child and named-part content. A React function containing business state and library JSX is an assembly, not permission to create a local visual primitive.
 - React refs are props. Preserve native accessibility attributes and event handlers. Interaction belongs to Base UI; simple semantics belong to native HTML. Each new complex control must preserve keyboard behavior and focus return.
 - Theme is a finite combination of brand, color scheme, and density. Overlays must inherit its scope through portals. CSS selectors are namespaced; importing the library must not reset the host app or change its global theme.
-- `src/styles.css` is the single visual source. Public source and generated package/registry output share it; publish no alternate component implementation. Export every public component subpath from `src/index.ts` so the complete catalog passes the automatic prop contract. New source modules use `.js` relative specifiers so emitted ESM runs outside Vite.
+- `src/styles.css` is the shared stylesheet entry; tokens and imported style modules stay in this repository. Package and generated registry output share the canonical implementation. Export every public component subpath from `src/index.ts` so the complete catalog passes the automatic prop contract. New source modules use `.js` relative specifiers so emitted ESM runs outside Vite.
+
+## Ownership beyond primitives
+
+Editors, graphs, virtual collections, data visualizations, workspace resize handles and history layouts follow the same contract as buttons. Wrap visual engines here with neutral data and behavior types. Apps own fetching, permissions, graph meaning, layout algorithms, cursor pagination and mutation success; the library owns rendered anatomy, keyboard interaction, measurement, theme portals and CSS. Numeric coordinates, progress and pane ratios are model/interaction data, not arbitrary visual tokens.
 
 ## Validation boundaries
 
-`pnpm check` checks lint, types (including rejected props), behavior, package output, and the documentation build. `pnpm test:browser` checks actual CSS, keyboard interactions, accessibility scans and responsive overflow. Packaging or exports changes additionally require `pnpm test:package` against the packed artifact. `pnpm registry:build` regenerates installable recipes; do not hand-edit output.
+`pnpm check` regenerates the registry and checks lint, types (including rejected props), behavior, package build, and documentation build. `pnpm test:browser` checks actual CSS, keyboard interactions, accessibility scans and responsive overflow. Packaging or exports changes additionally require `pnpm test:package` against the packed artifact and a consumer build. Consumer assembly checks include production code and stories. `pnpm registry:build` regenerates installable recipes; do not hand-edit output.
 
 Test what a person can observe. Include disabled, pending, empty, failed, long-content, touch, keyboard and dark states when applicable. Axe is one check, not a conformance claim. Token changes require contrast checks and both-theme screenshots. Capture images locally in `.ui-craft/` and attach them to PRs, never commit them.
 

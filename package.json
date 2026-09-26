@@ -41,7 +41,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc -p tsconfig.build.json && node scripts/copy-styles.mjs",
+    "build": "node scripts/clean-dist.mjs && tsc -p tsconfig.build.json && node scripts/copy-styles.mjs",
     "build:docs": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
