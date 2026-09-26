@@ -21,6 +21,10 @@ import { workerPhase, workerSteamTier } from '../internal/worker-tuning.js';
 export type WorkerAvatarProps = NoCustomStyle & {
   /** Fraction of worker capacity in use. Invalid values become idle. */
   load?: number;
+  /** Pebble preserves a readable liquid level when motion is reduced. */
+  variant?: 'robot' | 'pebble';
+  /** Heartbeat is near its freshness timeout. */
+  staling?: boolean;
   alarmed?: boolean;
   /** New observed heartbeat replays the signal. */
   beat?: string | number | null;
@@ -71,7 +75,7 @@ const PUFF_DISCS = [
   { dx: 2.2, dy: -2.8, r: 2.4 },
 ];
 
-export function WorkerAvatar({
+function WorkerRobot({
   load = 0,
   alarmed = false,
   beat = null,
@@ -210,4 +214,156 @@ export function WorkerAvatar({
       </g>
     </svg>
   );
+}
+
+const BODY = { x: 9, y: 11, width: 30, height: 29, radius: 13 };
+
+/** Liquid baseline when full: two units above the crown, so full has no gap. */
+const LIQUID_TOP = BODY.y - 2;
+
+/** Distance from full to empty, far enough that empty shows no crest. */
+const LIQUID_TRAVEL = 31;
+
+/**
+ * A liquid surface that loops when slid left by exactly one wavelength.
+ *
+ * `wavePath(12, 1.1)` starts one wavelength left of the drawing at x=-12,
+ * alternates crest and trough every 6 units out to x=60, then drops to the
+ * bottom and closes, so the fill below the surface is the same shape.
+ */
+function wavePath(wavelength: number, amplitude: number) {
+  const half = wavelength / 2;
+  const start = -wavelength;
+  const end = 48 + wavelength;
+  let d = `M${start} 0 Q${start + half / 2} ${-amplitude} ${start + half} 0`;
+
+  for (let x = start + half; x < end; x += half) {
+    d += ` T${x + half} 0`;
+  }
+
+  return `${d} V${BODY.height + 4} H${start} Z`;
+}
+
+const FRONT_WAVE = wavePath(12, 1.1);
+const BACK_WAVE = wavePath(16, 1.4);
+
+function Eyes({ beat, tone }: { beat: WorkerAvatarProps['beat']; tone: 'dry' | 'wet' }) {
+  return (
+    <g className="ns-worker-pebble-eyes" data-tone={tone}>
+      <g key={beat ?? 'none'} className="ns-worker-pebble-eyes-beat" data-ns-beat={beat != null}>
+        <g className="ns-worker-pebble-eyes-blink">
+          <rect x="17.4" y="19.6" width="3.8" height="6.8" rx="1.9" />
+          <rect x="26.8" y="19.6" width="3.8" height="6.8" rx="1.9" />
+        </g>
+      </g>
+    </g>
+  );
+}
+
+/**
+ * A worker, drawn as a small vessel that fills up with work.
+ *
+ * The liquid level is the load, so the reading survives a glance and survives
+ * reduced motion. The surface only sloshes while there is work, and sloshes
+ * faster as the vessel fills. The eyes carry the mood: a double blink is a
+ * heartbeat landing, a squint is a full worker, drooping lids are a heartbeat
+ * that is late.
+ *
+ * The eyes are drawn twice. The dry pair sits on the glass. The wet pair rides
+ * inside the liquid, clipped by it and counter-moved so it stays in place, so
+ * an eye half under the surface is half each colour instead of vanishing.
+ */
+function WorkerPebble({
+  load = 0,
+  alarmed = false,
+  staling = false,
+  beat = null,
+  activity,
+  seed = '',
+  size = 'md',
+  label,
+}: WorkerAvatarProps) {
+  const id = useId();
+  const bodyClipId = `${id}-body`;
+  const liquidClipId = `${id}-liquid`;
+  const safeLoad = clamp01(load);
+  const phase = workerPhase(seed);
+  const state = alarmed
+    ? 'alarmed'
+    : staling
+      ? 'staling'
+      : safeLoad >= 1
+        ? 'full'
+        : safeLoad > 0
+          ? 'working'
+          : 'idle';
+
+  return (
+    <svg
+      className="ns-worker-avatar ns-worker-pebble"
+      data-size={size}
+      data-ns-state={state}
+      viewBox="4 6 40 40"
+      style={{
+        ['--pebble-load' as string]: safeLoad.toFixed(3),
+        ['--pebble-phase' as string]: clamp01(phase).toFixed(3),
+        ['--pebble-liquid-y' as string]: `${LIQUID_TOP + (1 - safeLoad) * LIQUID_TRAVEL}px`,
+      }}
+      role={label ? 'img' : 'presentation'}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+    >
+      <defs>
+        <clipPath id={bodyClipId}>
+          <rect x={BODY.x} y={BODY.y} width={BODY.width} height={BODY.height} rx={BODY.radius} />
+        </clipPath>
+        <clipPath id={liquidClipId}>
+          <rect x="-20" y="0" width="88" height="48" />
+        </clipPath>
+      </defs>
+
+      <ellipse className="ns-worker-pebble-shadow" cx="24" cy="43" rx="11.5" ry="1.8" />
+
+      {/* One keyed wrapper for both one-shot reactions: which of them plays is
+          picked by what changed, so a remount never runs two at once. */}
+      <g key={activity} className="ns-worker-pebble-react" data-react={alarmed ? 'alarm' : 'hop'}>
+        <rect
+          className="ns-worker-pebble-glass"
+          x={BODY.x}
+          y={BODY.y}
+          width={BODY.width}
+          height={BODY.height}
+          rx={BODY.radius}
+        />
+
+        <Eyes beat={beat} tone="dry" />
+
+        <g clipPath={`url(#${bodyClipId})`}>
+          <g className="ns-worker-pebble-liquid">
+            <path className="ns-worker-pebble-wave-back" d={BACK_WAVE} />
+            <path className="ns-worker-pebble-wave" d={FRONT_WAVE} />
+            <g clipPath={`url(#${liquidClipId})`}>
+              <g className="ns-worker-pebble-liquid-counter">
+                <Eyes beat={beat} tone="wet" />
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <rect
+          className="ns-worker-pebble-rim"
+          x={BODY.x}
+          y={BODY.y}
+          width={BODY.width}
+          height={BODY.height}
+          rx={BODY.radius}
+        />
+        <path className="ns-worker-pebble-gloss" d="M14.6 18.2 Q16.4 14.6 20.6 13.8" />
+      </g>
+    </svg>
+  );
+}
+
+export function WorkerAvatar({ variant = 'robot', ...props }: WorkerAvatarProps) {
+  return variant === 'pebble' ? <WorkerPebble {...props} /> : <WorkerRobot {...props} />;
 }

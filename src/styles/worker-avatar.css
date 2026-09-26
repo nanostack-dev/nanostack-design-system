@@ -319,3 +319,247 @@
 .ns-worker-avatar[data-size='lg'] {
   width: 3.5rem;
 }
+
+.ns-worker-pebble {
+  --pebble-slosh: calc(2.6s - var(--pebble-load, 0) * 1.4s);
+  --pebble-liquid: var(--ns-accent);
+  --pebble-wet-eye: var(--ns-on-accent);
+
+  width: 2.75rem;
+  height: auto;
+  flex: none;
+  overflow: visible;
+}
+
+.ns-worker-pebble * {
+  transform-box: fill-box;
+}
+
+.ns-worker-pebble[data-ns-state='alarmed'] {
+  --pebble-liquid: var(--ns-danger);
+  --pebble-wet-eye: var(--ns-surface);
+}
+
+.ns-worker-pebble[data-ns-state='staling'] {
+  --pebble-liquid: color-mix(in oklab, var(--ns-accent) 45%, var(--ns-muted));
+}
+
+.ns-worker-pebble-glass {
+  fill: color-mix(in oklab, var(--ns-surface) 86%, var(--ns-text) 14%);
+}
+
+.ns-worker-pebble-rim {
+  fill: none;
+  stroke: color-mix(in oklab, var(--ns-text) 34%, transparent);
+  stroke-width: 1.4;
+  transition: stroke 260ms cubic-bezier(0.22, 1, 0.32, 1);
+}
+
+.ns-worker-pebble[data-ns-state='alarmed'] .ns-worker-pebble-rim {
+  stroke: var(--ns-danger);
+}
+
+.ns-worker-pebble[data-ns-state='staling'] .ns-worker-pebble-rim {
+  stroke: color-mix(in oklab, var(--ns-warning) 75%, transparent);
+}
+
+.ns-worker-pebble-gloss {
+  fill: none;
+  stroke: white;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+[data-ns-theme='dark'] .ns-worker-pebble-gloss {
+  opacity: 0.22;
+}
+
+.ns-worker-pebble-shadow {
+  fill: var(--ns-text);
+  opacity: 0.1;
+}
+
+/* ------------------------------------------------------------------ liquid */
+
+/* The two layers share one curve and one duration, so the wet eyes stay put
+   while the liquid carrying them moves. */
+.ns-worker-pebble-liquid {
+  transform: translateY(var(--pebble-liquid-y));
+  transition: transform 700ms cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+.ns-worker-pebble-liquid-counter {
+  transform: translateY(calc(var(--pebble-liquid-y) * -1));
+  transition: transform 700ms cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+.ns-worker-pebble-wave {
+  fill: var(--pebble-liquid);
+  transition: fill 260ms cubic-bezier(0.22, 1, 0.32, 1);
+}
+
+.ns-worker-pebble-wave-back {
+  fill: color-mix(in oklab, var(--pebble-liquid) 45%, transparent);
+  transition: fill 260ms cubic-bezier(0.22, 1, 0.32, 1);
+}
+
+.ns-worker-pebble:is([data-ns-state='working'], [data-ns-state='full'], [data-ns-state='alarmed'])
+  .ns-worker-pebble-wave {
+  animation: ns-worker-pebble-slosh var(--pebble-slosh) linear infinite;
+  animation-delay: calc(var(--pebble-phase, 0) * -3s);
+}
+
+.ns-worker-pebble:is([data-ns-state='working'], [data-ns-state='full'], [data-ns-state='alarmed'])
+  .ns-worker-pebble-wave-back {
+  animation: ns-worker-pebble-slosh-back calc(var(--pebble-slosh) * 1.7) linear infinite;
+  animation-delay: calc(var(--pebble-phase, 0) * -5s);
+}
+
+@keyframes ns-worker-pebble-slosh {
+  to {
+    transform: translateX(-12px);
+  }
+}
+
+@keyframes ns-worker-pebble-slosh-back {
+  from {
+    transform: translateX(-16px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* -------------------------------------------------------------------- eyes */
+
+.ns-worker-pebble-eyes[data-tone='dry'] {
+  fill: var(--ns-text);
+}
+
+.ns-worker-pebble-eyes[data-tone='wet'] {
+  fill: var(--pebble-wet-eye);
+}
+
+/* Mood is a held transform, not a loop, so it survives reduced motion. */
+.ns-worker-pebble-eyes {
+  transform-origin: 50% 100%;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.32, 1);
+}
+
+.ns-worker-pebble[data-ns-state='full'] .ns-worker-pebble-eyes {
+  transform: scaleY(0.74);
+}
+
+.ns-worker-pebble[data-ns-state='staling'] .ns-worker-pebble-eyes {
+  transform: scaleY(0.26);
+}
+
+.ns-worker-pebble[data-ns-state='alarmed'] .ns-worker-pebble-eyes {
+  transform-origin: 50% 50%;
+  transform: scale(1.2);
+}
+
+.ns-worker-pebble-eyes-blink {
+  transform-origin: 50% 50%;
+  animation: ns-worker-pebble-blink 6.5s linear infinite;
+  animation-delay: calc(var(--pebble-phase, 0) * -6.5s);
+}
+
+.ns-worker-pebble:is([data-ns-state='staling'], [data-ns-state='alarmed']) .ns-worker-pebble-eyes-blink {
+  animation: none;
+}
+
+@keyframes ns-worker-pebble-blink {
+  0%,
+  95.5%,
+  100% {
+    transform: scaleY(1);
+  }
+  97.5% {
+    transform: scaleY(0.08);
+  }
+}
+
+.ns-worker-pebble-eyes-beat[data-ns-beat='true'] {
+  transform-origin: 50% 50%;
+  animation: ns-worker-pebble-beat 420ms cubic-bezier(0.22, 1, 0.32, 1) 1;
+}
+
+@keyframes ns-worker-pebble-beat {
+  0%,
+  44%,
+  100% {
+    transform: scaleY(1);
+  }
+  22%,
+  64% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* ------------------------------------------------------------------- react */
+
+.ns-worker-pebble-react[data-react='hop'] {
+  transform-origin: 50% 100%;
+  animation: ns-worker-pebble-hop 520ms cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+@keyframes ns-worker-pebble-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  20% {
+    transform: translateY(0) scale(1.08, 0.9);
+  }
+  50% {
+    transform: translateY(-3px) scale(0.95, 1.06);
+  }
+  78% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+}
+
+/* Three shakes, then stillness. An alarm that never stops moving is one people
+   learn to ignore, and the red liquid holds the state afterwards. */
+.ns-worker-pebble-react[data-react='alarm'] {
+  transform-origin: 50% 100%;
+  animation: ns-worker-pebble-alarm 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) 3;
+}
+
+@keyframes ns-worker-pebble-alarm {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-1.5px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(1.5px) rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-worker-pebble .ns-worker-pebble-wave,
+  .ns-worker-pebble .ns-worker-pebble-wave-back,
+  .ns-worker-pebble-eyes-blink,
+  .ns-worker-pebble-eyes-beat,
+  .ns-worker-pebble-react {
+    animation: none !important;
+  }
+
+  .ns-worker-pebble-liquid,
+  .ns-worker-pebble-liquid-counter,
+  .ns-worker-pebble-eyes {
+    transition-duration: 120ms;
+  }
+}
+
+.ns-worker-pebble[data-size='sm'] {
+  width: 1.75rem;
+}
+.ns-worker-pebble[data-size='lg'] {
+  width: 3.5rem;
+}

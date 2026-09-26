@@ -115,6 +115,11 @@
           "target": "~/src/components/nanostack/blocks/resource-list.tsx"
         },
         {
+          "path": "src/blocks/resource-tile.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/resource-tile.tsx"
+        },
+        {
           "path": "src/blocks/responsive-panel.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/responsive-panel.tsx"
@@ -178,6 +183,11 @@
           "path": "src/components/button.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/button.tsx"
+        },
+        {
+          "path": "src/components/capacity-meter.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/capacity-meter.tsx"
         },
         {
           "path": "src/components/checkbox.tsx",
@@ -445,6 +455,11 @@
           "target": "~/src/components/nanostack/styles/breadcrumb.css"
         },
         {
+          "path": "src/styles/capacity-meter.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/capacity-meter.css"
+        },
+        {
           "path": "src/styles/catalog.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/catalog.css"
@@ -488,6 +503,11 @@
           "path": "src/styles/popover.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/popover.css"
+        },
+        {
+          "path": "src/styles/resource-tile.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/resource-tile.css"
         },
         {
           "path": "src/styles/table.css",

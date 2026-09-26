@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0-beta.2
+
+- Add capacity segments and selectable resource tiles with named parts and finite health states.
+- WorkerAvatar gains a liquid Pebble variant with observed heartbeat freshness and activity signals; its robot variant remains available.
+
+Upgrade: existing imports keep working. Choose `WorkerAvatar variant="pebble"` for capacity-sensitive resources and compose `ResourceTile` parts around product data. The Collections catalog demonstrates keyboard selection and resource health.
+
 ## 0.2.0-beta.1
 
 - Extend the closed contract to native aliases, provider appearance bags, owned state attributes, typed spreads and untyped runtime callers. Text now uses the finite `display` option; element replacement is unsupported.

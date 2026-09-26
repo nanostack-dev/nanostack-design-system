@@ -1,3 +1,5 @@
+@import './styles/capacity-meter.css';
+@import './styles/resource-tile.css';
 @import './styles/breadcrumb.css';
 @import './styles/activity.css';
 @import './styles/dock.css';

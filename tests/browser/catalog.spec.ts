@@ -16,8 +16,11 @@ test('catalog compositions fit the viewport and remain accessible in both themes
     for (const section of sections) {
       await page.getByRole('tab', { name: section, exact: true }).click();
       await expect(page.getByRole('tabpanel', { name: section })).toBeVisible();
-      await page.getByRole('tab', { name: section, exact: true }).evaluate(async (element) => {
-        await Promise.all(element.getAnimations().map((animation) => animation.finished));
+      await page.getByRole('tabpanel', { name: section }).evaluate(async (element) => {
+        const entrances = element.getAnimations({ subtree: true }).filter(
+          (animation) => animation.effect?.getTiming().iterations !== Infinity,
+        );
+        await Promise.all(entrances.map((animation) => animation.finished.catch(() => undefined)));
       });
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),

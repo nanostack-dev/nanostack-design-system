@@ -134,7 +134,7 @@ The record shape, permission and action are application concerns. The row, hit t
 | `SourcePane`, source token helpers | Labeled line-oriented source and diffs. Supply lines, starting line and changed-line data; change: `added`, `removed`. Compare revisions and load files in the application. |
 | `HttpMethodBadge` | Method normalization with `format="full"\|"short"`. Method-to-tone mapping belongs to the library. |
 | `Sparkline`, `Progress`, `BarStrip` | Named data displays. Sparkline accepts numeric values and semantic tone; Progress clamps finite data against max and supports indeterminate state. BarStrip receives labeled, toned points and selection callbacks. Geometry, colors and SVG remain internal. |
-| `WorkerAvatar` | Reusable activity illustration with `size="sm"\|"md"\|"lg"`. Load, alarm, heartbeat and activity inputs describe observed state; a seed keeps phase stable. Fleet health thresholds and lease calculations stay in the product. |
+| `WorkerAvatar` | Reusable activity illustration with `size="sm"\|"md"\|"lg"`. Load, alarm, stale heartbeat and activity inputs describe observed state; a seed keeps phase stable. Fleet health thresholds and lease calculations stay in the product. |
 | `GraphCanvas`, `GraphCanvasHandle`, graph data/change types | Required label, node/edge data and callbacks; mode: `readonly`, `interactive`; height: `panel`, `fill`. The ref fits, centers, or animates a layout. Canvas engines and engine-specific DOM/marker/style configurations remain private. |
 | `GraphNodeFrame`, `GraphNodeHeader`, `GraphNodeBody`, `GraphNodeFooter` | Reusable node anatomy. Width: `compact`, `standard`; emphasis: `normal`, `focused`, `critical`; tone: `neutral`, `info`, `success`, `warning`, `danger`. Node content contains library assemblies. |
 | `GraphViewportControls`, `useGraphNodes`, `useGraphEdges`, `useGraphViewport`, graph change/state helpers | Library-owned viewport controls and engine-neutral behavioral access. The application owns graph meaning, valid connections, layout algorithms, persistence and permission checks. |
@@ -150,3 +150,9 @@ Graph positions and measured dimensions are numeric model/engine data. Edge moti
 5. Run the consumer assembly boundary on production code and stories, then verify native links, permission gates, loading/error states, keyboard navigation and responsive layouts against the packed dependency.
 
 Echopoint assemblies are working integration examples for editor, graph, resource-list, fleet, monitor, webhook and history workflows. Copy their composition pattern, not their domain vocabulary or API dependencies. An Anchor-specific API hook remains in Anchor; a generally useful interaction discovered during adoption belongs in this library with behavior and contract tests.
+
+## Resource capacity
+
+`ResourceTileGrid` lays out responsive tiles. Compose `ResourceTile` with `ResourceTileBody`, `ResourceTileHeader`, `ResourceTileLabel`, `ResourceTileMeta` and `ResourceTileStatus`. A tile is a button: give it an accessible name and selection behavior, and keep nested content noninteractive. `selected`, `highlighted` and the finite `tone` (`default`, `warning`, `danger`) describe state. `ResourceTilePlaceholder` holds loading or waiting content without creating a false action.
+
+`CapacityMeter` accepts segments with stable identifiers and `free`, `busy`, `expiring` or `expired` state, plus an optional hidden count. Supply `label` when it is independently meaningful; omit it inside an already named resource control. Segment pointer callbacks select supporting detail, while keyboard users reach the same complete information through the resource control. The application computes capacity and freshness; the library draws them.
