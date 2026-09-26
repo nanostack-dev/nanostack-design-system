@@ -3,8 +3,10 @@
 @import './styles/popover.css';
 @import './styles/worker-avatar.css';
 @import './styles/data-visualization.css';
+@import './styles/workspace.css';
 @import './styles/table.css';
 @import './styles/composition.css';
+@import './styles/editor.css';
 @import './styles/catalog.css';
 @import './styles/controls.css';
 /* All selectors belong to Nanostack. No reset or host theme mutations. */

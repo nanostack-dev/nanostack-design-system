@@ -110,6 +110,11 @@
           "target": "~/src/components/nanostack/blocks/virtual-list.tsx"
         },
         {
+          "path": "src/blocks/workspace.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/workspace.tsx"
+        },
+        {
           "path": "src/components/activity.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/activity.tsx"
@@ -150,9 +155,24 @@
           "target": "~/src/components/nanostack/components/checkbox.tsx"
         },
         {
+          "path": "src/components/choice-card.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/choice-card.tsx"
+        },
+        {
+          "path": "src/components/code-editor.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/code-editor.tsx"
+        },
+        {
           "path": "src/components/command.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/command.tsx"
+        },
+        {
+          "path": "src/components/control-row.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/control-row.tsx"
         },
         {
           "path": "src/components/copy-button.tsx",
@@ -185,6 +205,16 @@
           "target": "~/src/components/nanostack/components/document-theme.tsx"
         },
         {
+          "path": "src/components/editable-text.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/editable-text.tsx"
+        },
+        {
+          "path": "src/components/editor-variables.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/editor-variables.ts"
+        },
+        {
           "path": "src/components/field.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/field.tsx"
@@ -195,6 +225,11 @@
           "target": "~/src/components/nanostack/components/highlight.tsx"
         },
         {
+          "path": "src/components/http-method-badge.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/http-method-badge.tsx"
+        },
+        {
           "path": "src/components/icon.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/icon.tsx"
@@ -203,6 +238,11 @@
           "path": "src/components/input.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/input.tsx"
+        },
+        {
+          "path": "src/components/key-value-editor.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/key-value-editor.tsx"
         },
         {
           "path": "src/components/layout.tsx",
@@ -233,6 +273,16 @@
           "path": "src/components/skeleton.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/skeleton.tsx"
+        },
+        {
+          "path": "src/components/source-pane.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/source-pane.tsx"
+        },
+        {
+          "path": "src/components/source-tokens.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/source-tokens.ts"
         },
         {
           "path": "src/components/tabs.tsx",
@@ -270,6 +320,16 @@
           "target": "~/src/components/nanostack/components/typography.tsx"
         },
         {
+          "path": "src/components/variable-aware-input.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/variable-aware-input.tsx"
+        },
+        {
+          "path": "src/components/variable-text.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/components/variable-text.tsx"
+        },
+        {
           "path": "src/components/worker-avatar.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/worker-avatar.tsx"
@@ -278,6 +338,16 @@
           "path": "src/index.ts",
           "type": "registry:file",
           "target": "~/src/components/nanostack/index.ts"
+        },
+        {
+          "path": "src/internal/editor/single-line.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/editor/single-line.ts"
+        },
+        {
+          "path": "src/internal/editor/variables.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/editor/variables.ts"
         },
         {
           "path": "src/internal/props.ts",
@@ -325,6 +395,11 @@
           "target": "~/src/components/nanostack/styles/data-visualization.css"
         },
         {
+          "path": "src/styles/editor.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/editor.css"
+        },
+        {
           "path": "src/styles/popover.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/popover.css"
@@ -338,6 +413,11 @@
           "path": "src/styles/worker-avatar.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/worker-avatar.css"
+        },
+        {
+          "path": "src/styles/workspace.css",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/styles/workspace.css"
         },
         {
           "path": "src/theme.tsx",
