@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useImperativeHandle, useRef, type ReactNode, type Ref } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState, type ReactNode, type Ref } from 'react';
 import {
   Group,
   Panel,
@@ -100,6 +100,11 @@ export function PaneSection({
 }
 
 export type SplitMode = 'primary' | 'secondary' | 'split';
+
+/** A collapsed pane has size 0; its minimum size keeps every open pane well above 1%. */
+function collapsedPanes(layout: Layout) {
+  return { primary: (layout.primary ?? 0) < 1, secondary: (layout.secondary ?? 0) < 1 };
+}
 export interface WorkspaceSplitHandle {
   setMode(mode: SplitMode): void;
 }
@@ -122,6 +127,8 @@ export function WorkspaceSplit({
   onLayoutChanged,
 }: WorkspaceSplitProps) {
   const group = useRef<GroupImperativeHandle | null>(null);
+  const initialLayout = defaultLayout ?? { primary: 55, secondary: 45 };
+  const [collapsed, setCollapsed] = useState(() => collapsedPanes(initialLayout));
   useImperativeHandle(
     ref,
     () => ({
@@ -141,12 +148,19 @@ export function WorkspaceSplit({
     <Group
       groupRef={group}
       orientation={orientation}
-      defaultLayout={defaultLayout ?? { primary: 55, secondary: 45 }}
+      defaultLayout={initialLayout}
+      onLayoutChange={(layout) => {
+        const next = collapsedPanes(layout);
+        setCollapsed((current) =>
+          current.primary === next.primary && current.secondary === next.secondary ? current : next,
+        );
+      }}
       onLayoutChanged={(layout, meta) => onLayoutChanged?.(layout, meta)}
       className="ns-workspace-split"
     >
       <Panel
         id="primary"
+        inert={collapsed.primary}
         minSize="15%"
         collapsible
         collapsedSize="0%"
@@ -160,6 +174,7 @@ export function WorkspaceSplit({
       </Separator>
       <Panel
         id="secondary"
+        inert={collapsed.secondary}
         minSize="15%"
         collapsible
         collapsedSize="0%"

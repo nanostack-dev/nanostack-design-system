@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { KeyValueRow, KeyValueDraftRow } from '../src/components/key-value-editor.js';
-import { DocumentTabs, DocumentTab } from '../src/blocks/workspace.js';
+import { DocumentTabs, DocumentTab, WorkspaceSplit } from '../src/blocks/workspace.js';
 
 describe('key/value editing', () => {
   it('buffers key renames, refuses duplicates, and cancels with Escape', async () => {
@@ -97,5 +97,32 @@ describe('document tabs', () => {
     expect(screen.getByRole('button', { name: 'Two' })).toHaveAttribute('aria-current', 'true');
     await user.click(screen.getByRole('button', { name: 'Close Two tab, unsaved' }));
     expect(close).toHaveBeenCalledOnce();
+  });
+});
+
+describe('workspace split', () => {
+  beforeAll(() =>
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe = vi.fn();
+        unobserve = vi.fn();
+        disconnect = vi.fn();
+      },
+    ),
+  );
+  afterAll(() => vi.unstubAllGlobals());
+
+  it('starts a pane collapsed by a stored layout as inert', () => {
+    render(
+      <WorkspaceSplit
+        label="Resize panes"
+        defaultLayout={{ primary: 100, secondary: 0 }}
+        primary={<button>Primary action</button>}
+        secondary={<button>Secondary action</button>}
+      />,
+    );
+    expect(screen.getByText('Secondary action').closest('[inert]')).not.toBeNull();
+    expect(screen.getByText('Primary action').closest('[inert]')).toBeNull();
   });
 });
