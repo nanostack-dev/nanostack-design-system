@@ -70,6 +70,8 @@ Triggers, content, and named parts are explicit imports. Consumers do not provid
 | `Tree`, `TreeBranch`, `TreeItem`, `TreeItemButton`, `TreeGroup`                                                                                                                      | Hierarchical navigation. Tree owns visible/enabled focus traversal and a primary roving tab stop; application callbacks expand or activate domain nodes. Supply labels, levels and expanded/selected state.                                          |
 | `PreviewFrame`                                                                                                                                                                       | Documentation fixtures with `width="narrow"\|"standard"\|"wide"` and `height="content"\|"panel"\|"workspace"`. Use it instead of story-only CSS.                                                                                                     |
 
+A `WorkspaceSplitLayout` holds `primary` and `secondary` percentages. `useWorkspaceLayout({ id, storage })` restores and stores that layout; pass its `defaultLayout` and `onLayoutChanged` straight to `WorkspaceSplit`. A collapsed pane is inert, so keyboard focus and assistive technology skip it.
+
 ## Collections, inspection, and history
 
 | Parts                                                                                                                                                   | Options and composition rules                                                                                                                                                                                                                                                                                    |

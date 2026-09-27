@@ -37,3 +37,22 @@ test('keeps a collapsed split pane out of the tab order until it is restored', a
   expect(split).toContain('Alpha primary action');
   expect(split.at(-1)).toBe('Alpha secondary action');
 });
+
+test('keeps two splits on one page independent, with unique pane ids and library layout keys', async ({
+  page,
+}) => {
+  const duplicates = await page.evaluate(() => {
+    const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
+    return ids.filter((id, index) => ids.indexOf(id) !== index);
+  });
+  expect(duplicates).toEqual([]);
+  for (const name of ['Resize Alpha', 'Resize Beta']) {
+    const controlled = await page.getByRole('separator', { name }).getAttribute('aria-controls');
+    expect(controlled).toBeTruthy();
+    await expect(page.locator(`[id="${controlled}"]`)).toHaveCount(1);
+  }
+  await page.getByRole('button', { name: 'Show only Alpha primary' }).click();
+  await expect(page.getByRole('status', { name: 'Alpha layout' })).toHaveText('100/0');
+  await expect(page.getByRole('status', { name: 'Beta layout' })).toHaveText('55/45');
+  await expect(page.getByRole('button', { name: 'Beta secondary action' })).toBeVisible();
+});

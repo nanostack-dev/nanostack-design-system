@@ -65,6 +65,7 @@ function Branch({ node, level }: { node: Node; level: number }) {
 
 function Split({ name }: { name: string }) {
   const split = useRef<WorkspaceSplitHandle>(null);
+  const [layout, setLayout] = useState('55/45');
   return (
     <Stack gap="sm">
       <Cluster>
@@ -84,6 +85,9 @@ function Split({ name }: { name: string }) {
             <WorkspaceSplit
               ref={split}
               label={`Resize ${name}`}
+              onLayoutChanged={(next) =>
+                setLayout(`${Math.round(next.primary)}/${Math.round(next.secondary)}`)
+              }
               orientation="horizontal"
               primary={
                 <Pane>
@@ -103,6 +107,9 @@ function Split({ name }: { name: string }) {
           </Stack>
         </Surface>
       </PreviewFrame>
+      <Text size="sm" tone="muted">
+        {name} layout: <output aria-label={`${name} layout`}>{layout}</output>
+      </Text>
     </Stack>
   );
 }

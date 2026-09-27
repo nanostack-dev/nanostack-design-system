@@ -1,13 +1,20 @@
 'use client';
 
-import { useEffect, useImperativeHandle, useRef, useState, type ReactNode, type Ref } from 'react';
+import {
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type ReactNode,
+  type Ref,
+} from 'react';
 import {
   Group,
   Panel,
   Separator,
   useDefaultLayout,
   type GroupImperativeHandle,
-  type Layout,
 } from 'react-resizable-panels';
 import { safeProps, type ElementProps, type NoCustomStyle } from '../internal/props.js';
 
@@ -100,11 +107,9 @@ export function PaneSection({
 }
 
 export type SplitMode = 'primary' | 'secondary' | 'split';
-
-/** A collapsed pane has size 0; its minimum size keeps every open pane well above 1%. */
-function collapsedPanes(layout: Layout) {
-  return { primary: (layout.primary ?? 0) < 1, secondary: (layout.secondary ?? 0) < 1 };
-}
+/** Pane sizes as percentages of the split, from 0 to 100. */
+export type WorkspaceSplitLayout = { primary: number; secondary: number };
+export type WorkspaceLayoutChange = { isUserInteraction: boolean };
 export interface WorkspaceSplitHandle {
   setMode(mode: SplitMode): void;
 }
@@ -114,9 +119,23 @@ export type WorkspaceSplitProps = NoCustomStyle & {
   secondary: ReactNode;
   label: string;
   orientation?: 'horizontal' | 'vertical';
-  defaultLayout?: Layout;
-  onLayoutChanged?: (layout: Layout, meta: { isUserInteraction: boolean }) => void;
+  defaultLayout?: WorkspaceSplitLayout | undefined;
+  onLayoutChanged?:
+    | ((layout: WorkspaceSplitLayout, change: WorkspaceLayoutChange) => void)
+    | undefined;
 };
+
+const splitLayouts: Record<SplitMode, WorkspaceSplitLayout> = {
+  primary: { primary: 100, secondary: 0 },
+  secondary: { primary: 0, secondary: 100 },
+  split: { primary: 55, secondary: 45 },
+};
+
+/** A collapsed pane has size 0; its minimum size keeps every open pane well above 1%. */
+function collapsedPanes(layout: WorkspaceSplitLayout) {
+  return { primary: layout.primary < 1, secondary: layout.secondary < 1 };
+}
+
 export function WorkspaceSplit({
   ref,
   primary,
@@ -127,39 +146,49 @@ export function WorkspaceSplit({
   onLayoutChanged,
 }: WorkspaceSplitProps) {
   const group = useRef<GroupImperativeHandle | null>(null);
-  const initialLayout = defaultLayout ?? { primary: 55, secondary: 45 };
+  const splitId = useId();
+  const panelIds = { primary: `${splitId}primary`, secondary: `${splitId}secondary` };
+  const toEngine = (layout: WorkspaceSplitLayout) => ({
+    [panelIds.primary]: layout.primary,
+    [panelIds.secondary]: layout.secondary,
+  });
+  const fromEngine = (layout: Record<string, number>): WorkspaceSplitLayout => ({
+    primary: layout[panelIds.primary] ?? 0,
+    secondary: layout[panelIds.secondary] ?? 0,
+  });
+  const initialLayout = defaultLayout ?? splitLayouts.split;
   const [collapsed, setCollapsed] = useState(() => collapsedPanes(initialLayout));
   useImperativeHandle(
     ref,
     () => ({
       setMode(mode) {
-        group.current?.setLayout(
-          mode === 'primary'
-            ? { primary: 100, secondary: 0 }
-            : mode === 'secondary'
-              ? { primary: 0, secondary: 100 }
-              : { primary: 55, secondary: 45 },
-        );
+        const layout = splitLayouts[mode];
+        group.current?.setLayout({
+          [`${splitId}primary`]: layout.primary,
+          [`${splitId}secondary`]: layout.secondary,
+        });
       },
     }),
-    [],
+    [splitId],
   );
   return (
     <Group
       groupRef={group}
       orientation={orientation}
-      defaultLayout={initialLayout}
+      defaultLayout={toEngine(initialLayout)}
       onLayoutChange={(layout) => {
-        const next = collapsedPanes(layout);
+        const next = collapsedPanes(fromEngine(layout));
         setCollapsed((current) =>
           current.primary === next.primary && current.secondary === next.secondary ? current : next,
         );
       }}
-      onLayoutChanged={(layout, meta) => onLayoutChanged?.(layout, meta)}
+      onLayoutChanged={(layout, meta) =>
+        onLayoutChanged?.(fromEngine(layout), { isUserInteraction: meta.isUserInteraction })
+      }
       className="ns-workspace-split"
     >
       <Panel
-        id="primary"
+        id={panelIds.primary}
         inert={collapsed.primary}
         minSize="15%"
         collapsible
@@ -173,7 +202,7 @@ export function WorkspaceSplit({
         <span aria-hidden="true" />
       </Separator>
       <Panel
-        id="secondary"
+        id={panelIds.secondary}
         inert={collapsed.secondary}
         minSize="15%"
         collapsible
@@ -375,8 +404,44 @@ export function TreeItemButton(props: TreeItemButtonProps) {
   return <button {...safeProps(props)} type="button" className="ns-tree-item-button" />;
 }
 
-/** Persist behavioral pane ratios without importing the visual engine in consumers. */
-export const useWorkspaceLayout = useDefaultLayout;
+export type WorkspaceLayoutStorage = {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+};
+export type WorkspaceLayoutOptions = {
+  /** Unique name of the stored layout. */
+  id: string;
+  /** Defaults to `localStorage` in a browser. */
+  storage?: WorkspaceLayoutStorage;
+};
+export type WorkspaceLayoutPersistence = {
+  defaultLayout: WorkspaceSplitLayout | undefined;
+  onLayoutChanged: (layout: WorkspaceSplitLayout, change: WorkspaceLayoutChange) => void;
+};
+
+const unavailableStorage: WorkspaceLayoutStorage = {
+  getItem: () => null,
+  setItem: () => undefined,
+};
+
+/** Persist a split's pane ratios; pass the result to `WorkspaceSplit`. */
+export function useWorkspaceLayout({
+  id,
+  storage,
+}: WorkspaceLayoutOptions): WorkspaceLayoutPersistence {
+  const persisted = useDefaultLayout({
+    id,
+    storage: storage ?? (typeof localStorage === 'undefined' ? unavailableStorage : localStorage),
+  });
+  const stored = persisted.defaultLayout;
+  return {
+    defaultLayout:
+      typeof stored?.primary === 'number' && typeof stored.secondary === 'number'
+        ? { primary: stored.primary, secondary: stored.secondary }
+        : undefined,
+    onLayoutChanged: persisted.onLayoutChanged,
+  };
+}
 
 /** Finite viewport presets for documentation and interaction fixtures. */
 export type PreviewFrameProps = ElementProps<'div'> & {

@@ -1,9 +1,16 @@
 import { useState } from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { KeyValueRow, KeyValueDraftRow } from '../src/components/key-value-editor.js';
-import { DocumentTabs, DocumentTab, WorkspaceSplit } from '../src/blocks/workspace.js';
+import {
+  DocumentTabs,
+  DocumentTab,
+  WorkspaceSplit,
+  useWorkspaceLayout,
+  type WorkspaceLayoutStorage,
+  type WorkspaceLayoutPersistence,
+} from '../src/blocks/workspace.js';
 
 describe('key/value editing', () => {
   it('buffers key renames, refuses duplicates, and cancels with Escape', async () => {
@@ -124,5 +131,50 @@ describe('workspace split', () => {
     );
     expect(screen.getByText('Secondary action').closest('[inert]')).not.toBeNull();
     expect(screen.getByText('Primary action').closest('[inert]')).toBeNull();
+  });
+
+  it('gives each split unique pane ids for its separator to control', () => {
+    const { container } = render(
+      <>
+        <WorkspaceSplit
+          label="Resize request"
+          primary={<p>Request</p>}
+          secondary={<p>Response</p>}
+        />
+        <WorkspaceSplit label="Resize preview" primary={<p>Source</p>} secondary={<p>Preview</p>} />
+      </>,
+    );
+    const ids = [...container.querySelectorAll('[id]')].map((element) => element.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).not.toContain('primary');
+    for (const name of ['Resize request', 'Resize preview']) {
+      const controlled = screen.getByRole('separator', { name }).getAttribute('aria-controls');
+      expect(controlled && document.getElementById(controlled)).toBeTruthy();
+    }
+    const request = screen.getByRole('separator', { name: 'Resize request' });
+    const preview = screen.getByRole('separator', { name: 'Resize preview' });
+    expect(request.getAttribute('aria-controls')).not.toBe(preview.getAttribute('aria-controls'));
+  });
+
+  it('restores a stored layout with library keys', () => {
+    const values = new Map<string, string>();
+    const storage: WorkspaceLayoutStorage = {
+      getItem: (key) => values.get(key) ?? null,
+      setItem: (key, value) => void values.set(key, value),
+    };
+    const restored: unknown[] = [];
+    let store: WorkspaceLayoutPersistence['onLayoutChanged'] | undefined;
+    function Persisted() {
+      const persistence = useWorkspaceLayout({ id: 'request-split', storage });
+      restored.push(persistence.defaultLayout);
+      store = persistence.onLayoutChanged;
+      return null;
+    }
+    const { unmount } = render(<Persisted />);
+    expect(restored.at(-1)).toBeUndefined();
+    act(() => store?.({ primary: 70, secondary: 30 }, { isUserInteraction: true }));
+    unmount();
+    render(<Persisted />);
+    expect(restored.at(-1)).toEqual({ primary: 70, secondary: 30 });
   });
 });
