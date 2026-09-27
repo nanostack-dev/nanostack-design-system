@@ -7,7 +7,7 @@ Applications install an exact public package version. The npm `beta` tag is a di
 1. Work in an isolated worktree. Bump the beta version, describe the consumer upgrade in `CHANGELOG.md`, and update the README install example. Component, token and variation changes follow the normal contribution checks.
 2. Run `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test:browser` and `pnpm test:package`. Confirm generated registry files are unchanged after generation.
 3. Pack the built output with `npm pack --ignore-scripts --pack-destination artifacts`. Inspect the archive: only `dist`, the package manifest, README, license and third-party notices belong in it. Test the packed package in the real consumer before publishing.
-4. Merge the reviewed release change into `main`, then tag that exact commit as `v<package-version>`. The release workflow refuses a tag whose version differs from the manifest or whose commit is not on `main`.
+4. Merge the reviewed release change into `main`. Do not tag it by hand: the release workflow tags the merged commit.
 
 ## First npm publication
 
@@ -33,16 +33,16 @@ The setup is documented by [npm's trusted publisher guide](https://docs.npmjs.co
 
 ## Subsequent releases
 
-Push the version tag, then explicitly run the workflow for that tag:
+Releases are automatic. Every push to `main` runs `release.yml`:
 
-```sh
-git push origin v<package-version>
-gh workflow run release.yml --ref v<package-version>
-```
+1. `plan` reads the manifest version. If npm already has it, nothing is released. A prerelease version such as `0.2.0-beta.5` publishes to the `beta` dist-tag, a stable version to `latest`.
+2. `verify` checks the manifest and the changelog entry, then runs `pnpm check`, the registry diff, `pnpm test:browser` and `pnpm test:package`, and packs the archive.
+3. `publish` publishes that exact archive with npm trusted publishing and provenance.
+4. `github-release` downloads the published archive from npm and creates the `v<package-version>` tag and GitHub release on the merged commit, with the archive, its SHA-256 checksum and the changelog notes. Prereleases are marked as such.
 
-The workflow validates the tagged source, tests the packed consumer, uploads the exact package artifact, publishes it publicly with the `beta` tag and provenance, and creates a GitHub prerelease with the same archive and SHA-256 checksum. It uses GitHub-hosted runners and npm 11.20.0 for OIDC support. Running it against a branch does not publish.
+So a release is one reviewed pull request that bumps the version and adds the changelog entry. Merging it ships it. A merge that does not change the version only runs `plan`.
 
-If npm publication succeeds but creation of the GitHub release fails, finish the GitHub release using that run's artifact; do not rerun publication or build a replacement. If npm has already accepted a version, publish a new version for any content change.
+If publication succeeded but the GitHub release failed, rerun the workflow on `main` (`gh workflow run release.yml --ref main`): npm already has the version, so only the GitHub release runs. If npm has already accepted a version, publish a new version for any content change. The workflow refuses to publish when `v<package-version>` already points at another commit.
 
 ## Verify adoption
 
