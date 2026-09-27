@@ -190,6 +190,7 @@ export function variableCompletions(
 
     return {
       from,
+      validFor: /^[\w.-]*$/,
       options: filtered.map((variable) => ({
         label: variable.name,
         type: 'variable',

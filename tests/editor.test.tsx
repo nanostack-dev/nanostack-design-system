@@ -1,9 +1,9 @@
 import { createRef } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import { CompletionContext } from '@codemirror/autocomplete';
+import { acceptCompletion, CompletionContext, completionStatus } from '@codemirror/autocomplete';
 import {
   CodeEditor,
   CodeViewer,
@@ -163,6 +163,29 @@ describe('variable matching and completion', () => {
     const started = performance.now();
     view.dispatch({ changes: { from: view.state.doc.length, insert: ' ' } });
     expect(performance.now() - started).toBeLessThan(50);
+  });
+
+  it('keeps an open variable completion accepting Tab immediately after each typed character', async () => {
+    const { container } = render(
+      <CodeEditor
+        defaultValue=""
+        variables={[{ name: 'host' }, { name: 'token' }]}
+        aria-label="URL"
+      />,
+    );
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    const type = (text: string) =>
+      view.dispatch({
+        changes: { from: view.state.selection.main.head, insert: text },
+        selection: { anchor: view.state.selection.main.head + text.length },
+        userEvent: 'input.type',
+      });
+    type('{{');
+    await waitFor(() => expect(completionStatus(view.state)).toBe('active'));
+    type('h');
+    type('o');
+    expect(acceptCompletion(view)).toBe(true);
+    expect(view.state.doc.toString()).toBe('{{host}}');
   });
 
   it('offers typed variables and matching closing delimiters for custom completion templates', () => {
