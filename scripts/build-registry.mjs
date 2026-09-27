@@ -5,6 +5,13 @@ import { fileURLToPath } from 'node:url';
 const root = new URL('../', import.meta.url);
 const sourceRoot = new URL('src/', root);
 const packageJson = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
+const hostProvidedPeers = new Set(['react', 'react-dom']);
+const requiredPeers = Object.entries(packageJson.peerDependencies).filter(
+  ([name]) => !hostProvidedPeers.has(name) && !packageJson.peerDependenciesMeta?.[name]?.optional,
+);
+const sourceDependencies = [...Object.entries(packageJson.dependencies), ...requiredPeers].sort(
+  ([left], [right]) => (left < right ? -1 : 1),
+);
 const sourcePaths = (await readdir(sourceRoot, { recursive: true }))
   .filter((path) => /\.(tsx?|css)$/.test(path) && !path.startsWith('adapters/'))
   .sort();
@@ -31,9 +38,7 @@ const item = registryItemSchema.parse({
   title: 'Nanostack design system',
   description:
     'Composable React blocks with finite variants and no consumer CSS overrides. Requires React 19.2+.',
-  dependencies: Object.entries(packageJson.dependencies).map(
-    ([name, version]) => `${name}@${version}`,
-  ),
+  dependencies: sourceDependencies.map(([name, version]) => `${name}@${version}`),
   files,
   docs: 'Import src/components/nanostack/styles.css once; wrap your composition in Theme. All public APIs forbid custom CSS. Keep modifications in the library; regenerate the registry from source.',
 });

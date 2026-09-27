@@ -19,7 +19,10 @@ Install an exact version from the public npm registry:
 
 ```sh
 pnpm add --save-exact @nanostackorg/design-system@0.2.0-beta.4
+pnpm add @phosphor-icons/react@^2.1.10
 ```
+
+The application provides the peer dependencies: React 19.2+ and `@phosphor-icons/react` 2.1.10+, whose glyph components `Icon` receives. The library and the application then share one icon package. Install `@clerk/clerk-react` 5.61.3+ only when importing `@nanostackorg/design-system/adapters/clerk`.
 
 Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
 

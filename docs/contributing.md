@@ -63,6 +63,6 @@ The beta line is a coordinated adoption period. Pin an exact beta release or com
 
 After 1.0, compatible additions are minor releases, compatible fixes are patches, and removals or incompatible semantics are major releases. Visual changes need review even when TypeScript still compiles. Mark deprecated APIs, provide a replacement, and allow a documented migration period before removal.
 
-Generate distribution artifacts from the canonical source. Verify the packed package and generated registry, then validate an affected consumer. Keep React as a peer dependency. The supported baseline is React 19.2; using a newer-only API requires changing that baseline and testing the upgrade explicitly.
+Generate distribution artifacts from the canonical source. Verify the packed package and generated registry, then validate an affected consumer. Keep React, and any package whose values consumers pass through public props such as Phosphor glyphs, as peer dependencies so the application owns one copy. The supported baseline is React 19.2; using a newer-only API requires changing that baseline and testing the upgrade explicitly.
 
 Release acceptance requires reproducible checks, an accurate change record, and a usable consumer example. Follow the workspace's isolated-worktree and PR process. Keep the guide concise and put architectural rationale in [research.md](research.md).

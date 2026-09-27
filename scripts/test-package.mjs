@@ -69,6 +69,7 @@ try {
           react: '19.2.0',
           'react-dom': '19.2.0',
           '@base-ui/react': manifest.dependencies['@base-ui/react'],
+          '@phosphor-icons/react': manifest.peerDependencies['@phosphor-icons/react'],
         },
         devDependencies: {
           vite: manifest.devDependencies.vite,
@@ -102,17 +103,25 @@ try {
     `
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createElement as h, version } from 'react';
 import { renderToString } from 'react-dom/server';
 import * as library from '@nanostackorg/design-system';
+import { GearIcon } from '@phosphor-icons/react';
 
 assert.equal(version, '19.2.0', 'The consumer must exercise the minimum React peer version');
 const packageRoot = fileURLToPath(new URL('../', import.meta.resolve('@nanostackorg/design-system')));
 assert(!existsSync(join(packageRoot, 'src')), 'Source must not be available to the consumer');
 const packedManifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 assert.deepEqual(packedManifest.sideEffects, ['**/*.css'], 'Bundlers must preserve imported CSS');
+assert(packedManifest.peerDependencies['@phosphor-icons/react'] && !packedManifest.dependencies['@phosphor-icons/react'], 'Icon glyphs are public props, so Phosphor must be a peer');
+assert.equal(
+  createRequire(join(packageRoot, 'dist', 'index.js')).resolve('@phosphor-icons/react'),
+  createRequire(import.meta.url).resolve('@phosphor-icons/react'),
+  'The library and the consumer must share one Phosphor copy',
+);
 const cssPath = fileURLToPath(import.meta.resolve('@nanostackorg/design-system/styles.css'));
 assert(readFileSync(cssPath, 'utf8').includes('.ns-theme'), 'The stylesheet export must contain compiled visual rules');
 
@@ -136,11 +145,13 @@ const output = renderToString(h(library.Theme, { brand: 'anchor' },
     h(library.Button, { variant: 'secondary' }, 'Tested button'),
     h(library.Field, null, h(library.FieldLabel, null, 'Name'), h(library.Input, { name: 'name' })),
     h(library.Metric, { label: 'Requests', value: '42' }),
+    h(library.Icon, { glyph: GearIcon, label: 'Consumer glyph' }),
     h(library.AppShell, null,
       h(library.AppShellSidebar, null, h(library.AppShellNav, { label: 'Workspace' }, h(library.AppShellNavLink, { href: '/', active: true }, 'Home'))),
       h(library.AppShellHeader, null, 'Workspace'),
       h(library.AppShellMain, null, 'Consumer content')))));
 assert(output.includes('Tested button') && output.includes('Consumer content'), 'SSR did not render composed public components');
+assert(/aria-label="Consumer glyph"[^>]*><svg/.test(output), 'SSR did not render a consumer-supplied glyph');
 assert(output.includes('ns-button') && output.includes('data-ns-brand="anchor"'), 'SSR lost owned style hooks');
 const graphOutput = renderToString(h(library.Theme, null,
   h(library.GraphNodeFrame, { family: 'logic', phase: 'running' },
@@ -159,12 +170,15 @@ console.log('Packed ESM exports, stylesheet, declarations, client boundaries and
     join(scratch, 'consumer.tsx'),
     `
 import { createRef } from 'react';
-import { Theme, Button, Input, AppShell, AppShellMain, Grid } from '@nanostackorg/design-system';
+import { GearIcon } from '@phosphor-icons/react';
+import { Theme, Button, Icon, Input, AppShell, AppShellMain, Grid } from '@nanostackorg/design-system';
 import { Button as SubpathButton } from '@nanostackorg/design-system/components/button';
 import { Metric } from '@nanostackorg/design-system/blocks/metric';
 import { Theme as SubpathTheme } from '@nanostackorg/design-system/theme';
 const ref = createRef<HTMLButtonElement>();
-export const valid = <Theme><AppShell><AppShellMain><Grid layout="sidebar"><Button ref={ref} variant="ghost" type="submit">Save</Button><Input required autoComplete="email" /></Grid><Metric label="Requests" value={42} /><SubpathButton>Subpath</SubpathButton><SubpathTheme /></AppShellMain></AppShell></Theme>;
+export const valid = <Theme><AppShell><AppShellMain><Grid layout="sidebar"><Button ref={ref} variant="ghost" type="submit">Save</Button><Input required autoComplete="email" /></Grid><Metric label="Requests" value={42} /><SubpathButton>Subpath</SubpathButton><SubpathTheme /><Icon glyph={GearIcon} label="Settings" /></AppShellMain></AppShell></Theme>;
+// @ts-expect-error Icon glyphs are Phosphor components, not names.
+export const invalidGlyph = <Icon glyph="gear" />;
 // @ts-expect-error Built declarations preserve the closed CSS contract.
 export const invalidStyle = <Button style={{ color: 'red' }} />;
 // @ts-expect-error Built declarations preserve finite variants.
@@ -202,9 +216,10 @@ export const invalidSpread = <Button {...escaped} />;
     `
 import { createElement as h } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Theme, Button, Stack, Heading } from '@nanostackorg/design-system';
+import { GearIcon } from '@phosphor-icons/react';
+import { Theme, Button, Stack, Heading, Icon } from '@nanostackorg/design-system';
 import '@nanostackorg/design-system/styles.css';
-createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null, h(Heading, { level: 1 }, 'Package consumer'), h(Button, null, 'Ready'))));
+createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null, h(Heading, { level: 1 }, 'Package consumer'), h(Icon, { glyph: GearIcon, label: 'Settings' }), h(Button, null, 'Ready'))));
 `,
   );
   // This is a browser-only consumer, so Rollup legitimately removes client
