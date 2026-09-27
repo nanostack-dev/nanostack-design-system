@@ -35,3 +35,24 @@ test('the table footer keeps paging controls on one line on a phone', async ({ p
   expect(Math.abs(pageSize.y + pageSize.height / 2 - (next.y + next.height / 2))).toBeLessThan(4);
   expect(next.x + next.width).toBeLessThanOrEqual(page.viewportSize()!.width);
 });
+
+test('the echopoint brand renders its own text, heading and code fonts', async ({ page }) => {
+  const heading = page.getByRole('heading', { name: 'Echopoint brand' });
+  const code = page.getByText('ep_live_key');
+  const body = page.getByRole('table', { name: 'Webhook endpoints' });
+  await expect(heading).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  const family = (locator: typeof heading) =>
+    locator.evaluate((element) => getComputedStyle(element).fontFamily);
+  expect(await family(heading)).toMatch(/^"?Outfit Variable/);
+  expect(await family(code)).toMatch(/^"?Geist Mono Variable/);
+  expect(await family(heading.locator('xpath=..'))).toMatch(/^"?Plus Jakarta Sans Variable/);
+  expect(await family(body)).toMatch(/-apple-system/);
+  expect(
+    await page.evaluate(() =>
+      ['Outfit Variable', 'Geist Mono Variable', 'Plus Jakarta Sans Variable'].every((name) =>
+        document.fonts.check(`16px "${name}"`),
+      ),
+    ),
+  ).toBe(true);
+});

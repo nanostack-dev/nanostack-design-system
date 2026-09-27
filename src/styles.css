@@ -41,10 +41,13 @@
   --ns-layer-popover: 110;
   --ns-layer-tooltip: 120;
   --ns-layer-skip-link: 130;
+  --ns-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ns-font-heading: var(--ns-font-sans);
+  --ns-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   color-scheme: light;
   color: var(--ns-text);
   background: var(--ns-canvas);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--ns-font-sans);
   font-size: 14px;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
@@ -76,6 +79,14 @@
   color-scheme: dark;
 }
 .ns-theme[data-ns-brand='echopoint'] {
+  --ns-font-sans:
+    'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  --ns-font-heading:
+    'Outfit Variable', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ns-font-mono:
+    'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
   --ns-accent: #1f5bbd;
   --ns-accent-hover: #194a9a;
   --ns-accent-soft: #ebf2fa;
@@ -227,6 +238,15 @@
 }
 .ns-text[data-weight='medium'] {
   font-weight: 550;
+}
+.ns-heading,
+.ns-page-header-title,
+.ns-section-title,
+.ns-card-title,
+.ns-empty-title,
+.ns-dialog-title,
+.ns-shell-drawer-title {
+  font-family: var(--ns-font-heading);
 }
 .ns-heading {
   margin: 0;

@@ -23,7 +23,7 @@ const appearance = {
     colorSuccess: 'var(--ns-success)',
     colorWarning: 'var(--ns-warning)',
     borderRadius: '0.5rem',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontFamily: 'var(--ns-font-sans)',
   },
   elements: {
     rootBox: 'ns-auth-widget',
