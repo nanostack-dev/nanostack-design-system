@@ -52,7 +52,7 @@
 }
 .ns-code,
 .ns-keyboard-key {
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-family: var(--ns-font-mono);
   font-size: 0.9em;
   overflow-wrap: anywhere;
 }

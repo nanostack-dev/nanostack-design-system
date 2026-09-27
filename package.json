@@ -1,6 +1,6 @@
 {
   "name": "@nanostackorg/design-system",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Typed, accessible UI building blocks for Nanostack products",
   "type": "module",
   "license": "MIT",
@@ -95,6 +95,9 @@
     "@axe-core/playwright": "^4.11.1",
     "@clerk/clerk-react": "^5.61.3",
     "@eslint/js": "^9.39.4",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@phosphor-icons/react": "^2.1.10",
     "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",

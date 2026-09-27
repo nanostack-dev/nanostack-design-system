@@ -1,5 +1,8 @@
 import { createRoot } from 'react-dom/client';
-import { Button, DataTable, Surface, Theme } from '../../../src/index.js';
+import { Button, Code, DataTable, Heading, Surface, Theme } from '../../../src/index.js';
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/outfit';
+import '@fontsource-variable/geist-mono';
 import '../../../src/styles.css';
 
 const endpoints = [
@@ -39,9 +42,17 @@ function Endpoints() {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <Theme>
-    <Surface padding="lg">
-      <Endpoints />
-    </Surface>
-  </Theme>,
+  <>
+    <Theme>
+      <Surface padding="lg">
+        <Endpoints />
+      </Surface>
+    </Theme>
+    <Theme brand="echopoint">
+      <Surface padding="lg">
+        <Heading level={2}>Echopoint brand</Heading>
+        <Code>ep_live_key</Code>
+      </Surface>
+    </Theme>
+  </>,
 );

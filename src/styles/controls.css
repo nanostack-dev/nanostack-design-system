@@ -242,7 +242,7 @@ input.ns-editable-text {
   font-weight: 600;
 }
 .ns-editable-text[data-variant='code'] {
-  font-family: ui-monospace, monospace;
+  font-family: var(--ns-font-mono);
 }
 .ns-control-row {
   display: flex;

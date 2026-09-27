@@ -47,13 +47,7 @@
 .ns-code-editor .cm-editor {
   background: transparent;
   color: var(--ns-text);
-  font:
-    13px/1.6 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    monospace;
+  font: 13px/1.6 var(--ns-font-mono);
 }
 .ns-code-editor .cm-editor.cm-focused {
   outline: none;

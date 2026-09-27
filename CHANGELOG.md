@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.4
+
+- Add the font tokens `--ns-font-sans`, `--ns-font-heading` and `--ns-font-mono`. Headings, page, section, card, empty-state and dialog titles use the heading font, and code, keyboard keys and the editors use the mono font.
+- `brand="echopoint"` uses Plus Jakarta Sans for text, Outfit for headings and Geist Mono for code, as Echopoint did before its migration. The default and `anchor` brands keep the system fonts.
+- The Clerk adapter uses the theme's text font.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.0.4`. An application with `brand="echopoint"` loads the font files itself, for example `pnpm add @fontsource-variable/plus-jakarta-sans @fontsource-variable/outfit @fontsource-variable/geist-mono` and `import '@fontsource-variable/plus-jakarta-sans'` (and the other two) in its entry point. Without them, the text falls back to the system fonts.
+
 ## 0.0.3
 
 - Add `AppShellHeaderTitle` and `AppShellHeaderActions`. The title shortens with an ellipsis and the actions stay on one line, so a phone top bar no longer wraps its account control onto a second line. Keyboard hints inside the actions hide on a phone.
