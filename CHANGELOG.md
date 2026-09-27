@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.2
+
+- Make `SignInPanel` and `AccountControl` readable in dark mode: text on the accent button uses `--ns-on-accent`, control borders use `--ns-control-border`, and the GitHub, Apple, X and Vercel icons invert on a dark theme.
+- Document that `SignInPanel routing="path"` needs every address under its `path` routed to the panel.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.0.2`. With `routing="path"`, also route every address under the panel's path to the screen that renders it. With TanStack Router, add `createRoute({ path: "/sign-in/$", component: AuthScreen })` beside the `/sign-in` route. Without it, the password step at `/sign-in/factor-one` shows the application's not-found page.
+
 ## 0.0.1
 
 Numbering restarts at 0.0.1 for the first release with the common-only scope. It supersedes the 0.2.0 betas: 0.2.0-beta.4 and 0.2.0-beta.5 were never published, and the inspector sidebar, `DockSheet`, `GraphCanvasHandle.revealNode` and `BarStrip` selection that beta.4 added left the library with those parts.
