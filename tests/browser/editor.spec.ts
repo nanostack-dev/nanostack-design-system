@@ -64,3 +64,24 @@ test('accepts a narrowed variable completion with Tab typed right after the last
   await expect(page.getByRole('status', { name: 'Current value' })).toHaveText('{{host}}');
   await expect(input).toBeFocused();
 });
+
+test('keeps the single-line input on one line through Enter variants and paste', async ({
+  page,
+}) => {
+  const input = page.getByRole('textbox', { name: 'URL', exact: true });
+  await input.click();
+  await page.keyboard.type('https://api');
+  await page.keyboard.press('Shift+Enter');
+  await page.keyboard.press('ControlOrMeta+Enter');
+  await input.evaluate((element) => {
+    const clipboardData = new DataTransfer();
+    clipboardData.setData('text/plain', '.example.com/users\n');
+    element.dispatchEvent(
+      new ClipboardEvent('paste', { clipboardData, bubbles: true, cancelable: true }),
+    );
+  });
+  await expect(page.getByRole('status', { name: 'Current value' })).toHaveText(
+    'https://api.example.com/users',
+  );
+  await expect(input.locator('.cm-line')).toHaveCount(1);
+});

@@ -2,9 +2,9 @@ import { createRef, useState } from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { EditorState } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
+import { EditorView, runScopeHandlers } from '@codemirror/view';
 import { language } from '@codemirror/language';
-import { undo } from '@codemirror/commands';
+import { insertBlankLine, insertNewlineAndIndent, undo } from '@codemirror/commands';
 import { acceptCompletion, CompletionContext, completionStatus } from '@codemirror/autocomplete';
 import {
   CodeEditor,
@@ -110,6 +110,62 @@ describe('editor', () => {
     expect(editor).toHaveAttribute('aria-readonly', 'true');
     expect(editor).toHaveAttribute('aria-multiline', 'false');
     expect(screen.getByText('New placeholder…')).toBeInTheDocument();
+  });
+
+  describe('single-line input', () => {
+    function renderInput() {
+      const onChange = vi.fn();
+      const { container } = render(
+        <CodeEditor variant="input" defaultValue="api" onChange={onChange} aria-label="URL" />,
+      );
+      const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+      view.dispatch({ selection: { anchor: 3 } });
+      return { view, onChange };
+    }
+
+    it.each([
+      ['Enter', {}],
+      ['Shift+Enter', { shiftKey: true }],
+      ['Mod+Enter', { ctrlKey: true }],
+    ])('ignores %s', (_name, modifiers) => {
+      const { view } = renderInput();
+      runScopeHandlers(
+        view,
+        new KeyboardEvent('keydown', { key: 'Enter', ...modifiers }),
+        'editor',
+      );
+      expect(view.state.doc.toString()).toBe('api');
+      expect(view.state.doc.lines).toBe(1);
+    });
+
+    it('ignores a line break inserted as typed input', () => {
+      const { view, onChange } = renderInput();
+      view.dispatch(view.state.replaceSelection('\n'), { userEvent: 'input.type' });
+      expect(view.state.doc.toString()).toBe('api');
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['a pasted URL with a trailing line break', 'input.paste', '.example.com/users\r\n'],
+      ['a dropped multi-line selection', 'input.drop', '.example\n.com'],
+      ['an accepted completion', 'input.complete', '\n.example.com'],
+    ])('strips line breaks from %s', (_name, userEvent, text) => {
+      const { view, onChange } = renderInput();
+      view.dispatch(view.state.replaceSelection(text), { userEvent });
+      const expected = `api${text.replace(/\r?\n/g, '')}`;
+      expect(view.state.doc.toString()).toBe(expected);
+      expect(view.state.doc.lines).toBe(1);
+      expect(view.state.selection.main.head).toBe(expected.length);
+      expect(onChange).toHaveBeenLastCalledWith(expected);
+    });
+
+    it('strips line breaks inserted by editing commands', () => {
+      const { view } = renderInput();
+      insertNewlineAndIndent(view);
+      insertBlankLine(view);
+      expect(view.state.doc.toString()).toBe('api');
+      expect(view.state.selection.main.head).toBe(3);
+    });
   });
 
   it('normalizes variable keys, refreshes resolution, and keeps viewers free of authoring affordances', () => {
