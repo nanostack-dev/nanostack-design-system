@@ -20,7 +20,14 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
-import { Compartment, EditorState, type Extension, type Text } from '@codemirror/state';
+import {
+  Annotation,
+  Compartment,
+  EditorState,
+  type Extension,
+  Text,
+  Transaction,
+} from '@codemirror/state';
 import {
   lineNumbers as cmLineNumbers,
   placeholder as cmPlaceholder,
@@ -91,6 +98,8 @@ export type CodeEditorProps = NoCustomStyle &
     lineNumbers?: boolean | undefined;
     autoDetectLanguage?: boolean | undefined;
     variant?: EditorVariant | undefined;
+    /** Identity of the edited document; a new key starts a fresh selection and undo history. */
+    documentKey?: string | number | undefined;
   };
 
 function detectLanguage(doc: Text): CodeLanguage {
@@ -129,6 +138,32 @@ function detectedLanguage(compartment: Compartment, language: CodeLanguage): Ext
 }
 
 const emptyVariables: readonly Variable[] = [];
+const externalValue = Annotation.define<boolean>();
+
+/**
+ * The smallest single replacement that turns `current` into `next`, so an external value keeps
+ * the selection and the undo history mapped around the region that actually changed.
+ *
+ * `current = 'GET /users'`, `next = 'GET /users/1'`: the common prefix is 10 characters and no
+ * suffix remains after it, so the result is `{ from: 10, to: 10, insert: '/1' }`.
+ */
+function replacementChange(current: string, next: string) {
+  if (current === next) return null;
+  const shorter = Math.min(current.length, next.length);
+  let prefix = 0;
+  while (prefix < shorter && current.charCodeAt(prefix) === next.charCodeAt(prefix)) prefix++;
+  let suffix = 0;
+  while (
+    suffix < shorter - prefix &&
+    current.charCodeAt(current.length - 1 - suffix) === next.charCodeAt(next.length - 1 - suffix)
+  )
+    suffix++;
+  return {
+    from: prefix,
+    to: current.length - suffix,
+    insert: next.slice(prefix, next.length - suffix),
+  };
+}
 
 function useLatestRef<T>(value: T) {
   const ref = useRef(value);
@@ -188,6 +223,7 @@ export function CodeEditor({
   lineNumbers = false,
   autoDetectLanguage = false,
   variant = 'editor',
+  documentKey,
   ...attributes
 }: CodeEditorProps) {
   const theme = useThemeSettings();
@@ -205,7 +241,8 @@ export function CodeEditor({
     attributes: new Compartment(),
     placeholder: new Compartment(),
   });
-  const externalChange = useRef(false);
+  const baseExtensions = useRef<Extension>([]);
+  const documentKeyRef = useRef(documentKey);
   const readOnly = requestedReadOnly || disabled || variant === 'viewer';
   const variablesActive = variablesEnabled && variant !== 'viewer';
   const patternSource = variablePattern?.source;
@@ -266,7 +303,7 @@ export function CodeEditor({
   if (id) contentAttributes.id = id;
   if (contentAttributes['aria-labelledby']) delete contentAttributes['aria-label'];
   const attributesKey = JSON.stringify(contentAttributes);
-  const initial = useLatestRef({ value, defaultValue });
+  const initial = useLatestRef({ value, defaultValue, autoDetectLanguage });
 
   useImperativeHandle(
     ref,
@@ -289,43 +326,39 @@ export function CodeEditor({
   useEffect(() => {
     if (!containerRef.current || !tooltipHost) return;
     const c = compartments.current;
+    baseExtensions.current = [
+      syntaxHighlighting(classHighlighter),
+      EditorView.domEventHandlers({
+        focus(event) {
+          eventsRef.current.onFocus?.(event);
+        },
+        blur(event) {
+          eventsRef.current.onBlur?.(event);
+        },
+        keydown(event) {
+          eventsRef.current.onKeyDown?.(event);
+          return event.defaultPrevented;
+        },
+        keyup(event) {
+          eventsRef.current.onKeyUp?.(event);
+          return event.defaultPrevented;
+        },
+      }),
+      tooltips({ parent: tooltipHost }),
+      EditorView.updateListener.of((update) => {
+        const edited = update.transactions.some(
+          (transaction) => transaction.docChanged && !transaction.annotation(externalValue),
+        );
+        if (edited) onChangeRef.current?.(update.state.doc.toString());
+      }),
+    ];
     const view = new EditorView({
       parent: containerRef.current,
       state: EditorState.create({
         doc: initial.current.value ?? initial.current.defaultValue,
         extensions: [
-          syntaxHighlighting(classHighlighter),
-          EditorView.domEventHandlers({
-            focus(event) {
-              eventsRef.current.onFocus?.(event);
-            },
-            blur(event) {
-              eventsRef.current.onBlur?.(event);
-            },
-            keydown(event) {
-              eventsRef.current.onKeyDown?.(event);
-              return event.defaultPrevented;
-            },
-            keyup(event) {
-              eventsRef.current.onKeyUp?.(event);
-              return event.defaultPrevented;
-            },
-          }),
-          tooltips({ parent: tooltipHost }),
-          c.language.of([]),
-          c.authoring.of([]),
-          c.editable.of([]),
-          c.lineNumbers.of([]),
-          c.theme.of([]),
-          c.completion.of([]),
-          c.variables.of([]),
-          c.attributes.of([]),
-          c.placeholder.of([]),
-          EditorView.updateListener.of((update) => {
-            if (update.docChanged && !externalChange.current) {
-              onChangeRef.current?.(update.state.doc.toString());
-            }
-          }),
+          baseExtensions.current,
+          Object.values(c).map((compartment) => compartment.of([])),
         ],
       }),
     });
@@ -338,14 +371,37 @@ export function CodeEditor({
 
   useEffect(() => {
     const view = viewRef.current;
-    if (!view || value === undefined || value === view.state.doc.toString()) return;
-    externalChange.current = true;
-    try {
-      view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } });
-    } finally {
-      externalChange.current = false;
+    if (!view) return;
+    if (documentKeyRef.current !== documentKey) {
+      documentKeyRef.current = documentKey;
+      const c = compartments.current;
+      const doc = Text.of(
+        (initial.current.value ?? initial.current.defaultValue).split(/\r\n?|\n/),
+      );
+      view.setState(
+        EditorState.create({
+          doc,
+          extensions: [
+            baseExtensions.current,
+            Object.values(c).map((compartment) =>
+              compartment === c.language && initial.current.autoDetectLanguage
+                ? compartment.of(detectedLanguage(compartment, detectLanguage(doc)))
+                : compartment.of(compartment.get(view.state) ?? []),
+            ),
+          ],
+        }),
+      );
+      return;
     }
-  }, [value, tooltipHost]);
+    if (value === undefined) return;
+    const change = replacementChange(view.state.doc.toString(), value);
+    if (!change) return;
+    view.dispatch({
+      changes: change,
+      annotations: [externalValue.of(true), Transaction.addToHistory.of(false)],
+      filter: false,
+    });
+  }, [value, documentKey, initial, tooltipHost]);
 
   useEffect(() => {
     const view = viewRef.current;

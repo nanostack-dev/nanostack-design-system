@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { language } from '@codemirror/language';
+import { undo } from '@codemirror/commands';
 import { acceptCompletion, CompletionContext, completionStatus } from '@codemirror/autocomplete';
 import {
   CodeEditor,
@@ -29,6 +30,69 @@ describe('editor', () => {
     rerender(<CodeEditor ref={ref} value="second" onChange={onChange} aria-label="Body" />);
     expect(screen.getByRole('textbox', { name: 'Body' })).toHaveTextContent('second');
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('keeps external values out of undo history and maps the cursor around them', () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(
+      <CodeEditor value="world" onChange={onChange} aria-label="Body" />,
+    );
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    act(() => view.dispatch({ selection: { anchor: 5 } }));
+    rerender(<CodeEditor value="hello world" onChange={onChange} aria-label="Body" />);
+    expect(view.state.doc.toString()).toBe('hello world');
+    expect(view.state.selection.main.head).toBe(11);
+    expect(undo(view)).toBe(false);
+    expect(view.state.doc.toString()).toBe('hello world');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('undoes only user edits after an external value arrives', () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(
+      <CodeEditor value="GET /users" onChange={onChange} aria-label="Request" />,
+    );
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    act(() => view.dispatch({ changes: { from: 0, insert: '# ' }, userEvent: 'input.type' }));
+    rerender(<CodeEditor value="# GET /users/1" onChange={onChange} aria-label="Request" />);
+    expect(undo(view)).toBe(true);
+    expect(view.state.doc.toString()).toBe('GET /users/1');
+    expect(onChange).toHaveBeenLastCalledWith('GET /users/1');
+  });
+
+  it('starts a fresh history for a new document key without saving the previous body', () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(
+      <CodeEditor
+        documentKey="a"
+        value="A body"
+        onChange={onChange}
+        language="json"
+        variables={[{ name: 'host', value: 'localhost' }]}
+        aria-label="Body"
+      />,
+    );
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    act(() => view.dispatch({ changes: { from: 6, insert: ' edited' }, userEvent: 'input.type' }));
+    expect(onChange).toHaveBeenLastCalledWith('A body edited');
+    onChange.mockClear();
+    rerender(
+      <CodeEditor
+        documentKey="b"
+        value="{{host}}"
+        onChange={onChange}
+        language="json"
+        variables={[{ name: 'host', value: 'localhost' }]}
+        aria-label="Body"
+      />,
+    );
+    expect(view.state.doc.toString()).toBe('{{host}}');
+    expect(undo(view)).toBe(false);
+    expect(view.state.doc.toString()).toBe('{{host}}');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(view.state.facet(language)?.name).toBe('json');
+    expect(container.querySelector('.cm-variable-resolved')).toHaveTextContent('{{host}}');
+    expect(screen.getByRole('textbox', { name: 'Body' })).toBe(view.contentDOM);
   });
 
   it('updates readonly, placeholder and variant behavior without recreating the textbox', () => {
