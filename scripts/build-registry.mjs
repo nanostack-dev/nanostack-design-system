@@ -16,12 +16,14 @@ const files = await Promise.all(
     content: await readFile(new URL(path, sourceRoot), 'utf8'),
   })),
 );
-files.push({
-  path: 'THIRD_PARTY_NOTICES.md',
-  type: 'registry:file',
-  target: '~/src/components/nanostack/THIRD_PARTY_NOTICES.md',
-  content: await readFile(new URL('THIRD_PARTY_NOTICES.md', root), 'utf8'),
-});
+for (const path of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) {
+  files.push({
+    path,
+    type: 'registry:file',
+    target: `~/src/components/nanostack/${path}`,
+    content: await readFile(new URL(path, root), 'utf8'),
+  });
+}
 const item = registryItemSchema.parse({
   $schema: 'https://ui.shadcn.com/schema/registry-item.json',
   name: 'system',

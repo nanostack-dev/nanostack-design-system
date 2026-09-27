@@ -44,6 +44,7 @@ try {
     'dist/index.d.ts',
     'dist/styles.css',
     'dist/theme.js',
+    'LICENSE',
     'THIRD_PARTY_NOTICES.md',
   ]) {
     assert(

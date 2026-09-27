@@ -565,6 +565,11 @@
           "target": "~/src/components/nanostack/theme.tsx"
         },
         {
+          "path": "LICENSE",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/LICENSE"
+        },
+        {
           "path": "THIRD_PARTY_NOTICES.md",
           "type": "registry:file",
           "target": "~/src/components/nanostack/THIRD_PARTY_NOTICES.md"

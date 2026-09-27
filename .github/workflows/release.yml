@@ -1,0 +1,102 @@
+name: Public beta release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Check release identity
+        id: release
+        run: |
+          git merge-base --is-ancestor HEAD origin/main
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const manifest = JSON.parse(readFileSync('package.json', 'utf8'));
+          assert.equal(manifest.name, '@nanostack/design-system');
+          assert.match(manifest.version, /^\d+\.\d+\.\d+-beta\.\d+$/);
+          assert.equal(process.env.GITHUB_REF_NAME, `v${manifest.version}`);
+          assert.notEqual(manifest.license, 'UNLICENSED');
+          assert.equal(manifest.publishConfig.access, 'public');
+          assert.equal(manifest.publishConfig.tag, 'beta');
+          appendFileSync(process.env.GITHUB_OUTPUT, `version=${manifest.version}\n`);
+          NODE
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: git diff --exit-code -- registry.json public/r
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:browser
+      - run: pnpm test:package
+      - name: Pack verified package
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          mkdir -p artifacts
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const heading = `## ${process.env.RELEASE_VERSION}\n`;
+          const changelog = readFileSync('CHANGELOG.md', 'utf8');
+          assert(changelog.includes(heading), 'Release requires a changelog entry');
+          const notes = changelog.split(heading)[1].split('\n## ')[0].trim();
+          assert(notes.length > 0, 'Release notes must not be empty');
+          writeFileSync('artifacts/release-notes.md', notes);
+          NODE
+          npm pack --ignore-scripts --pack-destination artifacts
+          cd artifacts
+          sha256sum ./*.tgz > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-beta-package
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm install --global npm@11.20.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: public-beta-package
+          path: artifacts
+      - name: Publish with npm trusted publishing
+        run: |
+          cd artifacts
+          sha256sum --check SHA256SUMS
+          npm publish ./*.tgz --access public --tag beta --provenance --ignore-scripts --registry https://registry.npmjs.org/
+      - name: Create GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS --verify-tag --prerelease --title "$RELEASE_TAG" --notes-file artifacts/release-notes.md

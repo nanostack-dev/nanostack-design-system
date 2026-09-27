@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0-beta.3
+
+- Release under the MIT license and prepare public npm distribution with exact beta installs, public package metadata and a release workflow using npm trusted publishing.
+- Keep all component implementations, stylesheet rules, exports and the closed variation contract unchanged from beta.2.
+
+Upgrade: replace the vendored beta.2 dependency with `@nanostack/design-system@0.2.0-beta.3`, commit the regenerated lockfile and remove the unused archive. Existing imports and assemblies remain unchanged.
+
 ## 0.2.0-beta.2
 
 - Add neutral graph presentation-store subscriptions and finite family/run-phase variants. Streamed changes update affected elements without rebuilding graph arrays; historical arrivals and reduced motion avoid replaying animations.

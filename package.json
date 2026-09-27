@@ -1,9 +1,18 @@
 {
   "name": "@nanostack/design-system",
-  "version": "0.2.0-beta.2",
+  "version": "0.2.0-beta.3",
   "description": "Typed, accessible UI building blocks for Nanostack products",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "homepage": "https://github.com/nanostack-dev/nanostack-design-system#readme",
+  "bugs": {
+    "url": "https://github.com/nanostack-dev/nanostack-design-system/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "beta"
+  },
   "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=22.16.0"
@@ -11,6 +20,7 @@
   "files": [
     "dist",
     "README.md",
+    "LICENSE",
     "THIRD_PARTY_NOTICES.md"
   ],
   "sideEffects": [
@@ -104,7 +114,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/nanostack-dev/nanostack-design-system.git"
+    "url": "git+https://github.com/nanostack-dev/nanostack-design-system.git"
   },
   "peerDependenciesMeta": {
     "@clerk/clerk-react": {

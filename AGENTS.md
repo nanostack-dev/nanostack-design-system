@@ -24,4 +24,4 @@ Test what a person can observe. Include disabled, pending, empty, failed, long-c
 
 ## Evolution
 
-Beta APIs may change only with a changelog entry and an upgrade example. Keep additive changes small; extract a block only after a second composition proves its boundary. A consumer needing a visual exception brings the variant back here. Preserve React peer compatibility with the installed consumer versions; using a newer hook requires raising the peer range and coordinating upgrades.
+Beta APIs may change only with a changelog entry and an upgrade example. Keep additive changes small; extract a block only after a second composition proves its boundary. A consumer needing a visual exception brings the variant back here. Preserve React peer compatibility with the installed consumer versions; using a newer hook requires raising the peer range and coordinating upgrades. Follow [the release procedure](docs/releasing.md) for public packages; applications pin exact versions and never carry patched copies.

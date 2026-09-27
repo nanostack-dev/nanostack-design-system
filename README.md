@@ -2,7 +2,7 @@
 
 Composable React building blocks for Echopoint and Anchor. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
-Status: **0.2.0-beta.2**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
+Status: **0.2.0-beta.3**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
 ## Try it
 
@@ -15,16 +15,13 @@ The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive bl
 
 ## Install the beta
 
-The first release is an intentionally private, versioned package artifact. There is no public npm release or assumed cross-repository CI credential.
+Install an exact beta version from the public npm registry:
 
 ```sh
-pnpm build
-pnpm pack --pack-destination artifacts
-# Copy the resulting archive into the consumer's vendor/ directory, then:
-pnpm add ./vendor/nanostack-design-system-0.2.0-beta.2.tgz
+pnpm add --save-exact @nanostack/design-system@0.2.0-beta.3
 ```
 
-Commit the artifact and consumer lockfile together, with its source commit and SHA-256 recorded alongside it. Echopoint's beta follows this model. Keep archives immutable once reviewed; later changes receive a new beta version. Package registry publishing can replace the dependency transport when configured without changing imports.
+Commit the manifest and lockfile together. Beta releases use npm's `beta` tag and may require a coordinated upgrade; product applications pin a reviewed version instead of following that tag automatically. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
 
 ```tsx
 import '@nanostack/design-system/styles.css';
@@ -89,7 +86,7 @@ Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `r
 pnpm dlx shadcn@latest add /path/to/nanostack-design-system/public/r/system.json
 ```
 
-The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. Private remote registry hosting is not required for the package beta and has not been deployed.
+The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. A hosted shadcn registry has not been deployed; package consumers do not need one.
 
 ## Verify and evolve
 
@@ -102,3 +99,9 @@ pnpm test:package
 The checks cover rejected API props, native/ref behavior, keyboard interaction, modal focus, theme portals, contrast pairs, mobile/landscape overflow, browser axe scans, generated registry freshness and an installed package consumer. Automated checks are not a WCAG certification.
 
 Read the [component catalog](docs/components.md) to assemble a surface; [research](docs/research.md) for official Airbnb, Stripe, Linear, React, Base UI and shadcn evidence; [contribution rules](docs/contributing.md) for changes; [design decisions](DESIGN.md) for the visual language; and [AGENTS.md](AGENTS.md) for agent invariants.
+
+Maintainers follow the [release procedure](docs/releasing.md) to validate, publish and verify an immutable package before upgrading a consumer.
+
+## License
+
+[MIT](LICENSE). Third-party foundations and adapted code retain the notices in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -10,6 +10,7 @@ describe('source registry', () => {
     expect(item.files?.some((file) => file.path.startsWith('src/adapters/'))).toBe(false);
     expect(item.dependencies?.some((dependency) => dependency.startsWith('@clerk/'))).toBe(false);
     expect(item.files?.some((file) => file.path === 'THIRD_PARTY_NOTICES.md')).toBe(true);
+    expect(item.files?.some((file) => file.path === 'LICENSE')).toBe(true);
     for (const file of item.files ?? []) {
       expect(file.content, file.path).toBe(readFileSync(file.path, 'utf8'));
       const target = file.path.startsWith('src/') ? file.path.slice(4) : file.path;
