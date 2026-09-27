@@ -141,7 +141,8 @@
   color: var(--ns-text);
   text-align: start;
   font: inherit;
-  font-weight: 550;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 .ns-disclosure-trigger:hover {
@@ -254,6 +255,7 @@ input.ns-editable-text {
   align-items: flex-start;
 }
 .ns-control-row > .ns-input,
+.ns-control-row > .ns-input-frame,
 .ns-control-row > .ns-select,
 .ns-control-row > .ns-code-editor,
 .ns-control-row > .ns-stack {
@@ -270,6 +272,7 @@ input.ns-editable-text {
     flex-wrap: wrap;
   }
   .ns-control-row > .ns-input,
+  .ns-control-row > .ns-input-frame,
   .ns-control-row > .ns-select,
   .ns-control-row > .ns-code-editor,
   .ns-control-row > .ns-stack {

@@ -17,6 +17,7 @@ import {
   type VisibilityState,
   type Updater,
 } from '@tanstack/react-table';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { safeProps, type NoCustomStyle } from '../internal/props.js';
 import { Button } from '../components/button.js';
 import { Input } from '../components/input.js';
@@ -122,6 +123,7 @@ export function DataTableToolbar({
         <div className="ns-table-search">
           <Input
             aria-label={searchLabel}
+            icon={MagnifyingGlassIcon}
             placeholder={searchPlaceholder}
             value={value}
             onChange={(event) => {

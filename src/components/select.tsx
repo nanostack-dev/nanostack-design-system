@@ -12,14 +12,15 @@ export type SelectOption = Readonly<{
 export type SelectProps = Omit<ElementProps<'select'>, 'size' | 'children'> & {
   options: readonly SelectOption[];
   size?: 'sm' | 'md';
-  width?: 'fill' | 'content';
+  /** `auto` fills a Field and fits its options elsewhere, such as in a toolbar. */
+  width?: 'auto' | 'fill' | 'content';
 };
 
 /** Native selection preserves browser keyboard behavior; Field supplies its label and errors. */
 export function Select({
   options,
   size = 'md',
-  width = 'fill',
+  width = 'auto',
   id,
   name,
   value,

@@ -89,9 +89,12 @@ export type ReportProps = ElementProps<'section'>;
 export function Report(props: ReportProps) {
   return <section {...safeProps(props)} className="ns-report" />;
 }
-export type ReportHeaderProps = ElementProps<'header'>;
-export function ReportHeader(props: ReportHeaderProps) {
-  return <header {...safeProps(props)} className="ns-report-header" />;
+export type ReportHeaderProps = ElementProps<'header'> & {
+  /** Keep the heading pinned while the report scrolls. Turn it off where screen height is short. */
+  sticky?: boolean;
+};
+export function ReportHeader({ sticky = true, ...props }: ReportHeaderProps) {
+  return <header {...safeProps(props)} className="ns-report-header" data-ns-sticky={sticky} />;
 }
 export type ReportContentProps = ElementProps<'div'>;
 export function ReportContent(props: ReportContentProps) {

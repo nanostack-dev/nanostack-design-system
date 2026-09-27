@@ -127,9 +127,11 @@
   background: var(--ns-surface);
   overflow: visible;
 }
-.ns-report-header {
+.ns-report-header[data-ns-sticky='true'] {
   position: sticky;
   top: 0;
+}
+.ns-report-header {
   z-index: 1;
   padding: 16px;
   border-bottom: 1px solid var(--ns-border);

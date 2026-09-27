@@ -120,7 +120,7 @@
   background: var(--ns-accent-soft);
   color: var(--ns-text);
 }
-.ns-theme :where(a, button, input, textarea, [tabindex]):focus-visible {
+.ns-theme :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--ns-accent);
   outline-offset: 3px;
 }
@@ -155,8 +155,10 @@
   background: var(--ns-accent);
   color: var(--ns-on-accent);
 }
-.ns-button:hover {
-  background: var(--ns-accent-hover);
+@media (hover: hover) {
+  .ns-button:hover {
+    background: var(--ns-accent-hover);
+  }
 }
 .ns-button[data-variant='secondary'] {
   background: var(--ns-surface);
@@ -167,10 +169,12 @@
   background: transparent;
   color: var(--ns-muted);
 }
-.ns-button[data-variant='secondary']:hover,
-.ns-button[data-variant='ghost']:hover {
-  background: var(--ns-hover);
-  color: var(--ns-text);
+@media (hover: hover) {
+  .ns-button[data-variant='secondary']:hover,
+  .ns-button[data-variant='ghost']:hover {
+    background: var(--ns-hover);
+    color: var(--ns-text);
+  }
 }
 .ns-button[data-variant='danger'] {
   background: var(--ns-danger-soft);
@@ -408,9 +412,58 @@
   min-height: 32px;
   font-size: 12px;
 }
-.ns-select[data-ns-width='content'] {
+.ns-select {
+  appearance: none;
+  padding-inline-end: 30px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--ns-muted) 50%),
+    linear-gradient(135deg, var(--ns-muted) 50%, transparent 50%);
+  background-position:
+    right 15px center,
+    right 10px center;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.ns-select:disabled {
+  cursor: not-allowed;
+}
+.ns-select[data-ns-width='content'],
+.ns-select[data-ns-width='auto'] {
   width: auto;
   max-width: 100%;
+}
+.ns-field .ns-select[data-ns-width='auto'] {
+  width: 100%;
+}
+.ns-input-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+.ns-input-frame > .ns-input {
+  padding-inline-start: 32px;
+}
+.ns-input-icon {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--ns-muted);
+  pointer-events: none;
+}
+.ns-input-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.ns-input-frame[data-size='sm'] > .ns-input {
+  padding-inline-start: 30px;
+}
+.ns-input-frame[data-size='sm'] .ns-input-icon svg {
+  width: 14px;
+  height: 14px;
 }
 .ns-input::placeholder {
   color: var(--ns-muted);
@@ -728,7 +781,12 @@
   max-width: 48ch;
 }
 .ns-empty-action {
+  width: min(100%, 24rem);
   margin-top: 20px;
+  text-align: center;
+}
+.ns-empty-action > .ns-definition-list {
+  text-align: start;
 }
 .ns-metric {
   display: flex;
