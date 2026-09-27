@@ -69,3 +69,19 @@ test('anchored overlays paint above the mobile responsive panel sheet', async ({
   await exerciseAnchoredOverlays(panel);
   await expect(panel).toBeVisible();
 });
+
+test('a pending confirmation ignores a held key and keeps focus on its action', async ({
+  page,
+}) => {
+  await page.getByRole('button', { name: 'Delete flow' }).click();
+  const action = page.getByRole('button', { name: 'Delete', exact: true });
+  await action.focus();
+  for (let press = 0; press < 5; press += 1) await page.keyboard.down('Enter');
+  await page.keyboard.up('Enter');
+  await expect(page.getByText('Delete requests: 1')).toBeVisible();
+  await expect(action).toHaveAttribute('aria-busy', 'true');
+  await expect(action).toHaveAttribute('aria-disabled', 'true');
+  await expect(action).toBeFocused();
+  await action.click({ force: true });
+  await expect(page.getByText('Delete requests: 1')).toBeVisible();
+});

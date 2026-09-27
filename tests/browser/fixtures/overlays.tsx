@@ -137,7 +137,7 @@ function Overlays() {
             title="Delete flow?"
             description="The flow and its run history are removed."
             actionLabel="Delete"
-            actionDisabled={deleting}
+            pending={deleting}
             onAction={() => {
               setDeleteRequests((count) => count + 1);
               setDeleting(true);

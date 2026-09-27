@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { DataTable } from '../src/blocks/data-table.js';
@@ -110,6 +110,61 @@ describe('application catalog behavior', () => {
     expect(screen.getByRole('alertdialog')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(close).toHaveBeenCalledWith(false);
+  });
+
+  it('ignores a held key and repeat activation while the confirmation is pending', async () => {
+    const user = userEvent.setup();
+    const action = vi.fn();
+    function PendingConfirmation() {
+      const [pending, setPending] = useState(false);
+      return (
+        <ConfirmationDialog
+          open
+          onOpenChange={() => undefined}
+          severity="destructive"
+          title="Delete record?"
+          description="This removes the record."
+          actionLabel="Delete"
+          pending={pending}
+          onAction={() => {
+            action();
+            setPending(true);
+          }}
+        />
+      );
+    }
+    render(<PendingConfirmation />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus());
+    await user.tab();
+    const button = screen.getByRole('button', { name: /^Delete$/ });
+    expect(button).toHaveFocus();
+    await user.keyboard('{Enter>4/}');
+    expect(action).toHaveBeenCalledOnce();
+    expect(button).toHaveFocus();
+    expect(button).toHaveAttribute('aria-busy', 'true');
+    expect(button).toHaveAttribute('aria-disabled', 'true');
+    await user.click(button);
+    expect(action).toHaveBeenCalledOnce();
+  });
+
+  it('treats a held Enter key as one confirmation even without a pending state', async () => {
+    const user = userEvent.setup();
+    const action = vi.fn();
+    render(
+      <ConfirmationDialog
+        open
+        onOpenChange={() => undefined}
+        title="Archive record?"
+        description="The record moves to the archive."
+        actionLabel="Archive"
+        onAction={action}
+      />,
+    );
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus());
+    await user.tab();
+    expect(screen.getByRole('button', { name: /^Archive$/ })).toHaveFocus();
+    await user.keyboard('{Enter>4/}');
+    expect(action).toHaveBeenCalledOnce();
   });
 
   it('commits and removes controlled tags while preserving validation errors', async () => {

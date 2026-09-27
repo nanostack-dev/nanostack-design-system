@@ -2,14 +2,14 @@
 
 import { useRef, type ReactNode } from 'react';
 import { AlertDialog } from '@base-ui/react/alert-dialog';
+import { Button as BaseButton } from '@base-ui/react/button';
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
 import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import type { Icon as Glyph } from '@phosphor-icons/react';
 import type { NoCustomStyle } from '../internal/props.js';
 import { Theme, useThemeSettings } from '../theme.js';
-import { Button } from '../components/button.js';
-import { Icon } from '../components/icon.js';
+import { Icon, Spinner } from '../components/icon.js';
 import { DialogFooter } from '../components/dialog-parts.js';
 
 export type ConfirmationSeverity = 'info' | 'success' | 'warning' | 'destructive';
@@ -24,6 +24,8 @@ export type ConfirmationDialogProps = NoCustomStyle & {
   closeLabel?: string;
   onAction: () => void;
   actionDisabled?: boolean;
+  /** The application's work is running: the action stays focused but ignores activation. */
+  pending?: boolean;
   cancelDisabled?: boolean;
   showCloseButton?: boolean;
   icon?: Glyph;
@@ -41,6 +43,7 @@ export function ConfirmationDialog({
   closeLabel = 'Close dialog',
   onAction,
   actionDisabled = false,
+  pending = false,
   cancelDisabled = false,
   showCloseButton = true,
   icon,
@@ -79,13 +82,23 @@ export function ConfirmationDialog({
               >
                 {cancelLabel}
               </AlertDialog.Close>
-              <Button
-                variant={severity === 'destructive' ? 'danger' : 'primary'}
-                disabled={actionDisabled}
+              <BaseButton
+                type="button"
+                nativeButton
+                className="ns-button"
+                data-variant={severity === 'destructive' ? 'danger' : 'primary'}
+                data-size="md"
+                disabled={actionDisabled || pending}
+                focusableWhenDisabled={pending}
+                aria-busy={pending || undefined}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && event.repeat) event.preventDefault();
+                }}
                 onClick={onAction}
               >
+                {pending ? <Spinner label="" size="sm" /> : null}
                 {actionLabel}
-              </Button>
+              </BaseButton>
             </DialogFooter>
             {showCloseButton ? (
               <AlertDialog.Close
