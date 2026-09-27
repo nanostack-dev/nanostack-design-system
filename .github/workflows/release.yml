@@ -1,40 +1,78 @@
-name: Public beta release
+name: Release
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release
   cancel-in-progress: false
 
 jobs:
-  verify:
-    if: github.ref_type == 'tag'
+  plan:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.release.outputs.version }}
+      version: ${{ steps.plan.outputs.version }}
+      npm-tag: ${{ steps.plan.outputs.npm-tag }}
+      publish: ${{ steps.plan.outputs.publish }}
+      github-release: ${{ steps.plan.outputs.github-release }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Check release identity
-        id: release
+      - name: Decide what this commit releases
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git merge-base --is-ancestor HEAD origin/main
+          version=$(node -p "require('./package.json').version")
+          name=$(node -p "require('./package.json').name")
+          if [[ "$version" == *-* ]]; then npm_tag=beta; else npm_tag=latest; fi
+          publish=true
+          if npm view "$name@$version" version >/dev/null 2>&1; then publish=false; fi
+          github_release=true
+          if gh release view "v$version" >/dev/null 2>&1; then github_release=false; fi
+          tag_commit=$(git ls-remote origin "refs/tags/v$version^{}" | cut -f1)
+          tag_commit=${tag_commit:-$(git ls-remote origin "refs/tags/v$version" | cut -f1)}
+          if [[ "$publish" == true && -n "$tag_commit" && "$tag_commit" != "$GITHUB_SHA" ]]; then
+            echo "::error::Tag v$version already points at $tag_commit, not this commit. Delete the unpublished tag or bump the version."
+            exit 1
+          fi
+          {
+            echo "version=$version"
+            echo "npm-tag=$npm_tag"
+            echo "publish=$publish"
+            echo "github-release=$github_release"
+          } >> "$GITHUB_OUTPUT"
+          echo "$name@$version: publish=$publish github-release=$github_release npm-tag=$npm_tag" >> "$GITHUB_STEP_SUMMARY"
+
+  verify:
+    needs: plan
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check release metadata
+        env:
+          RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+        run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
-          import { appendFileSync, readFileSync } from 'node:fs';
+          import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
           const manifest = JSON.parse(readFileSync('package.json', 'utf8'));
           assert.equal(manifest.name, '@nanostackorg/design-system');
-          assert.match(manifest.version, /^\d+\.\d+\.\d+-beta\.\d+$/);
-          assert.equal(process.env.GITHUB_REF_NAME, `v${manifest.version}`);
+          assert.match(manifest.version, /^\d+\.\d+\.\d+(-beta\.\d+)?$/);
           assert.notEqual(manifest.license, 'UNLICENSED');
           assert.equal(manifest.publishConfig.access, 'public');
-          assert.equal(manifest.publishConfig.tag, 'beta');
-          appendFileSync(process.env.GITHUB_OUTPUT, `version=${manifest.version}\n`);
+          const heading = `## ${process.env.RELEASE_VERSION}\n`;
+          const changelog = readFileSync('CHANGELOG.md', 'utf8');
+          assert(changelog.includes(heading), 'Release requires a changelog entry');
+          const notes = changelog.split(heading)[1].split('\n## ')[0].trim();
+          assert(notes.length > 0, 'Release notes must not be empty');
+          mkdirSync('artifacts', { recursive: true });
+          writeFileSync('artifacts/release-notes.md', notes);
           NODE
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
@@ -48,38 +86,31 @@ jobs:
       - run: pnpm test:browser
       - run: pnpm test:package
       - name: Pack verified package
-        env:
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
-          mkdir -p artifacts
-          node --input-type=module <<'NODE'
-          import assert from 'node:assert/strict';
-          import { readFileSync, writeFileSync } from 'node:fs';
-          const heading = `## ${process.env.RELEASE_VERSION}\n`;
-          const changelog = readFileSync('CHANGELOG.md', 'utf8');
-          assert(changelog.includes(heading), 'Release requires a changelog entry');
-          const notes = changelog.split(heading)[1].split('\n## ')[0].trim();
-          assert(notes.length > 0, 'Release notes must not be empty');
-          writeFileSync('artifacts/release-notes.md', notes);
-          NODE
           npm pack --ignore-scripts --pack-destination artifacts
           cd artifacts
           sha256sum ./*.tgz > SHA256SUMS
       - uses: actions/upload-artifact@v4
+        if: failure()
         with:
-          name: public-beta-package
+          name: browser-evidence
+          path: |
+            test-results/
+            playwright-report/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-package
           path: artifacts/
           if-no-files-found: error
           retention-days: 30
 
   publish:
-    needs: verify
+    needs: [plan, verify]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -87,16 +118,51 @@ jobs:
       - run: npm install --global npm@11.20.0
       - uses: actions/download-artifact@v4
         with:
-          name: public-beta-package
+          name: release-package
           path: artifacts
       - name: Publish with npm trusted publishing
+        env:
+          NPM_TAG: ${{ needs.plan.outputs.npm-tag }}
         run: |
           cd artifacts
           sha256sum --check SHA256SUMS
-          npm publish ./*.tgz --access public --tag beta --provenance --ignore-scripts --registry https://registry.npmjs.org/
-      - name: Create GitHub prerelease
+          npm publish ./*.tgz --access public --tag "$NPM_TAG" --provenance --ignore-scripts --registry https://registry.npmjs.org/
+
+  github-release:
+    needs: [plan, verify, publish]
+    if: >-
+      always() && needs.plan.result == 'success' && needs.plan.outputs.github-release == 'true' &&
+      (needs.publish.result == 'success' || needs.plan.outputs.publish == 'false')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Collect the published archive
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          mkdir -p artifacts
+          name=$(node -p "require('./package.json').name")
+          cd artifacts
+          npm pack "$name@$VERSION" --silent
+          sha256sum ./*.tgz > SHA256SUMS
+          echo "npm integrity: \`$(npm view "$name@$VERSION" dist.integrity)\`" > integrity.md
+          cd ..
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const heading = `## ${process.env.VERSION}\n`;
+          const changelog = readFileSync('CHANGELOG.md', 'utf8');
+          const notes = changelog.includes(heading) ? changelog.split(heading)[1].split('\n## ')[0].trim() : '';
+          writeFileSync('artifacts/release-notes.md', `${notes}\n\n${readFileSync('artifacts/integrity.md', 'utf8')}`);
+          NODE
+      - name: Create GitHub release and tag
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          NPM_TAG: ${{ needs.plan.outputs.npm-tag }}
         run: |
-          gh release create "$RELEASE_TAG" artifacts/*.tgz artifacts/SHA256SUMS --verify-tag --prerelease --title "$RELEASE_TAG" --notes-file artifacts/release-notes.md
+          prerelease=()
+          if [[ "$NPM_TAG" == beta ]]; then prerelease=(--prerelease); fi
+          gh release create "v$VERSION" artifacts/*.tgz artifacts/SHA256SUMS \
+            --target "$GITHUB_SHA" "${prerelease[@]}" --title "v$VERSION" --notes-file artifacts/release-notes.md
