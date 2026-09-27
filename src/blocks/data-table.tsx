@@ -10,6 +10,8 @@ import {
   type ColumnDef,
   type OnChangeFn,
   type PaginationState,
+  type Row,
+  type RowSelectionState,
   type SortingState,
   type VisibilityState,
   type Updater,
@@ -29,6 +31,27 @@ import {
   MenuCheckboxItem,
 } from '../components/menu.js';
 
+/** Selection is keyed by application IDs, so it survives sorting and server pages. */
+export type DataTableSelectionProps<T> =
+  | {
+      enableRowSelection?: false;
+      getRowId?: (row: T, index: number) => string;
+      /** Highlights rows, for example the record open in a detail pane, when checkboxes are off. */
+      isRowSelected?: (row: T) => boolean;
+      selectedRowIds?: never;
+      onSelectedRowIdsChange?: never;
+      getRowLabel?: never;
+    }
+  | {
+      enableRowSelection: boolean;
+      getRowId: (row: T, index: number) => string;
+      selectedRowIds?: readonly string[];
+      onSelectedRowIdsChange?: (selectedRowIds: string[]) => void;
+      /** Names the row in its checkbox label. Defaults to the first visible column's value. */
+      getRowLabel?: (row: T) => string;
+      isRowSelected?: never;
+    };
+
 export type DataTableProps<T, TValue = unknown> = NoCustomStyle & {
   label: string;
   columns: ColumnDef<T, TValue>[];
@@ -46,11 +69,8 @@ export type DataTableProps<T, TValue = unknown> = NoCustomStyle & {
   rowCount?: number;
   pageCount?: number;
   enableColumnVisibility?: boolean;
-  enableRowSelection?: boolean;
-  getRowId?: (row: T, index: number) => string;
-  isRowSelected?: (row: T) => boolean;
   rowTone?: (row: T) => 'neutral' | 'warning' | 'danger';
-};
+} & DataTableSelectionProps<T>;
 
 export type DataTableToolbarProps = NoCustomStyle & {
   searchValue?: string;
@@ -63,6 +83,16 @@ export type DataTableToolbarProps = NoCustomStyle & {
 
 function updated<T>(updater: Updater<T>, current: T): T {
   return typeof updater === 'function' ? (updater as (value: T) => T)(current) : updater;
+}
+
+const selectionColumnId = 'select';
+
+function firstVisibleValue<T>(row: Row<T>): string {
+  const value = row
+    .getVisibleCells()
+    .find((cell) => cell.column.id !== selectionColumnId)
+    ?.getValue();
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : row.id;
 }
 
 export function DataTableToolbar({
@@ -121,6 +151,9 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
     enableColumnVisibility = true,
     enableRowSelection = false,
     getRowId,
+    getRowLabel,
+    selectedRowIds: selectedRowIdsProp,
+    onSelectedRowIdsChange,
     rowTone,
     isRowSelected,
   } = safeProps(input);
@@ -130,7 +163,12 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
   });
   const [localSorting, setLocalSorting] = useState<SortingState>([]);
   const [visibility, setVisibility] = useState<VisibilityState>({});
-  const [selection, setSelection] = useState({});
+  const [localSelectedRowIds, setLocalSelectedRowIds] = useState<readonly string[]>([]);
+  const selectedRowIds = selectedRowIdsProp ?? localSelectedRowIds;
+  const rowSelection = useMemo<RowSelectionState>(
+    () => Object.fromEntries(selectedRowIds.map((id) => [id, true])),
+    [selectedRowIds],
+  );
   const pagination = paginationProp ?? localPagination;
   const sorting = sortingProp ?? localSorting;
   const manual = mode === 'manual';
@@ -142,12 +180,18 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
     onSortingChange
       ? onSortingChange(value)
       : setLocalSorting((current) => updated(value, current));
+  const changeRowSelection: OnChangeFn<RowSelectionState> = (value) => {
+    const next = updated(value, rowSelection);
+    const ids = Object.keys(next).filter((id) => next[id]);
+    if (selectedRowIdsProp === undefined) setLocalSelectedRowIds(ids);
+    onSelectedRowIdsChange?.(ids);
+  };
   const tableColumns = useMemo<ColumnDef<T, TValue>[]>(
     () =>
       enableRowSelection
         ? [
             {
-              id: 'select',
+              id: selectionColumnId,
               header: ({ table }) => (
                 <Checkbox
                   aria-label="Select all visible rows"
@@ -158,7 +202,7 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
               ),
               cell: ({ row }) => (
                 <Checkbox
-                  aria-label="Select row"
+                  aria-label={`Select ${getRowLabel ? getRowLabel(row.original) : firstVisibleValue(row)}`}
                   checked={row.getIsSelected()}
                   onCheckedChange={(value) => row.toggleSelected(value)}
                 />
@@ -169,7 +213,7 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
             ...columns,
           ]
         : columns,
-    [columns, enableRowSelection],
+    [columns, enableRowSelection, getRowLabel],
   );
   const table = useReactTable({
     data,
@@ -187,8 +231,8 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
     onPaginationChange: changePagination,
     onSortingChange: changeSorting,
     onColumnVisibilityChange: setVisibility,
-    onRowSelectionChange: setSelection,
-    state: { pagination, sorting, columnVisibility: visibility, rowSelection: selection },
+    onRowSelectionChange: changeRowSelection,
+    state: { pagination, sorting, columnVisibility: visibility, rowSelection },
   });
   const total = manual ? (rowCount ?? data.length) : data.length;
   const pageCount = manual
@@ -280,20 +324,25 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
                 </tr>
               ))
             ) : table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  data-selected={row.getIsSelected() || isRowSelected?.(row.original) || false}
-                  aria-selected={row.getIsSelected() || isRowSelected?.(row.original) || false}
-                  data-tone={rowTone?.(row.original) ?? 'neutral'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const selected = enableRowSelection
+                  ? row.getIsSelected()
+                  : (isRowSelected?.(row.original) ?? false);
+                return (
+                  <tr
+                    key={row.id}
+                    data-selected={selected}
+                    aria-selected={selected}
+                    data-tone={rowTone?.(row.original) ?? 'neutral'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={visibleColumns}>
@@ -307,7 +356,7 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
       <div className="ns-table-footer">
         <span>
           {enableRowSelection
-            ? `${table.getSelectedRowModel().rows.length} of ${total} selected`
+            ? `${selectedRowIds.length} of ${total} selected`
             : `${total} records`}
         </span>
         <div className="ns-table-toolbar-actions">
