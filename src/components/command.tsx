@@ -13,8 +13,22 @@ export type CommandInputProps = Closed<ComponentProps<typeof BaseCommand.Input>>
   /** Match the visibility of a persistently mounted CommandList. */
   expanded?: boolean;
 };
-export function CommandInput({ expanded = true, onKeyDown, ...props }: CommandInputProps) {
+/**
+ * A consumer `id` or name overrides cmdk's generated id and hidden label, so an external
+ * `<label htmlFor>` names and focuses the input. With a consumer id the input also drops
+ * `cmdk-input`: cmdk refocuses the element with its own id on every highlight change and
+ * would otherwise move focus to the list while the person types.
+ */
+export function CommandInput({
+  expanded = true,
+  onKeyDown,
+  id,
+  'aria-labelledby': labelledBy,
+  ...props
+}: CommandInputProps) {
   const isExpanded = expanded && !props.disabled;
+  const namedByConsumer =
+    id !== undefined || labelledBy !== undefined || props['aria-label'] !== undefined;
   return (
     <BaseCommand.Input {...safeProps(props)} className="ns-command-input" asChild>
       {/* cmdk supplies role=combobox and its control IDs through this private slot. */}
@@ -22,6 +36,8 @@ export function CommandInput({ expanded = true, onKeyDown, ...props }: CommandIn
       <input
         aria-expanded={isExpanded}
         {...(!isExpanded ? { 'aria-activedescendant': undefined } : {})}
+        {...(namedByConsumer ? { 'aria-labelledby': labelledBy } : {})}
+        {...(id === undefined ? {} : { id, 'cmdk-input': undefined })}
         onKeyDown={(event) => {
           onKeyDown?.(event);
           // cmdk handles keys at the root. Hidden options must never be activated.
