@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -25,6 +26,22 @@ function run(command, args, cwd, capture = false) {
   return result.stdout;
 }
 
+function npmInstall(...packages) {
+  run(
+    'npm',
+    [
+      'install',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      '--package-lock=false',
+      '--prefer-offline',
+      ...packages,
+    ],
+    scratch,
+  );
+}
+
 try {
   // Build before calling this script. Packing with scripts disabled proves that the
   // published package needs neither a prepare hook nor the source checkout.
@@ -38,6 +55,10 @@ try {
   );
   const packed = packResult[0];
   assert(packed?.filename, 'npm pack did not produce an archive');
+  const archiveDigest = createHash('sha256')
+    .update(await readFile(join(scratch, packed.filename)))
+    .digest('hex');
+  console.log(`SHA-256 ${archiveDigest}  ${packed.filename}`);
   const paths = packed.files.map((file) => file.path);
   for (const required of [
     'dist/index.js',
@@ -85,18 +106,7 @@ try {
 
   // npm reuses its download cache across runs; this consumer is intentionally new
   // each time so workspace node_modules, symlinks and source aliases cannot help it.
-  run(
-    'npm',
-    [
-      'install',
-      '--ignore-scripts',
-      '--no-audit',
-      '--no-fund',
-      '--package-lock=false',
-      '--prefer-offline',
-    ],
-    scratch,
-  );
+  npmInstall();
 
   await writeFile(
     join(scratch, 'smoke.mjs'),
@@ -113,6 +123,7 @@ import { GearIcon } from '@phosphor-icons/react';
 
 assert.equal(version, '19.2.0', 'The consumer must exercise the minimum React peer version');
 const packageRoot = fileURLToPath(new URL('../', import.meta.resolve('@nanostackorg/design-system')));
+assert.throws(() => createRequire(import.meta.url).resolve('@clerk/clerk-react'), { code: 'MODULE_NOT_FOUND' }, 'The root entry must be checked without the optional Clerk peer');
 assert(!existsSync(join(packageRoot, 'src')), 'Source must not be available to the consumer');
 const packedManifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 assert.deepEqual(packedManifest.sideEffects, ['**/*.css'], 'Bundlers must preserve imported CSS');
@@ -244,7 +255,60 @@ createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null,
   } } } };`,
   );
   run(process.execPath, ['node_modules/vite/bin/vite.js', 'build'], scratch);
-  console.log('Clean consumer typecheck and production CSS/JavaScript bundle passed.');
+  console.log(
+    'Clean consumer typecheck and production CSS/JavaScript bundle passed without Clerk.',
+  );
+
+  const clerkMinimumReact = '19.2.3';
+  npmInstall(
+    `react@${clerkMinimumReact}`,
+    `react-dom@${clerkMinimumReact}`,
+    `@clerk/clerk-react@${manifest.peerDependencies['@clerk/clerk-react']}`,
+  );
+  await writeFile(
+    join(scratch, 'adapter-smoke.mjs'),
+    `
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { AccountControl, SignInPanel } from '@nanostackorg/design-system/adapters/clerk';
+assert.equal(typeof SignInPanel, 'function');
+assert.equal(typeof AccountControl, 'function');
+const { version } = createRequire(import.meta.url)('@clerk/clerk-react/package.json');
+console.log('Clerk adapter subpath loaded with @clerk/clerk-react ' + version + '.');
+`,
+  );
+  run(process.execPath, ['adapter-smoke.mjs'], scratch);
+  await writeFile(
+    join(scratch, 'adapter-consumer.tsx'),
+    `
+import { AccountControl, SignInPanel } from '@nanostackorg/design-system/adapters/clerk';
+export const signIn = <SignInPanel routing="path" path="/sign-in" forceRedirectUrl="/" />;
+export const hashSignIn = <SignInPanel />;
+export const account = <AccountControl showName />;
+// @ts-expect-error Path routing needs its path.
+export const missingPath = <SignInPanel routing="path" />;
+// @ts-expect-error Provider appearance stays inside the library.
+export const customAppearance = <AccountControl appearance={{}} />;
+// @ts-expect-error The adapter keeps the closed CSS contract.
+export const customStyle = <SignInPanel style={{ color: 'red' }} />;
+`,
+  );
+  // Clerk's own declarations fail under exactOptionalPropertyTypes; the consumer
+  // code, and therefore the adapter's public types, are still fully checked.
+  await writeFile(
+    join(scratch, 'tsconfig.adapter.json'),
+    JSON.stringify({
+      extends: './tsconfig.json',
+      compilerOptions: { skipLibCheck: true },
+      include: ['adapter-consumer.tsx'],
+    }),
+  );
+  run(
+    process.execPath,
+    ['node_modules/typescript/bin/tsc', '-p', 'tsconfig.adapter.json'],
+    scratch,
+  );
+  console.log('Clerk adapter import and consumer typecheck passed.');
 } finally {
   await rm(scratch, { recursive: true, force: true });
 }
