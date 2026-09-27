@@ -85,3 +85,19 @@ test('a pending confirmation ignores a held key and keeps focus on its action', 
   await action.click({ force: true });
   await expect(page.getByText('Delete requests: 1')).toBeVisible();
 });
+
+test('Escape closes an open tag list before it closes the dialog', async ({ page }) => {
+  const trigger = page.getByRole('button', { name: 'Open dialog' });
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: 'Edit flow' });
+  const tags = dialog.getByRole('combobox', { name: 'Tags' });
+  await tags.click();
+  await expect(tags).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Escape');
+  await expect(tags).toHaveAttribute('aria-expanded', 'false');
+  await expect(dialog).toBeVisible();
+  await expect(tags).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
