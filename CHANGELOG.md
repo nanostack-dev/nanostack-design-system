@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.5
+
+- Add `Input icon`: a glyph at the start of the field, for search fields. The `DataTable` search shows a magnifier.
+- Draw `Select` with the library's own chevron instead of the operating system control. The new default width `auto` fills a `Field` and fits its options elsewhere, such as in a toolbar.
+- Add `ReportHeader sticky`. `sticky={false}` lets the heading scroll with the report on short screens.
+- Apply button hover colors only on devices that hover, so a tapped button does not keep its hover color.
+- Show a disclosure trigger at label size (13 px, medium) instead of the surrounding text size.
+- Give an `EmptyState` action a width of up to 24rem, so a `DefinitionList` in it no longer collapses to one letter per line.
+- Keep values at their own width in the phone `DataTable` cards instead of stretching them.
+- Show focus rings on `Select` like on the other controls.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.0.5`. A `Select` outside a `Field` that must fill its row now needs `width="fill"`: `<Select width="fill" options={options} />`. Replace a search icon stacked over an `Input` with `<Input icon={MagnifyingGlassIcon} aria-label="Search" />`.
+
 ## 0.0.4
 
 - Add the font tokens `--ns-font-sans`, `--ns-font-heading` and `--ns-font-mono`. Headings, page, section, card, empty-state and dialog titles use the heading font, and code, keyboard keys and the editors use the mono font.
