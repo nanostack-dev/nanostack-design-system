@@ -6,8 +6,15 @@
 - Resolve every export through a `default` condition and export `package.json`, so CommonJS-aware resolvers and test runners find the package.
 - Ship JavaScript source maps with inline sources. Declaration maps are removed because their sources were never shipped.
 - `pnpm check` verifies the committed shadcn registry instead of regenerating it.
+- Show the backdrop of a `Dialog`, `ConfirmationDialog` or `ResponsivePanel` inside `AppShell`. The navigation drawer no longer wraps the shell, so a `DialogTrigger` outside a `Dialog` no longer opens navigation.
+- Connect `Select` to its surrounding `Field` for its label, description, error, invalid and disabled state.
+- Let the `hidden` attribute hide library elements, wrap static `ActivityItem` rows on narrow screens, and paint `--ns-canvas` behind a scoped `Theme`.
+- Give `brand="echopoint"` its own accent tokens: Echopoint blue in light mode and Echopoint lime in dark mode.
+- Add `openNavigationLabel` and `closeNavigationLabel` to `AppShell`, and `closeLabel` to `DialogPopup` and `ConfirmationDialog`.
 
 Upgrade: add Phosphor to the application when it is not already a direct dependency with `pnpm add @phosphor-icons/react@^2.1.10`. Glyph imports do not change: `<Icon glyph={GearIcon} label="Settings" />`. The Clerk adapter needs React 19.2.3 or later because of Clerk's own peer range.
+
+Upgrade: a `DialogTrigger` or `DialogClose` inside `AppShell` must belong to its own `Dialog`, for example `<Dialog><DialogTrigger>Edit</DialogTrigger><DialogPopup>…</DialogPopup></Dialog>`. Inside a `Field`, the Field's `name` wins over the `Select`'s `name`, and manual `id`, `htmlFor` and `aria-describedby` wiring can be removed: `<Field name="environment"><FieldLabel>Environment</FieldLabel><Select options={options} /></Field>`.
 
 ## 0.2.0-beta.4
 
