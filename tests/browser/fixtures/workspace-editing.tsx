@@ -4,7 +4,6 @@ import {
   Button,
   Cluster,
   EditableText,
-  KeyValueRow,
   Pane,
   PaneBody,
   PreviewFrame,
@@ -121,8 +120,6 @@ function Split({ name }: { name: string }) {
 
 function Fixture() {
   const [dark, setDark] = useState(false);
-  const [key, setKey] = useState('Accept');
-  const [value, setValue] = useState('{{host}}/json');
   const [name, setName] = useState('List invoices');
   return (
     <Theme colorScheme={dark ? 'dark' : 'light'} brand="echopoint">
@@ -134,21 +131,6 @@ function Fixture() {
               Toggle theme
             </Button>
           </Cluster>
-          <section aria-label="Headers" data-testid="headers">
-            <KeyValueRow
-              keyValue={key}
-              value={value}
-              keyPlaceholder="header"
-              variables={[{ name: 'host', value: 'https://example.com' }]}
-              reservedKeys={['Authorization']}
-              onKeyChange={setKey}
-              onValueChange={setValue}
-              onRemove={() => undefined}
-            />
-          </section>
-          <Text size="sm" tone="muted">
-            Saved header: <output aria-label="Saved header">{`${key}=${value}`}</output>
-          </Text>
           <section aria-label="Request identity" data-testid="identity">
             <EditableText value={name} label="Request name" onCommit={setName} />
           </section>

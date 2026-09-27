@@ -89,53 +89,26 @@ test('navigates the tree by item with arrows, typeahead and one tab stop in both
   }
 });
 
-test('edits key/value rows and inline text from the keyboard without losing focus or a rejected rename', async ({
+test('edits inline text from the keyboard and keeps focus on the renamed text', async ({
   page,
 }) => {
-  const headers = page.getByRole('region', { name: 'Headers' });
+  const identity = page.getByRole('region', { name: 'Request identity' });
   for (const theme of ['light', 'dark']) {
     if (theme === 'dark') await page.getByRole('button', { name: 'Toggle theme' }).click();
     expect(
-      (await new AxeBuilder({ page }).include('[data-testid="headers"]').analyze()).violations,
+      (await new AxeBuilder({ page }).include('[data-testid="identity"]').analyze()).violations,
     ).toEqual([]);
   }
-  const keyButton = headers.getByRole('button', { name: 'Accept', exact: true });
   await page.getByRole('button', { name: 'Toggle theme' }).focus();
   await page.keyboard.press('Tab');
-  await expect(keyButton).toBeFocused();
-  await expect(headers.getByRole('textbox')).toHaveCount(0);
+  await expect(identity.getByRole('button', { name: 'List invoices' })).toBeFocused();
   await page.keyboard.press('Enter');
-  const keyInput = headers.getByRole('textbox', { name: 'header name' });
-  await expect(keyInput).toBeFocused();
-  await keyInput.fill('Authorization');
-  await page.keyboard.press('Tab');
-  const valueButton = headers.getByRole('button', { name: '{{host}}/json' });
-  await expect(valueButton).toBeFocused();
-  await expect(keyInput).toHaveValue('Authorization');
-  await expect(keyInput).toHaveAttribute('aria-invalid', 'true');
-  await expect(keyInput).toHaveAccessibleDescription(
-    'There is already a header called Authorization.',
-  );
-  await expect(valueButton.locator('[tabindex]')).toHaveCount(0);
-  await page.keyboard.press('Tab');
-  await expect(headers.getByRole('button', { name: 'Remove Accept' })).toBeFocused();
-  await keyInput.fill('Content-Type');
-  await page.keyboard.press('Enter');
-  await expect(headers.getByRole('button', { name: 'Content-Type', exact: true })).toBeFocused();
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Enter');
+  await expect(identity.getByRole('textbox', { name: 'Request name' })).toBeFocused();
   await page.keyboard.press('End');
-  await page.keyboard.type('/v2');
+  await page.keyboard.type(' draft');
   await page.keyboard.press('Escape');
-  await expect(valueButton).toBeFocused();
-  await expect(page.getByRole('status', { name: 'Saved header' })).toHaveText(
-    'Content-Type={{host}}/json',
-  );
-  expect(
-    (await new AxeBuilder({ page }).include('[data-testid="headers"]').analyze()).violations,
-  ).toEqual([]);
-
-  const identity = page.getByRole('region', { name: 'Request identity' });
+  await expect(identity.getByRole('button', { name: 'List invoices' })).toBeFocused();
+  await expect(page.getByRole('status', { name: 'Saved name' })).toHaveText('List invoices');
   await identity.getByRole('button', { name: 'List invoices' }).click();
   await page.keyboard.press('End');
   await page.keyboard.type(' v2');

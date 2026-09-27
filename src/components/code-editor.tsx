@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  acceptCompletion,
-  autocompletion,
-  closeBrackets,
-  closeBracketsKeymap,
-  completionKeymap,
-  type CompletionContext,
-} from '@codemirror/autocomplete';
+import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { html } from '@codemirror/lang-html';
 import { json } from '@codemirror/lang-json';
@@ -34,36 +27,22 @@ import {
   drawSelection,
   EditorView,
   keymap,
-  tooltips,
 } from '@codemirror/view';
 import { classHighlighter } from '@lezer/highlight';
 import {
-  useCallback,
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
-  useMemo,
   useRef,
-  useState,
   type AriaAttributes,
   type Ref,
 } from 'react';
-import { createPortal } from 'react-dom';
-import { singleLine } from '../internal/editor/single-line.js';
-import {
-  inlineCompletionPreview,
-  refreshVariables,
-  variableCompletions,
-  variableHighlighting,
-  variableHoverTooltip,
-} from '../internal/editor/variables.js';
 import { safeProps, type NoCustomStyle } from '../internal/props.js';
-import { Theme, useThemeSettings } from '../theme.js';
-import type { Variable, VariableMatchOptions, VariableTemplate } from './editor-variables.js';
+import { useThemeSettings } from '../theme.js';
 
 export type CodeLanguage = 'text' | 'json' | 'xml' | 'html';
 export type EditorHeight = 'content' | 'compact' | 'standard' | 'fill';
-export type EditorVariant = 'input' | 'editor' | 'viewer';
+export type EditorVariant = 'editor' | 'viewer';
 
 /** Behavior-only ref: CodeMirror configuration and DOM styling remain private. */
 export interface CodeEditorHandle {
@@ -91,11 +70,6 @@ export type CodeEditorOptions = NoCustomStyle &
     onKeyDown?: ((event: KeyboardEvent) => void) | undefined;
     onKeyUp?: ((event: KeyboardEvent) => void) | undefined;
     language?: CodeLanguage | undefined;
-    variables?: readonly Variable[] | undefined;
-    variablesEnabled?: boolean | undefined;
-    variablePattern?: RegExp | undefined;
-    variableTemplates?: readonly VariableTemplate[] | undefined;
-    variableResolver?: ((name: string) => string | undefined) | undefined;
     placeholder?: string | undefined;
     readOnly?: boolean | undefined;
     disabled?: boolean | undefined;
@@ -144,7 +118,6 @@ function detectedLanguage(compartment: Compartment, language: CodeLanguage): Ext
   ];
 }
 
-const emptyVariables: readonly Variable[] = [];
 const externalValue = Annotation.define<boolean>();
 
 /**
@@ -186,19 +159,16 @@ function authoringExtensions(variant: EditorVariant): Extension {
     drawSelection(),
     bracketMatching(),
     highlightSelectionMatches(),
-    viewer ? EditorView.lineWrapping : [history(), indentOnInput(), closeBrackets()],
-    variant === 'input' ? singleLine() : viewer ? [] : foldGutter(),
+    viewer ? EditorView.lineWrapping : [history(), indentOnInput(), closeBrackets(), foldGutter()],
     keymap.of(
       viewer
         ? [...defaultKeymap, ...searchKeymap]
         : [
-            { key: 'Tab', run: acceptCompletion },
             ...closeBracketsKeymap,
             ...defaultKeymap,
             ...searchKeymap,
             ...historyKeymap,
             ...foldKeymap,
-            ...completionKeymap,
           ],
     ),
   ];
@@ -218,11 +188,6 @@ export function CodeEditor({
   onKeyDown,
   onKeyUp,
   language = 'text',
-  variables = emptyVariables,
-  variablesEnabled = true,
-  variablePattern,
-  variableTemplates,
-  variableResolver,
   placeholder = '',
   readOnly: requestedReadOnly = false,
   disabled = false,
@@ -238,60 +203,25 @@ export function CodeEditor({
   const theme = useThemeSettings();
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
-  const [tooltipHost, setTooltipHost] = useState<HTMLDivElement | null>(null);
   const compartments = useRef({
     language: new Compartment(),
     authoring: new Compartment(),
     editable: new Compartment(),
     lineNumbers: new Compartment(),
     theme: new Compartment(),
-    completion: new Compartment(),
-    variables: new Compartment(),
     attributes: new Compartment(),
     placeholder: new Compartment(),
   });
   const baseExtensions = useRef<Extension>([]);
   const documentKeyRef = useRef(documentKey);
   const readOnly = requestedReadOnly || disabled || variant === 'viewer';
-  const variablesActive = variablesEnabled && variant !== 'viewer';
-  const patternSource = variablePattern?.source;
-  const patternFlags = variablePattern?.flags;
-  const templatesKey = variableTemplates ? JSON.stringify(variableTemplates) : undefined;
-  const options = useMemo<VariableMatchOptions>(
-    () => ({
-      pattern: patternSource === undefined ? undefined : new RegExp(patternSource, patternFlags),
-      templates:
-        templatesKey === undefined ? undefined : (JSON.parse(templatesKey) as VariableTemplate[]),
-    }),
-    [patternSource, patternFlags, templatesKey],
-  );
-  const variableContext = useLatestRef({ variables, variableResolver, variablesEnabled });
-  const resolver = useCallback(
-    (name: string) => {
-      const current = variableContext.current;
-      if (!current.variablesEnabled) return undefined;
-      const normalized = name.trim();
-      return (
-        current.variableResolver?.(normalized) ??
-        current.variables.find((variable) => variable.name.trim() === normalized)?.value
-      );
-    },
-    [variableContext],
-  );
-  const completionSource = useMemo(() => {
-    return (context: CompletionContext) =>
-      variableCompletions(variableContext.current.variables, options)(context);
-  }, [options, variableContext]);
-  const resolutionKey = JSON.stringify(
-    variables.map((variable) => [variable.name.trim(), variable.value ?? null]),
-  );
   const onChangeRef = useLatestRef(onChange);
   const eventsRef = useLatestRef({ onFocus, onBlur, onKeyDown, onKeyUp });
 
   // Attribute values land on the actual textbox, not an inaccessible outer wrapper.
   const contentAttributes: Record<string, string> = {
     role: 'textbox',
-    'aria-multiline': String(variant !== 'input'),
+    'aria-multiline': 'true',
     'aria-readonly': String(readOnly),
     'aria-disabled': String(disabled),
     spellcheck: 'false',
@@ -307,7 +237,7 @@ export function CodeEditor({
   // The variant and disabled state cannot be overridden with conflicting ARIA.
   contentAttributes['aria-readonly'] = String(readOnly);
   contentAttributes['aria-disabled'] = String(disabled);
-  contentAttributes['aria-multiline'] = String(variant !== 'input');
+  contentAttributes['aria-multiline'] = 'true';
   if (id) contentAttributes.id = id;
   if (labelledBy) {
     contentAttributes['aria-labelledby'] = labelledBy;
@@ -349,7 +279,7 @@ export function CodeEditor({
   }, [id, disabled]);
 
   useEffect(() => {
-    if (!containerRef.current || !tooltipHost) return;
+    if (!containerRef.current) return;
     const c = compartments.current;
     baseExtensions.current = [
       syntaxHighlighting(classHighlighter),
@@ -369,7 +299,6 @@ export function CodeEditor({
           return event.defaultPrevented;
         },
       }),
-      tooltips({ parent: tooltipHost }),
       EditorView.updateListener.of((update) => {
         const edited = update.transactions.some(
           (transaction) => transaction.docChanged && !transaction.annotation(externalValue),
@@ -392,7 +321,7 @@ export function CodeEditor({
       view.destroy();
       viewRef.current = null;
     };
-  }, [eventsRef, initial, onChangeRef, tooltipHost]);
+  }, [eventsRef, initial, onChangeRef]);
 
   useEffect(() => {
     const view = viewRef.current;
@@ -426,7 +355,7 @@ export function CodeEditor({
       annotations: [externalValue.of(true), Transaction.addToHistory.of(false)],
       filter: false,
     });
-  }, [value, documentKey, initial, tooltipHost]);
+  }, [value, documentKey, initial]);
 
   useEffect(() => {
     const view = viewRef.current;
@@ -439,13 +368,13 @@ export function CodeEditor({
           : languageExtension(language),
       ),
     });
-  }, [language, autoDetectLanguage, tooltipHost]);
+  }, [language, autoDetectLanguage]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
       effects: compartments.current.authoring.reconfigure(authoringExtensions(variant)),
     });
-  }, [variant, tooltipHost]);
+  }, [variant]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
@@ -454,53 +383,13 @@ export function CodeEditor({
         EditorView.editable.of(!readOnly),
       ]),
     });
-  }, [readOnly, tooltipHost]);
+  }, [readOnly]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
-      effects: compartments.current.lineNumbers.reconfigure(
-        lineNumbers && variant !== 'input' ? cmLineNumbers() : [],
-      ),
+      effects: compartments.current.lineNumbers.reconfigure(lineNumbers ? cmLineNumbers() : []),
     });
-  }, [lineNumbers, variant, tooltipHost]);
-
-  useEffect(() => {
-    viewRef.current?.dispatch({
-      effects: compartments.current.variables.reconfigure(
-        variablesActive
-          ? [
-              variableHighlighting(resolver, options),
-              variableHoverTooltip(resolver, options),
-              inlineCompletionPreview(options),
-            ]
-          : [],
-      ),
-    });
-  }, [resolver, options, variablesActive, tooltipHost]);
-
-  const resolutionMounted = useRef(false);
-  useEffect(() => {
-    if (!resolutionMounted.current) {
-      resolutionMounted.current = true;
-      return;
-    }
-    viewRef.current?.dispatch({ effects: refreshVariables.of(null) });
-  }, [resolutionKey, variableResolver, variablesEnabled]);
-
-  useEffect(() => {
-    viewRef.current?.dispatch({
-      effects: compartments.current.completion.reconfigure(
-        variant === 'viewer' || readOnly
-          ? []
-          : autocompletion({
-              override: variablesActive ? [completionSource] : [],
-              activateOnTyping: true,
-              selectOnOpen: true,
-              interactionDelay: 0,
-            }),
-      ),
-    });
-  }, [completionSource, readOnly, variablesActive, variant, tooltipHost]);
+  }, [lineNumbers]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
@@ -508,7 +397,7 @@ export function CodeEditor({
         EditorView.theme({}, { dark: theme.colorScheme === 'dark' }),
       ),
     });
-  }, [theme.colorScheme, tooltipHost]);
+  }, [theme.colorScheme]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
@@ -516,7 +405,7 @@ export function CodeEditor({
         EditorView.contentAttributes.of(JSON.parse(attributesKey) as Record<string, string>),
       ),
     });
-  }, [attributesKey, tooltipHost]);
+  }, [attributesKey]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
@@ -524,50 +413,29 @@ export function CodeEditor({
         placeholder ? cmPlaceholder(placeholder) : [],
       ),
     });
-  }, [placeholder, tooltipHost]);
+  }, [placeholder]);
 
   return (
-    <>
-      <div
-        className="ns-code-editor"
-        data-slot="code-editor"
-        data-ns-editor-variant={variant}
-        data-ns-editor-height={height}
-        data-ns-editor-disabled={disabled || undefined}
-        data-testid={testId}
-        title={title}
-      >
-        <div className="ns-code-editor-mount" ref={containerRef} />
-      </div>
-      {typeof document !== 'undefined'
-        ? createPortal(
-            <Theme {...theme}>
-              <div className="ns-editor-popovers" ref={setTooltipHost} />
-            </Theme>,
-            document.body,
-          )
-        : null}
-    </>
+    <div
+      className="ns-code-editor"
+      data-slot="code-editor"
+      data-ns-editor-variant={variant}
+      data-ns-editor-height={height}
+      data-ns-editor-disabled={disabled || undefined}
+      data-testid={testId}
+      title={title}
+    >
+      <div className="ns-code-editor-mount" ref={containerRef} />
+    </div>
   );
 }
 
 export type CodeViewerProps = Omit<
   CodeEditorOptions,
-  | 'variant'
-  | 'readOnly'
-  | 'onChange'
-  | 'defaultValue'
-  | 'placeholder'
-  | 'variables'
-  | 'variablesEnabled'
-  | 'variableTemplates'
-  | 'variableResolver'
-  | 'variablePattern'
+  'variant' | 'readOnly' | 'onChange' | 'defaultValue' | 'placeholder'
 > &
   CodeEditorAccessibleName;
 
 export function CodeViewer(props: CodeViewerProps) {
   return <CodeEditor {...props} variant="viewer" />;
 }
-
-export type { Variable, VariableTemplate } from './editor-variables.js';

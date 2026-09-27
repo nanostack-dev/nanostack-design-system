@@ -1,6 +1,5 @@
 import { SourcePane } from '../src/components/source-pane.js';
 import { ChoiceCard } from '../src/components/choice-card.js';
-import { VariableText } from '../src/components/variable-text.js';
 import {
   PreviewFrame,
   TreeItem,
@@ -12,8 +11,6 @@ import {
 <SourcePane label="Base" lines={[]} style={{ color: 'red' }} />;
 // @ts-expect-error Choice presentation belongs to the library.
 <ChoiceCard title="Choice" description="Detail" className="custom" />;
-// @ts-expect-error Variable content cannot replace its element implementation.
-<VariableText value="{{name}}" as="div" />;
 // @ts-expect-error Preview dimensions are finite library presets.
 <PreviewFrame width="900px" />;
 // @ts-expect-error Split pane engines remain encapsulated.
@@ -54,6 +51,3 @@ export function PersistedSplit() {
 <TreeItem expanded={false} onExpandedChange={(expanded: boolean) => expanded} />;
 // @ts-expect-error Expansion is a boolean state, not a label.
 <TreeItem expanded="open" />;
-<VariableText value="{{name}}" interactive={false} />;
-// @ts-expect-error Chip interactivity is on or off.
-<VariableText value="{{name}}" interactive="tooltip" />;

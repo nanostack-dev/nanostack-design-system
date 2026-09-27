@@ -3,8 +3,6 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { SourcePane, tokenizeSourceLine } from '../src/components/source-pane.js';
 import { ChoiceCard } from '../src/components/choice-card.js';
-import { VariableText } from '../src/components/variable-text.js';
-import { Theme } from '../src/theme.js';
 
 describe('source context', () => {
   it('preserves source bytes while tokenizing YAML and JSON lines', () => {
@@ -71,21 +69,4 @@ it('activates a choice card from the keyboard and respects disabled state', asyn
   );
   expect(screen.getByRole('button')).toBeDisabled();
   expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
-});
-
-it('exposes variable resolution details on keyboard focus', async () => {
-  const user = userEvent.setup();
-  render(
-    <Theme>
-      <VariableText
-        value="{{baseUrl}}/users"
-        variables={[
-          { name: 'baseUrl', value: 'https://example.test', description: 'Production host' },
-        ]}
-      />
-    </Theme>,
-  );
-  await user.tab();
-  expect(await screen.findByRole('tooltip')).toHaveTextContent('Production host');
-  expect(screen.getByRole('tooltip')).toHaveTextContent('https://example.test');
 });

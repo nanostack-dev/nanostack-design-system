@@ -463,7 +463,7 @@ function Collections() {
 }
 
 const initialDocument =
-  '{\n  "event": "release.ready",\n  "environment": "{{environment}}",\n  "verified": true\n}';
+  '{\n  "event": "release.ready",\n  "environment": "staging",\n  "verified": true\n}';
 function Workspace() {
   const [document, setDocument] = useState(initialDocument);
   const [response, setResponse] = useState('{\n  "status": "waiting"\n}');
@@ -532,7 +532,6 @@ function Workspace() {
                           language="json"
                           lineNumbers
                           height="fill"
-                          variables={[{ name: 'environment', value: 'staging' }]}
                         />
                       ) : (
                         <UI.EmptyState
