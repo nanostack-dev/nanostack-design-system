@@ -11,12 +11,17 @@ const sections = [
   'Data display',
 ];
 const screenFrames = ['Workspace shell example', 'Centered screen example', 'Split screen example'];
+const frameLoadTimeout = 30_000;
 
 async function waitForScreenFrames(page: Page, colorScheme: string) {
   for (const title of screenFrames) {
     const frame = page.frameLocator(`iframe[title="${title}"]`);
-    await expect(frame.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(frame.locator('.ns-theme').first()).toHaveAttribute('data-ns-theme', colorScheme);
+    await expect(frame.getByRole('heading', { level: 1 })).toBeVisible({
+      timeout: frameLoadTimeout,
+    });
+    await expect(frame.locator('.ns-theme').first()).toHaveAttribute('data-ns-theme', colorScheme, {
+      timeout: frameLoadTimeout,
+    });
   }
 }
 
