@@ -1,8 +1,9 @@
-import { createRef } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { createRef, useState } from 'react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
+import { language } from '@codemirror/language';
 import { acceptCompletion, CompletionContext, completionStatus } from '@codemirror/autocomplete';
 import {
   CodeEditor,
@@ -66,6 +67,69 @@ describe('editor', () => {
     );
     expect(container.querySelector('.cm-variable')).toBeNull();
     expect(container.querySelector('.cm-foldGutter')).toBeNull();
+  });
+
+  it('keeps an open completion and configuration while a controlled parent re-renders inline variables', async () => {
+    function Harness() {
+      const [value, setValue] = useState('');
+      return (
+        <CodeEditor
+          value={value}
+          onChange={setValue}
+          variables={[{ name: 'host', value: 'localhost' }, { name: 'token' }]}
+          aria-label="URL"
+        />
+      );
+    }
+    const { container, rerender } = render(<Harness />);
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    const type = (text: string) =>
+      act(() =>
+        view.dispatch({
+          changes: { from: view.state.selection.main.head, insert: text },
+          selection: { anchor: view.state.selection.main.head + text.length },
+          userEvent: 'input.type',
+        }),
+      );
+    type('{{');
+    await waitFor(() => expect(completionStatus(view.state)).toBe('active'));
+    const dispatch = vi.spyOn(view, 'dispatch');
+    type('h');
+    rerender(<Harness />);
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(completionStatus(view.state)).toBe('active');
+    expect(acceptCompletion(view)).toBe(true);
+    expect(view.state.doc.toString()).toBe('{{host}}');
+  });
+
+  it('refreshes variable resolution only when the resolved values change', () => {
+    const { container, rerender } = render(
+      <CodeEditor value="{{host}}" variables={[{ name: 'host' }]} aria-label="URL" />,
+    );
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    const dispatch = vi.spyOn(view, 'dispatch');
+    rerender(<CodeEditor value="{{host}}" variables={[{ name: 'host' }]} aria-label="URL" />);
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(container.querySelector('.cm-variable-resolved')).toBeNull();
+    rerender(
+      <CodeEditor value="{{host}}" variables={[{ name: 'host', value: 'a' }]} aria-label="URL" />,
+    );
+    expect(container.querySelector('.cm-variable-resolved')).toHaveTextContent('{{host}}');
+  });
+
+  it('re-detects an uncontrolled document language only when auto-detection is on', () => {
+    const { container, rerender } = render(
+      <CodeEditor autoDetectLanguage defaultValue="" aria-label="Body" />,
+    );
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    act(() => view.dispatch({ changes: { from: 0, insert: '<note></note>' } }));
+    expect(view.state.facet(language)?.name).toBe('xml');
+    act(() => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: '{}' } }));
+    expect(view.state.facet(language)?.name).toBe('json');
+    rerender(<CodeEditor defaultValue="" aria-label="Body" />);
+    expect(view.state.facet(language)).toBeNull();
+    act(() => view.dispatch({ changes: { from: 0, insert: '[' } }));
+    expect(view.state.facet(language)).toBeNull();
   });
 
   it('inherits the nearest theme in its popover portal and removes the portal on unmount', () => {

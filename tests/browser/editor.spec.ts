@@ -51,3 +51,16 @@ test('maintains read-only behavior and accessible viewers, themes and height var
     .evaluate((element) => element.getBoundingClientRect().height);
   expect(inputHeight).toBeGreaterThanOrEqual(testInfo.project.name === 'desktop' ? 36 : 44);
 });
+
+test('accepts a narrowed variable completion with Tab typed right after the last character', async ({
+  page,
+}) => {
+  const input = page.getByRole('textbox', { name: 'URL', exact: true });
+  await input.click();
+  await page.keyboard.type('{{');
+  await expect(page.getByRole('option', { name: /host/ })).toBeVisible();
+  await page.keyboard.type('ho');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('status', { name: 'Current value' })).toHaveText('{{host}}');
+  await expect(input).toBeFocused();
+});

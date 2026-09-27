@@ -6,6 +6,7 @@ import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
+  type CompletionContext,
 } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { html } from '@codemirror/lang-html';
@@ -19,7 +20,7 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
-import { Compartment, EditorState, type Extension } from '@codemirror/state';
+import { Compartment, EditorState, type Extension, type Text } from '@codemirror/state';
 import {
   lineNumbers as cmLineNumbers,
   placeholder as cmPlaceholder,
@@ -43,8 +44,8 @@ import {
 import { createPortal } from 'react-dom';
 import { singleLine } from '../internal/editor/single-line.js';
 import {
-  setResolverEffect,
   inlineCompletionPreview,
+  refreshVariables,
   variableCompletions,
   variableHighlighting,
   variableHoverTooltip,
@@ -92,8 +93,8 @@ export type CodeEditorProps = NoCustomStyle &
     variant?: EditorVariant | undefined;
   };
 
-function detectLanguage(content: string): CodeLanguage {
-  const trimmed = content.trim();
+function detectLanguage(doc: Text): CodeLanguage {
+  const trimmed = doc.sliceString(0, 4096).trimStart();
   if (trimmed.startsWith('{') || trimmed.startsWith('[')) return 'json';
   if (/^<!DOCTYPE\s+html|^<html/i.test(trimmed)) return 'html';
   if (/^<\?xml|^<[a-zA-Z]/.test(trimmed)) return 'xml';
@@ -111,6 +112,20 @@ function languageExtension(language: CodeLanguage): Extension {
     default:
       return [];
   }
+}
+
+/** Follows the document's content: each edit re-detects and swaps the language when it changes. */
+function detectedLanguage(compartment: Compartment, language: CodeLanguage): Extension {
+  return [
+    languageExtension(language),
+    EditorState.transactionExtender.of((transaction) => {
+      if (!transaction.docChanged) return null;
+      const next = detectLanguage(transaction.newDoc);
+      return next === language
+        ? null
+        : { effects: compartment.reconfigure(detectedLanguage(compartment, next)) };
+    }),
+  ];
 }
 
 const emptyVariables: readonly Variable[] = [];
@@ -193,20 +208,36 @@ export function CodeEditor({
   const externalChange = useRef(false);
   const readOnly = requestedReadOnly || disabled || variant === 'viewer';
   const variablesActive = variablesEnabled && variant !== 'viewer';
+  const patternSource = variablePattern?.source;
+  const patternFlags = variablePattern?.flags;
+  const templatesKey = variableTemplates ? JSON.stringify(variableTemplates) : undefined;
   const options = useMemo<VariableMatchOptions>(
-    () => ({ pattern: variablePattern, templates: variableTemplates }),
-    [variablePattern, variableTemplates],
+    () => ({
+      pattern: patternSource === undefined ? undefined : new RegExp(patternSource, patternFlags),
+      templates:
+        templatesKey === undefined ? undefined : (JSON.parse(templatesKey) as VariableTemplate[]),
+    }),
+    [patternSource, patternFlags, templatesKey],
   );
+  const variableContext = useLatestRef({ variables, variableResolver, variablesEnabled });
   const resolver = useCallback(
     (name: string) => {
-      if (!variablesEnabled) return undefined;
+      const current = variableContext.current;
+      if (!current.variablesEnabled) return undefined;
       const normalized = name.trim();
       return (
-        variableResolver?.(normalized) ??
-        variables.find((variable) => variable.name.trim() === normalized)?.value
+        current.variableResolver?.(normalized) ??
+        current.variables.find((variable) => variable.name.trim() === normalized)?.value
       );
     },
-    [variableResolver, variables, variablesEnabled],
+    [variableContext],
+  );
+  const completionSource = useMemo(() => {
+    return (context: CompletionContext) =>
+      variableCompletions(variableContext.current.variables, options)(context);
+  }, [options, variableContext]);
+  const resolutionKey = JSON.stringify(
+    variables.map((variable) => [variable.name.trim(), variable.value ?? null]),
   );
   const onChangeRef = useLatestRef(onChange);
   const eventsRef = useLatestRef({ onFocus, onBlur, onKeyDown, onKeyUp });
@@ -319,14 +350,15 @@ export function CodeEditor({
   useEffect(() => {
     const view = viewRef.current;
     if (!view) return;
+    const compartment = compartments.current.language;
     view.dispatch({
-      effects: compartments.current.language.reconfigure(
-        languageExtension(
-          autoDetectLanguage ? detectLanguage(view.state.doc.toString()) : language,
-        ),
+      effects: compartment.reconfigure(
+        autoDetectLanguage
+          ? detectedLanguage(compartment, detectLanguage(view.state.doc))
+          : languageExtension(language),
       ),
     });
-  }, [language, autoDetectLanguage, value, tooltipHost]);
+  }, [language, autoDetectLanguage, tooltipHost]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
@@ -357,7 +389,7 @@ export function CodeEditor({
         variablesActive
           ? [
               variableHighlighting(resolver, options),
-              variableHoverTooltip(options),
+              variableHoverTooltip(resolver, options),
               inlineCompletionPreview(options),
             ]
           : [],
@@ -365,9 +397,14 @@ export function CodeEditor({
     });
   }, [resolver, options, variablesActive, tooltipHost]);
 
+  const resolutionMounted = useRef(false);
   useEffect(() => {
-    if (variablesActive) viewRef.current?.dispatch({ effects: setResolverEffect.of(resolver) });
-  }, [resolver, variablesActive, tooltipHost]);
+    if (!resolutionMounted.current) {
+      resolutionMounted.current = true;
+      return;
+    }
+    viewRef.current?.dispatch({ effects: refreshVariables.of(null) });
+  }, [resolutionKey, variableResolver, variablesEnabled]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
@@ -375,14 +412,14 @@ export function CodeEditor({
         variant === 'viewer' || readOnly
           ? []
           : autocompletion({
-              override: variablesActive ? [variableCompletions(variables, options)] : [],
+              override: variablesActive ? [completionSource] : [],
               activateOnTyping: true,
               selectOnOpen: true,
               interactionDelay: 0,
             }),
       ),
     });
-  }, [options, readOnly, variables, variablesActive, variant, tooltipHost]);
+  }, [completionSource, readOnly, variablesActive, variant, tooltipHost]);
 
   useEffect(() => {
     viewRef.current?.dispatch({
