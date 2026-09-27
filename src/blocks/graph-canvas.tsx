@@ -26,6 +26,8 @@ import { GraphPresentationContext } from '../internal/graph/presentation.js';
 import { GraphNodeRenderer } from '../internal/graph/node.js';
 import { GraphGestureProvider, useGraphGestureStore } from '../internal/graph/context.js';
 import { getNearestBorderSide } from '../internal/graph/geometry.js';
+import { INSPECTOR_WIDTH, SHEET_SHARE, INSPECTOR_DURATION, inspectorEase, revealOffset } from '../internal/graph/reveal.js';
+import { useReducedMotionPreference } from '../components/motion-preference.js';
 import {
   toEngineNode,
   toEngineEdge,
@@ -91,7 +93,8 @@ function GraphCanvasInner<NodeType extends GraphNode, EdgeType extends GraphEdge
 }: GraphCanvasProps<NodeType, EdgeType>) {
   const { armConnectionSettle, clearReconnectRetainedAnchor, recordReconnectRetainedAnchor } =
     useGraphGestureStore();
-  const { fitView, setCenter, getNode, getInternalNode, getZoom } = useReactFlow<
+  const reducedMotion = useReducedMotionPreference();
+  const { fitView, setCenter, setViewport, getNode, getInternalNode, getZoom } = useReactFlow<
     EngineNode,
     EngineEdge
   >();
@@ -382,6 +385,24 @@ function GraphCanvasInner<NodeType extends GraphNode, EdgeType extends GraphEdge
             { zoom: getZoom(), duration: 450 },
           );
       },
+      revealNode(nodeId, { occlusion = 'none', entering = false } = {}) {
+        const node = getInternalNode(nodeId);
+        if (!node) return;
+        const { width, height, transform: [x, y, zoom] } = storeApi.getState();
+        const left = node.internals.positionAbsolute.x * zoom + x;
+        const top = node.internals.positionAbsolute.y * zoom + y;
+        const { dx, dy } = revealOffset({
+          left, top,
+          right: left + (node.measured.width ?? 0) * zoom,
+          bottom: top + (node.measured.height ?? 0) * zoom,
+        }, width - (occlusion === 'sidebar' && entering ? INSPECTOR_WIDTH : 0),
+        height * (occlusion === 'bottom-sheet' ? 1 - SHEET_SHARE : 1));
+        if (dx === 0 && dy === 0) return;
+        void setViewport({ x: x + dx, y: y + dy, zoom }, {
+          duration: reducedMotion ? 120 : INSPECTOR_DURATION,
+          ease: inspectorEase,
+        });
+      },
       animateLayout() {
         setIsRelayouting(true);
         window.clearTimeout(relayoutTimer.current);
@@ -391,7 +412,7 @@ function GraphCanvasInner<NodeType extends GraphNode, EdgeType extends GraphEdge
         );
       },
     }),
-    [fitView, getNode, getZoom, setCenter],
+    [fitView, getNode, getZoom, setCenter, getInternalNode, setViewport, storeApi, reducedMotion],
   );
   useEffect(() => () => window.clearTimeout(relayoutTimer.current), []);
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0-beta.4
+
+- Add a nonmodal inspector: `DockSidebar` accepts `size="inspector"` and `side="end"`, and the new `DockSheet` covers the lower part of `DockMain` while the canvas stays interactive.
+- Add `GraphCanvasHandle.revealNode(nodeId, { occlusion, entering })`. It moves the viewport only enough to keep a node clear of the sidebar or sheet. An item larger than the free area keeps its start visible. Reduced motion shortens the move.
+- `BarStrip` accepts `selection="single"` for keyboard radio selection and `onPreview` for hover and focus previews. Points accept the `info` tone.
+
+Upgrade: install `@nanostackorg/design-system@0.2.0-beta.4`. Existing props keep their behavior. To inspect a node, render the detail inside `DockSidebar size="inspector" side="end"` or `DockSheet`, then call `canvas.current?.revealNode(id, { occlusion: 'sidebar', entering: true })` when the panel opens.
+
 ## 0.2.0-beta.3
 
 - Release under the MIT license on public npm and GitHub with exact beta installs, public package metadata and a release workflow using npm trusted publishing.

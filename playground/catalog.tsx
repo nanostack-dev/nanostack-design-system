@@ -1,3 +1,4 @@
+import { InspectorExample } from './inspector-example.js';
 import { useState, type ReactNode } from 'react';
 import {
   ArrowRight,
@@ -730,6 +731,9 @@ function Graph() {
             controls={<UI.GraphViewportControls />}
           />
         </UI.Stack>
+      </Example>
+      <Example title="Nonmodal inspection" description="A finite sidebar or bottom sheet keeps the canvas interactive; reveal moves only enough to keep an item visible. Run selection uses keyboard radio behavior.">
+        <InspectorExample />
       </Example>
       <Example
         title="Node presentation parts"

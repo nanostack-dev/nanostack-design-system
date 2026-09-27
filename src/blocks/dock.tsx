@@ -18,21 +18,28 @@ export function DockRail(props: DockRailProps) {
 }
 export type DockSidebarProps = ElementProps<'aside'> & {
   open: boolean;
-  size?: 'standard' | 'wide';
+  size?: 'standard' | 'wide' | 'inspector';
+  side?: 'start' | 'end';
 };
-export function DockSidebar({ open, size = 'standard', children, ...props }: DockSidebarProps) {
+export function DockSidebar({ open, size = 'standard', side = 'start', children, ...props }: DockSidebarProps) {
   return (
     <aside
       {...safeProps(props)}
       className="ns-dock-sidebar"
       data-open={open}
       data-size={size}
+      data-side={side}
       inert={!open}
       aria-hidden={!open}
     >
       <div className="ns-dock-sidebar-content">{children}</div>
     </aside>
   );
+}
+export type DockSheetProps = ElementProps<'aside'> & { open: boolean };
+/** A nonmodal inspector over the lower part of DockMain; the canvas remains interactive. */
+export function DockSheet({ open, ...props }: DockSheetProps) {
+  return <aside {...safeProps(props)} className="ns-dock-sheet" data-open={open} inert={!open} aria-hidden={!open} />;
 }
 export type DockMainProps = ElementProps<'div'>;
 export function DockMain(props: DockMainProps) {
