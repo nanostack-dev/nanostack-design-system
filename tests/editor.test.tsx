@@ -60,7 +60,13 @@ describe('editor', () => {
   it('starts a fresh history for a new document key without saving the previous body', () => {
     const onChange = vi.fn();
     const { container, rerender } = render(
-      <CodeEditor documentKey="a" value="A body" onChange={onChange} language="json" label="Body" />,
+      <CodeEditor
+        documentKey="a"
+        value="A body"
+        onChange={onChange}
+        language="json"
+        label="Body"
+      />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
     act(() => view.dispatch({ changes: { from: 6, insert: ' edited' }, userEvent: 'input.type' }));
