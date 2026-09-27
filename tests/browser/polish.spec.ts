@@ -42,10 +42,17 @@ test('a disclosure trigger reads as a label, not a heading', async ({ page }) =>
 
 test('a ghost button keeps its resting look after a tap on a touch screen', async ({ page }) => {
   const button = page.getByRole('button', { name: 'Ghost action' });
-  const resting = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const background = () =>
+    button.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const resting = await background();
   await button.hover();
-  const hovered = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
   const hoverCapable = await page.evaluate(() => matchMedia('(hover: hover)').matches);
-  if (hoverCapable) expect(hovered).not.toBe(resting);
-  else expect(hovered).toBe(resting);
+  if (hoverCapable) {
+    await expect.poll(background).not.toBe(resting);
+  } else {
+    await button.evaluate(
+      (element) => Promise.all(element.getAnimations().map((animation) => animation.finished)),
+    );
+    expect(await background()).toBe(resting);
+  }
 });
