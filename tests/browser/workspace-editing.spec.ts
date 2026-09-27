@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/workspace-editing.html');
@@ -55,4 +56,35 @@ test('keeps two splits on one page independent, with unique pane ids and library
   await expect(page.getByRole('status', { name: 'Alpha layout' })).toHaveText('100/0');
   await expect(page.getByRole('status', { name: 'Beta layout' })).toHaveText('55/45');
   await expect(page.getByRole('button', { name: 'Beta secondary action' })).toBeVisible();
+});
+
+test('navigates the tree by item with arrows, typeahead and one tab stop in both themes', async ({
+  page,
+}) => {
+  const tree = page.getByRole('tree', { name: 'Collections' });
+  const item = (name: string) => tree.getByRole('treeitem', { name, exact: true });
+  for (const theme of ['light', 'dark']) {
+    if (theme === 'dark') await page.getByRole('button', { name: 'Toggle theme' }).click();
+    await page.getByRole('button', { name: 'After tree' }).focus();
+    await page.keyboard.press('Shift+Tab');
+    const start = theme === 'light' ? 'Billing' : 'Health check';
+    await expect(item(start)).toBeFocused();
+    if (theme === 'light') {
+      await page.keyboard.press('ArrowRight');
+      await expect(item('Billing')).toHaveAttribute('aria-expanded', 'true');
+      await page.keyboard.press('ArrowRight');
+      await expect(item('Invoices')).toBeFocused();
+      await expect(item('Invoices')).toHaveAttribute('aria-level', '2');
+      await page.keyboard.press('ArrowLeft');
+      await expect(item('Billing')).toBeFocused();
+      await page.keyboard.press('h');
+      await expect(item('Health check')).toBeFocused();
+      await page.keyboard.press('Enter');
+      await expect(item('Health check')).toHaveAttribute('aria-selected', 'true');
+    }
+    await expect(tree.locator('[tabindex="0"]')).toHaveCount(1);
+    expect(
+      (await new AxeBuilder({ page }).include('[data-testid="tree"]').analyze()).violations,
+    ).toEqual([]);
+  }
 });

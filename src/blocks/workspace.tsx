@@ -297,48 +297,108 @@ export function DocumentTab({
 }
 
 export type TreeProps = ElementProps<'div'> & { 'aria-label': string };
-/** Visible tree items share a roving tab stop; domain expansion stays with the item. */
+
+const typeaheadTimeout = 500;
+
+function isTextEntry(element: Element) {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement ||
+    (element instanceof HTMLElement && element.isContentEditable)
+  );
+}
+
+function treeItems(root: HTMLElement) {
+  return [...root.querySelectorAll<HTMLElement>('[role="treeitem"]')].filter(
+    (item) => item.closest('[role="tree"]') === root,
+  );
+}
+
+function isAvailable(item: HTMLElement, root: HTMLElement) {
+  if (item.getAttribute('aria-disabled') === 'true') return false;
+  for (
+    let element: HTMLElement | null = item;
+    element && element !== root;
+    element = element.parentElement
+  ) {
+    const style = getComputedStyle(element);
+    if (
+      element.hidden ||
+      element.hasAttribute('inert') ||
+      element.getAttribute('aria-hidden') === 'true' ||
+      style.display === 'none' ||
+      style.visibility === 'hidden'
+    )
+      return false;
+  }
+  return true;
+}
+
+function itemLevel(item: HTMLElement, root: HTMLElement) {
+  const declared = Number(item.getAttribute('aria-level'));
+  if (declared > 0) return declared;
+  let level = 1;
+  for (
+    let element = item.parentElement;
+    element && element !== root;
+    element = element.parentElement
+  )
+    if (element.getAttribute('role') === 'group') level++;
+  return level;
+}
+
+function itemText(item: HTMLElement) {
+  return (item.getAttribute('aria-label') ?? item.textContent ?? '').trim().toLowerCase();
+}
+
+function primaryAction(item: HTMLElement) {
+  return item.querySelector<HTMLElement>('.ns-tree-item-button, a[href]');
+}
+
+function availableItems(root: HTMLElement) {
+  return treeItems(root).filter((item) => isAvailable(item, root));
+}
+
+function setTabStop(root: HTMLElement, current: HTMLElement) {
+  for (const item of treeItems(root)) {
+    item.tabIndex = item === current ? 0 : -1;
+    const action = primaryAction(item);
+    if (action) action.tabIndex = -1;
+  }
+}
+
+function syncTabStop(root: HTMLElement) {
+  const items = availableItems(root);
+  const current =
+    items.find((item) => item.contains(root.ownerDocument.activeElement)) ??
+    items.find((item) => item.tabIndex === 0) ??
+    items.find((item) => item.getAttribute('aria-selected') === 'true') ??
+    items[0];
+  if (current) setTabStop(root, current);
+}
+
+/**
+ * Visible tree items share one roving tab stop on the item itself, so its level and expanded
+ * state are announced. Expansion stays with each item; the tree follows DOM changes.
+ */
 export function Tree({ onKeyDown, onFocusCapture, ref, ...props }: TreeProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const typeahead = useRef({ text: '', time: 0 });
   useImperativeHandle(ref, () => rootRef.current!);
-  const availableItems = (root: HTMLDivElement) =>
-    [...root.querySelectorAll<HTMLElement>('[role="treeitem"]')].filter((item) => {
-      if (item.closest('[role="tree"]') !== root || item.getAttribute('aria-disabled') === 'true')
-        return false;
-      for (
-        let element: HTMLElement | null = item;
-        element && element !== root;
-        element = element.parentElement
-      ) {
-        const style = getComputedStyle(element);
-        if (
-          element.hidden ||
-          element.hasAttribute('inert') ||
-          element.getAttribute('aria-hidden') === 'true' ||
-          style.display === 'none' ||
-          style.visibility === 'hidden'
-        )
-          return false;
-      }
-      return true;
-    });
-  const focusTarget = (item: HTMLElement) =>
-    item.hasAttribute('tabindex')
-      ? item
-      : (item.querySelector<HTMLElement>('button:not([disabled]), a[href]') ?? item);
-  const setTabStop = (items: HTMLElement[], current: HTMLElement) => {
-    for (const item of items) focusTarget(item).tabIndex = item === current ? 0 : -1;
-  };
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const items = availableItems(root);
-    const current =
-      items.find((item) => item.contains(document.activeElement)) ??
-      items.find((item) => item.getAttribute('aria-selected') === 'true') ??
-      items[0];
-    if (current) setTabStop(items, current);
-  });
+    syncTabStop(root);
+    const observer = new MutationObserver(() => syncTabStop(root));
+    observer.observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['aria-disabled', 'aria-expanded', 'aria-hidden', 'hidden', 'inert'],
+    });
+    return () => observer.disconnect();
+  }, []);
   return (
     <div
       {...safeProps(props)}
@@ -350,30 +410,64 @@ export function Tree({ onKeyDown, onFocusCapture, ref, ...props }: TreeProps) {
         onFocusCapture?.(event);
         const item = (event.target as HTMLElement).closest<HTMLElement>('[role="treeitem"]');
         if (item?.closest('[role="tree"]') === event.currentTarget)
-          setTabStop(availableItems(event.currentTarget), item);
+          setTabStop(event.currentTarget, item);
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event);
-        if (event.defaultPrevented || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key))
+        const root = event.currentTarget;
+        const target = event.target as HTMLElement;
+        if (
+          event.defaultPrevented ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.metaKey ||
+          isTextEntry(target)
+        )
           return;
-        const items = availableItems(event.currentTarget);
-        const current = (event.target as HTMLElement).closest('[role="treeitem"]');
+        const items = availableItems(root);
+        const current = target.closest<HTMLElement>('[role="treeitem"]');
         const index = items.findIndex((item) => item === current);
-        if (index < 0) return;
-        const next =
-          event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? items.length - 1
-              : Math.min(
-                  items.length - 1,
-                  Math.max(0, index + (event.key === 'ArrowDown' ? 1 : -1)),
-                );
-        const target = items[next];
-        if (!target) return;
+        if (!current || index < 0) return;
+        const level = itemLevel(current, root);
+        const expanded = current.getAttribute('aria-expanded');
+        let next: HTMLElement | undefined;
+        if (event.key === 'ArrowDown') next = items[index + 1];
+        else if (event.key === 'ArrowUp') next = items[index - 1];
+        else if (event.key === 'Home') next = items[0];
+        else if (event.key === 'End') next = items.at(-1);
+        else if (event.key === 'ArrowRight' && expanded === 'true') {
+          const child = items[index + 1];
+          if (child && itemLevel(child, root) > level) next = child;
+        } else if (event.key === 'ArrowLeft' && expanded !== 'true') {
+          next = items
+            .slice(0, index)
+            .reverse()
+            .find((item) => itemLevel(item, root) < level);
+        } else if ((event.key === 'Enter' || event.key === ' ') && target === current) {
+          const action = primaryAction(current);
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        } else if (event.key.length === 1 && event.key !== ' ') {
+          const state = typeahead.current;
+          state.text =
+            event.timeStamp - state.time > typeaheadTimeout
+              ? event.key.toLowerCase()
+              : state.text + event.key.toLowerCase();
+          state.time = event.timeStamp;
+          const repeated = [...state.text].every((character) => character === state.text[0]);
+          const query = repeated ? state.text[0]! : state.text;
+          const start = repeated ? index + 1 : index;
+          next = [...items.slice(start), ...items.slice(0, start)].find((item) =>
+            itemText(item).startsWith(query),
+          );
+        } else return;
+        if (!next) return;
         event.preventDefault();
-        setTabStop(items, target);
-        focusTarget(target).focus();
+        if (next === current) return;
+        setTabStop(root, next);
+        next.focus();
       }}
     />
   );
@@ -386,22 +480,62 @@ export type TreeGroupProps = ElementProps<'div'>;
 export function TreeGroup(props: TreeGroupProps) {
   return <div {...safeProps(props)} role="group" className="ns-tree-group" />;
 }
-export type TreeItemProps = ElementProps<'div'> & { selected?: boolean; active?: boolean };
-export function TreeItem({ selected = false, active = false, ...props }: TreeItemProps) {
+export type TreeItemProps = ElementProps<'div'> & {
+  selected?: boolean;
+  active?: boolean;
+  /** Expansion state of an item with children; leave unset for a leaf. */
+  expanded?: boolean | undefined;
+  /** Arrow Right expands and Arrow Left collapses through this callback. */
+  onExpandedChange?: ((expanded: boolean) => void) | undefined;
+};
+export function TreeItem({
+  selected = false,
+  active = false,
+  expanded,
+  onExpandedChange,
+  onKeyDown,
+  ...props
+}: TreeItemProps) {
+  const ariaExpanded = props['aria-expanded'] ?? expanded;
+  const isExpanded = ariaExpanded === true || ariaExpanded === 'true';
+  const isCollapsed = ariaExpanded === false || ariaExpanded === 'false';
   return (
     <div
+      tabIndex={-1}
       {...safeProps(props)}
       role="treeitem"
+      aria-expanded={ariaExpanded}
       aria-selected={props['aria-selected'] ?? selected}
       className="ns-tree-item"
       data-ns-selected={selected}
       data-active={active}
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        const target = event.target as Element;
+        if (
+          event.defaultPrevented ||
+          !onExpandedChange ||
+          target.closest('[role="treeitem"]') !== event.currentTarget ||
+          isTextEntry(target)
+        )
+          return;
+        if (event.key === 'ArrowRight' && isCollapsed) {
+          event.preventDefault();
+          onExpandedChange(true);
+        } else if (event.key === 'ArrowLeft' && isExpanded) {
+          event.preventDefault();
+          onExpandedChange(false);
+        }
+      }}
     />
   );
 }
 export type TreeItemButtonProps = ElementProps<'button'>;
+/** The item's primary action; the item itself holds focus and activates it with Enter or Space. */
 export function TreeItemButton(props: TreeItemButtonProps) {
-  return <button {...safeProps(props)} type="button" className="ns-tree-item-button" />;
+  return (
+    <button tabIndex={-1} {...safeProps(props)} type="button" className="ns-tree-item-button" />
+  );
 }
 
 export type WorkspaceLayoutStorage = {

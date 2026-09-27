@@ -72,6 +72,8 @@ Triggers, content, and named parts are explicit imports. Consumers do not provid
 
 A `WorkspaceSplitLayout` holds `primary` and `secondary` percentages. `useWorkspaceLayout({ id, storage })` restores and stores that layout; pass its `defaultLayout` and `onLayoutChanged` straight to `WorkspaceSplit`. A collapsed pane is inert, so keyboard focus and assistive technology skip it.
 
+In a `Tree`, focus rests on the `TreeItem` itself, so its level and expanded state are announced. Give a parent item `expanded` and `onExpandedChange`: Arrow Right expands it or enters its first child, and Arrow Left collapses it or returns to its parent. Up, Down, Home, End and typed characters move between visible items. Enter and Space activate the item's `TreeItemButton`.
+
 ## Collections, inspection, and history
 
 | Parts                                                                                                                                                   | Options and composition rules                                                                                                                                                                                                                                                                                    |

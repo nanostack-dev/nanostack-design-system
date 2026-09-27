@@ -3,6 +3,7 @@ import { ChoiceCard } from '../src/components/choice-card.js';
 import { VariableText } from '../src/components/variable-text.js';
 import {
   PreviewFrame,
+  TreeItem,
   WorkspaceSplit,
   useWorkspaceLayout,
   type WorkspaceSplitLayout,
@@ -50,3 +51,6 @@ export function PersistedSplit() {
     />
   );
 }
+<TreeItem expanded={false} onExpandedChange={(expanded: boolean) => expanded} />;
+// @ts-expect-error Expansion is a boolean state, not a label.
+<TreeItem expanded="open" />;

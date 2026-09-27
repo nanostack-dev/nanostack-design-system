@@ -42,7 +42,12 @@ function Branch({ node, level }: { node: Node; level: number }) {
   const parent = Boolean(node.children);
   return (
     <TreeBranch>
-      <TreeItem aria-level={level} aria-expanded={parent ? open : undefined} selected={selected}>
+      <TreeItem
+        aria-level={level}
+        expanded={parent ? open : undefined}
+        onExpandedChange={setOpen}
+        selected={selected}
+      >
         <TreeItemButton
           onClick={() => {
             setSelected(true);
