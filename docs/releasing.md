@@ -59,4 +59,4 @@ If npm publication succeeds but creation of the GitHub release fails, finish the
 
 Query the public registry with `npm view @nanostackorg/design-system@<version> version dist.integrity dist.tarball`. Install that exact registry version into the consumer, commit its lockfile, and remove unused vendored archives. Run the application's assembly guard, lint, type checks and production build. Run affected interaction and accessibility checks whenever implementation bytes change.
 
-Imports and the single stylesheet entry remain the same. All new presentation capabilities still belong to the library; publishing publicly does not permit local CSS, primitive copies, visual-engine imports or custom styling props in Echopoint or Anchor.
+Imports and the single stylesheet entry remain the same. Publishing publicly does not relax the contract: applications never restyle a library component, copy a library primitive or pass styling props. Product-specific visuals follow the scope rule in `AGENTS.md`: they stay in their product, built from library tokens and primitives with CSS the product owns.
