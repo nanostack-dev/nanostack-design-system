@@ -85,3 +85,13 @@ test('keeps the single-line input on one line through Enter variants and paste',
   );
   await expect(input.locator('.cm-line')).toHaveCount(1);
 });
+
+test('lets a wheel over a single-line input scroll its pane', async ({ page }) => {
+  const region = page.getByRole('region', { name: 'Request form' });
+  const input = region.getByRole('textbox', { name: 'Scrolling URL' });
+  await region.scrollIntoViewIfNeeded();
+  const box = (await input.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(0, 160);
+  await expect.poll(() => region.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+});

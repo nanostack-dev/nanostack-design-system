@@ -48,16 +48,6 @@ export function singleLine(): Extension {
       { key: 'Mod-Enter', run: () => true },
     ]),
     withoutLineBreaks,
-    EditorView.domEventHandlers({
-      wheel(event) {
-        // Prevent vertical wheel/trackpad from causing horizontal scroll
-        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-          event.preventDefault();
-          return true;
-        }
-        return false;
-      },
-    }),
     EditorView.theme({
       '&': {
         height: '100%',

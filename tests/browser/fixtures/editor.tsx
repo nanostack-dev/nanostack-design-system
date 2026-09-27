@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Surface } from '../../../src/components/layout.js';
+import { ScrollRegion, Stack, Surface } from '../../../src/components/layout.js';
+import { Text } from '../../../src/components/typography.js';
 import { Theme } from '../../../src/theme.js';
 import { CodeEditor, CodeViewer } from '../../../src/components/code-editor.js';
 import { VariableAwareInput } from '../../../src/components/variable-aware-input.js';
@@ -40,6 +41,14 @@ function Fixture() {
           value={'{"long":"' + 'unbroken'.repeat(70) + '"}'}
         />
         <button>After editors</button>
+        <ScrollRegion label="Request form">
+          <Stack gap="md">
+            <VariableAwareInput aria-label="Scrolling URL" defaultValue="https://example.com" />
+            {Array.from({ length: 16 }, (_, index) => (
+              <Text key={index}>Request form section {index + 1}</Text>
+            ))}
+          </Stack>
+        </ScrollRegion>
       </Surface>
     </Theme>
   );
