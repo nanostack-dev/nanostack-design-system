@@ -751,6 +751,13 @@
   color: var(--ns-text);
   text-decoration: none;
 }
+.ns-activity-static {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--ns-row-padding);
+  min-width: 0;
+}
 a.ns-activity-link:hover {
   background: var(--ns-subtle);
 }
@@ -961,13 +968,6 @@ a.ns-activity-link:hover {
 .ns-shell-mobile-trigger svg {
   width: 20px;
   height: 20px;
-}
-.ns-activity-static {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: var(--ns-row-padding);
-  min-width: 0;
 }
 .ns-dialog-dismiss {
   position: absolute;
