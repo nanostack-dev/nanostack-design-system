@@ -12,6 +12,7 @@ import {
   AppShellSidebar,
 } from '../src/blocks/app-shell.js';
 import { ActivityItem, ActivityList } from '../src/blocks/activity-list.js';
+import { DialogTrigger } from '../src/components/dialog.js';
 import {
   PageHeader,
   PageHeaderActions,
@@ -100,6 +101,21 @@ describe('application shell', () => {
     await user.click(screen.getByRole('button', { name: 'Open navigation' }));
     await user.click(await screen.findByRole('link', { name: 'Flows' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  });
+
+  it('rejects a stray dialog trigger instead of binding it to the navigation drawer', () => {
+    mobile = true;
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    expect(() =>
+      render(
+        <AppShell>
+          <AppShellMain>
+            <DialogTrigger>Stray trigger</DialogTrigger>
+          </AppShellMain>
+        </AppShell>,
+      ),
+    ).toThrow(/Dialog\.Trigger/);
+    consoleError.mockRestore();
   });
 });
 
