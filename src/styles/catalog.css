@@ -676,3 +676,24 @@
   max-height: 90dvh;
   border-radius: 12px 12px 0 0;
 }
+.ns-preview-frame {
+  box-sizing: border-box;
+  padding: 16px;
+  width: min(100%, 720px);
+  min-width: 0;
+  background: var(--ns-canvas);
+}
+.ns-preview-frame[data-ns-width='narrow'] {
+  width: min(100%, 320px);
+}
+.ns-preview-frame[data-ns-width='wide'] {
+  width: min(100%, 1200px);
+}
+.ns-preview-frame[data-ns-height='panel'] {
+  height: 560px;
+  max-height: 100vh;
+}
+.ns-preview-frame[data-ns-height='workspace'] {
+  height: 820px;
+  max-height: 100vh;
+}

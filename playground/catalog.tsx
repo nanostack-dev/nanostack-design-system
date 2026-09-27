@@ -5,7 +5,6 @@ import {
   Code as CodeGlyph,
   Cube,
   Play,
-  Plus,
 } from '@phosphor-icons/react';
 import * as UI from '../src/index.js';
 
@@ -13,7 +12,7 @@ const sections = [
   'Foundations',
   'Controls',
   'Collections',
-  'Workspace',
+  'Editors',
   'History',
 ] as const;
 type CatalogSection = (typeof sections)[number];
@@ -464,129 +463,89 @@ function Collections() {
 
 const initialDocument =
   '{\n  "event": "release.ready",\n  "environment": "staging",\n  "verified": true\n}';
-function Workspace() {
+function Editors() {
+  const [fileName, setFileName] = useState('payload.json');
   const [document, setDocument] = useState(initialDocument);
-  const [response, setResponse] = useState('{\n  "status": "waiting"\n}');
-  const [showDocument, setShowDocument] = useState(true);
   const [saved, setSaved] = useState(true);
+  const [result, setResult] = useState('{\n  "checked": false\n}');
+  const valid = result.includes('"valid": true');
   return (
     <UI.Stack gap="xl">
       <Example
-        title="Editor workspace"
-        description="Document tabs, panes, editor geometry and resize interaction belong to the library. This example owns only document state."
+        title="Code editor and viewer"
+        description="Editor geometry, syntax colors, focus, undo history and read-only behavior belong to the library. This example owns only the document state."
       >
-        <UI.PreviewFrame width="wide" height="workspace">
-          <UI.Workspace>
-            <UI.WorkspaceMain>
-              <UI.PaneToolbar>
-                <UI.Cluster justify="between">
-                  <UI.Text size="sm" weight="medium">
-                    /example/events
-                  </UI.Text>
-                  <UI.Button
-                    size="sm"
-                    onClick={() =>
-                      setResponse('{\n  "status": "accepted",\n  "requestId": "example_01"\n}')
-                    }
-                  >
-                    <UI.Icon glyph={Play} size="sm" />
-                    Run example
-                  </UI.Button>
-                </UI.Cluster>
-              </UI.PaneToolbar>
-              <UI.DocumentTabs aria-label="Example documents">
-                {showDocument ? (
-                  <UI.DocumentTab
-                    label="payload.json"
-                    leading={<UI.Icon glyph={CodeGlyph} size="sm" />}
-                    active
-                    dirty={!saved}
-                    onSelect={() => setSaved(false)}
-                    onClose={() => setShowDocument(false)}
+        <UI.PreviewFrame width="wide">
+          <UI.Grid columns={2} gap="lg">
+            <UI.Card>
+              <UI.CardHeader>
+                <UI.Cluster>
+                  <UI.Icon glyph={CodeGlyph} size="sm" />
+                  <UI.EditableText
+                    value={fileName}
+                    label="Document name"
+                    variant="code"
+                    onCommit={setFileName}
                   />
-                ) : (
-                  <UI.Button size="sm" variant="ghost" onClick={() => setShowDocument(true)}>
-                    <UI.Icon glyph={Plus} size="sm" />
-                    Open payload
-                  </UI.Button>
-                )}
-              </UI.DocumentTabs>
-              <UI.WorkspaceSplit
-                label="Resize request and response"
-                primary={
-                  <UI.Pane>
-                    <UI.PaneToolbar>
-                      <UI.Text size="sm" weight="semibold">
-                        Request body
-                      </UI.Text>
-                    </UI.PaneToolbar>
-                    <UI.PaneBody scroll="none" padding="none">
-                      {showDocument ? (
-                        <UI.CodeEditor
-                          label="Example request body"
-                          value={document}
-                          onChange={(value) => {
-                            setDocument(value);
-                            setSaved(false);
-                          }}
-                          language="json"
-                          lineNumbers
-                          height="fill"
-                        />
-                      ) : (
-                        <UI.EmptyState
-                          title="Document closed"
-                          description="Open payload to continue editing."
-                        />
-                      )}
-                    </UI.PaneBody>
-                    <UI.PaneFooter>
-                      <UI.Cluster justify="between">
-                        <UI.Text size="xs" tone="muted">
-                          {saved ? 'Saved in this preview' : 'Unsaved preview changes'}
-                        </UI.Text>
-                        <UI.Button
-                          variant="ghost"
-                          size="sm"
-                          disabled={saved}
-                          onClick={() => setSaved(true)}
-                        >
-                          Save document
-                        </UI.Button>
-                      </UI.Cluster>
-                    </UI.PaneFooter>
-                  </UI.Pane>
-                }
-                secondary={
-                  <UI.Pane tone="subtle">
-                    <UI.PaneToolbar>
-                      <UI.Cluster>
-                        <UI.Badge tone={response.includes('accepted') ? 'success' : 'neutral'}>
-                          {response.includes('accepted') ? '202 Accepted' : 'Awaiting request'}
-                        </UI.Badge>
-                        <UI.Text size="sm">Response</UI.Text>
-                      </UI.Cluster>
-                    </UI.PaneToolbar>
-                    <UI.PaneBody scroll="none" padding="none">
-                      <UI.CodeViewer
-                        label="Example response body"
-                        value={response}
-                        language="json"
-                        lineNumbers
-                        height="fill"
-                      />
-                    </UI.PaneBody>
-                  </UI.Pane>
-                }
-              />
-            </UI.WorkspaceMain>
-          </UI.Workspace>
+                </UI.Cluster>
+              </UI.CardHeader>
+              <UI.CardContent>
+                <UI.CodeEditor
+                  label="Example document"
+                  value={document}
+                  onChange={(value) => {
+                    setDocument(value);
+                    setSaved(false);
+                  }}
+                  language="json"
+                  lineNumbers
+                />
+              </UI.CardContent>
+              <UI.CardFooter>
+                <UI.Cluster justify="between">
+                  <UI.Text size="xs" tone="muted">
+                    {saved ? 'Saved in this preview' : 'Unsaved preview changes'}
+                  </UI.Text>
+                  <UI.Cluster gap="sm">
+                    <UI.Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={saved}
+                      onClick={() => setSaved(true)}
+                    >
+                      Save document
+                    </UI.Button>
+                    <UI.Button
+                      size="sm"
+                      onClick={() => setResult('{\n  "valid": true,\n  "fields": 3\n}')}
+                    >
+                      <UI.Icon glyph={Play} size="sm" />
+                      Check example
+                    </UI.Button>
+                  </UI.Cluster>
+                </UI.Cluster>
+              </UI.CardFooter>
+            </UI.Card>
+            <UI.Card tone="subtle">
+              <UI.CardHeader>
+                <UI.Cluster>
+                  <UI.Badge tone={valid ? 'success' : 'neutral'}>
+                    {valid ? 'Valid' : 'Not checked'}
+                  </UI.Badge>
+                  <UI.CardTitle>Result</UI.CardTitle>
+                </UI.Cluster>
+              </UI.CardHeader>
+              <UI.CardContent>
+                <UI.CodeViewer label="Example result" value={result} language="json" lineNumbers />
+              </UI.CardContent>
+            </UI.Card>
+          </UI.Grid>
         </UI.PreviewFrame>
       </Example>
       <UI.Callout>
         <UI.Text size="sm">
-          Try editing the request, dragging the separator, closing the document and running the
-          example. Everything is local sample data.
+          Try editing the document, renaming it and checking the example. Everything is local
+          sample data.
         </UI.Text>
       </UI.Callout>
     </UI.Stack>
@@ -746,8 +705,8 @@ export function Catalog() {
               <UI.TabsPanel value="Collections">
                 <Collections />
               </UI.TabsPanel>
-              <UI.TabsPanel value="Workspace">
-                <Workspace />
+              <UI.TabsPanel value="Editors">
+                <Editors />
               </UI.TabsPanel>
               <UI.TabsPanel value="History">
                 <History />

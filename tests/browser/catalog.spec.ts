@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const sections = ['Foundations', 'Controls', 'Collections', 'Workspace', 'History'];
+const sections = ['Foundations', 'Controls', 'Collections', 'Editors', 'History'];
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/?catalog');
@@ -84,13 +84,19 @@ test('composed table, editor and history examples retain local behavior', async 
   await expect(table.getByRole('row')).toHaveCount(3);
   await page.getByRole('textbox', { name: 'Search example records' }).fill('Payment');
   await expect(table.getByText('Payment confirmation')).toBeVisible();
-  await page.getByRole('tab', { name: 'Workspace', exact: true }).click();
-  await page.getByRole('button', { name: 'Run example', exact: true }).click();
-  await expect(page.getByText('202 Accepted', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Close payload.json tab' }).click();
-  await expect(page.getByRole('heading', { name: 'Document closed' })).toBeVisible();
-  await page.getByRole('button', { name: 'Open payload' }).click();
-  await expect(page.getByRole('textbox', { name: 'Example request body' })).toBeVisible();
+  await page.getByRole('tab', { name: 'Editors', exact: true }).click();
+  const editor = page.getByRole('textbox', { name: 'Example document' });
+  await editor.click();
+  await page.keyboard.press('ControlOrMeta+End');
+  await page.keyboard.press('Enter');
+  await expect(page.getByText('Unsaved preview changes', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Check example', exact: true }).click();
+  await expect(page.getByText('Valid', { exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Example result' })).toContainText('"fields": 3');
+  await page.getByRole('button', { name: 'payload.json', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Document name' }).fill('event.json');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'event.json', exact: true })).toBeFocused();
   await page.getByRole('tab', { name: 'History', exact: true }).click();
   await page.getByRole('button', { name: /^Example run 2\b/ }).click();
   await expect(page.getByText('Selected: run_2', { exact: true })).toBeVisible();

@@ -297,6 +297,10 @@ const internalTokenSpread = { 'data-ns-theme': 'dark' };
 <DS.Input ref={buttonRef} />;
 // @ts-expect-error A navigation link requires a real link destination.
 <DS.AppShellNavLink>Missing destination</DS.AppShellNavLink>;
+// @ts-expect-error Choice presentation belongs to the library.
+<DS.ChoiceCard title="Choice" description="Detail" className="custom" />;
+// @ts-expect-error Preview dimensions are finite library presets.
+<DS.PreviewFrame width="900px" />;
 
 // Library-owned CSS states are not alternate public variants.
 // @ts-expect-error The orientation comes from the component, never raw CSS state.
