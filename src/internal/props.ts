@@ -53,6 +53,7 @@ const ownedAttributes = [
   'data-ns-editor-height',
   'data-ns-editor-variant',
   'data-ns-height',
+  'data-ns-label',
   'data-ns-marker',
   'data-ns-placement',
   'data-ns-readonly',

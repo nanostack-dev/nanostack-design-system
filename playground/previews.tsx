@@ -62,17 +62,12 @@ function WorkspacePreview() {
       </UI.AppShellSidebar>
       <UI.AppShellBody>
         <UI.AppShellHeader>
-          <UI.Breadcrumb>
-            <UI.BreadcrumbList>
-              <UI.BreadcrumbItem>
-                <UI.BreadcrumbLink href="#workspace">Workspace</UI.BreadcrumbLink>
-              </UI.BreadcrumbItem>
-              <UI.BreadcrumbSeparator />
-              <UI.BreadcrumbItem>
-                <UI.BreadcrumbPage>Home</UI.BreadcrumbPage>
-              </UI.BreadcrumbItem>
-            </UI.BreadcrumbList>
-          </UI.Breadcrumb>
+          <UI.AppShellHeaderTitle>Home</UI.AppShellHeaderTitle>
+          <UI.AppShellHeaderActions>
+            <UI.Button variant="secondary" size="sm">
+              Search<UI.KeyboardKey>⌘ K</UI.KeyboardKey>
+            </UI.Button>
+          </UI.AppShellHeaderActions>
         </UI.AppShellHeader>
         <UI.AppShellMain>
           <UI.Page>

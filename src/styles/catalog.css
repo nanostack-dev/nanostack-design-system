@@ -73,6 +73,7 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  container: ns-data-table / inline-size;
 }
 .ns-data-table-scroll {
   overflow-x: auto;
@@ -152,6 +153,85 @@
 }
 .ns-table-page-size {
   width: 120px;
+}
+@container ns-data-table (max-width: 560px) {
+  .ns-table,
+  .ns-table thead,
+  .ns-table tbody,
+  .ns-table tbody tr,
+  .ns-table tbody td {
+    display: block;
+  }
+  .ns-table thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--ns-border);
+    background: var(--ns-subtle);
+  }
+  .ns-table thead tr:not(:has(button, input, [role='checkbox'])) {
+    display: none;
+  }
+  .ns-table th {
+    padding: 0;
+    border: 0;
+  }
+  .ns-table th:not(:has(button, input, [role='checkbox'])) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .ns-table tbody tr {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid var(--ns-border);
+  }
+  .ns-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .ns-table tbody td {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+  .ns-table tbody td[data-ns-label] {
+    display: grid;
+    grid-template-columns: minmax(80px, 35%) minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+  }
+  .ns-table tbody td[data-ns-label]::before {
+    content: attr(data-ns-label);
+    color: var(--ns-muted);
+    font-size: 12px;
+    font-weight: 550;
+  }
+  .ns-table tbody td[data-ns-label=''] {
+    display: block;
+  }
+  .ns-table tbody td[data-ns-label='']::before {
+    content: none;
+  }
+  .ns-table-footer .ns-table-toolbar-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    width: 100%;
+    margin-left: 0;
+  }
+  .ns-table-footer .ns-table-toolbar-actions > span {
+    grid-column: 1 / -1;
+  }
+  .ns-table-page-size {
+    width: auto;
+    min-width: 0;
+  }
 }
 .ns-page {
   display: flex;

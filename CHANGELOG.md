@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.3
+
+- Add `AppShellHeaderTitle` and `AppShellHeaderActions`. The title shortens with an ellipsis and the actions stay on one line, so a phone top bar no longer wraps its account control onto a second line. Keyboard hints inside the actions hide on a phone.
+- Show each `DataTable` row as a card of label and value lines when the table is narrower than 560 px. Long values wrap inside their line instead of widening the table. Sortable headers stay available as a sort bar, and the paging controls stay on one line.
+- Keep a `Checkbox` box at 20 px on touch screens. Only its tap area grows to 44 px.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.0.3`. Compose the top bar with the new parts instead of one wrapping `Cluster`: `<AppShellHeader><AppShellHeaderTitle>Home</AppShellHeaderTitle><AppShellHeaderActions>…</AppShellHeaderActions></AppShellHeader>`. In a `DataTable`, a column whose `header` is not a string shows its `id` as the phone label: give action columns `header: ''`.
+
 ## 0.0.2
 
 - Make `SignInPanel` and `AccountControl` readable in dark mode: text on the accent button uses `--ns-on-accent`, control borders use `--ns-control-border`, and the GitHub, Apple, X and Vercel icons invert on a dark theme.

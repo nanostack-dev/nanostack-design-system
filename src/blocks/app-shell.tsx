@@ -177,6 +177,16 @@ export function AppShellHeader({ children, ...props }: ElementProps<'header'>) {
   );
 }
 
+/** The current screen's name in the top bar. It shortens with an ellipsis instead of wrapping. */
+export function AppShellHeaderTitle(props: ElementProps<'p'>) {
+  return <p {...safeProps(props)} className="ns-shell-header-title" />;
+}
+
+/** Top bar controls. They stay on one line and hide keyboard hints on a phone. */
+export function AppShellHeaderActions(props: ElementProps<'div'>) {
+  return <div {...safeProps(props)} className="ns-shell-header-actions" />;
+}
+
 export type AppShellMainProps = Omit<ElementProps<'main'>, 'id'>;
 
 export function AppShellMain(props: AppShellMainProps) {

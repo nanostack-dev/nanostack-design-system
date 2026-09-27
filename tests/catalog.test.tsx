@@ -24,6 +24,29 @@ beforeAll(() =>
 afterAll(() => vi.unstubAllGlobals());
 
 describe('application catalog behavior', () => {
+  it('labels each cell with its column header for the phone card layout', () => {
+    render(
+      <DataTable
+        label="Endpoints"
+        columns={[
+          { accessorKey: 'name', header: 'Endpoint' },
+          { accessorKey: 'request_count' },
+          { id: 'actions', header: '', cell: () => 'Open' },
+        ]}
+        data={[{ name: 'Stripe', request_count: 12 }]}
+        enableRowSelection
+        getRowId={(endpoint) => endpoint.name}
+      />,
+    );
+    const cells = within(screen.getByRole('table', { name: 'Endpoints' })).getAllByRole('cell');
+    expect(cells.map((cell) => cell.getAttribute('data-ns-label'))).toEqual([
+      null,
+      'Endpoint',
+      'request count',
+      '',
+    ]);
+  });
+
   it('sorts client records before paging and preserves selected rows across pages', async () => {
     const user = userEvent.setup();
     render(
