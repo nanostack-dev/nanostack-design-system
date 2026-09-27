@@ -17,12 +17,17 @@
 - Stop `VirtualList` from re-requesting a failed page. Add `loadMoreFailed`, `loadMoreFailedMessage` and `retryLabel` for a retry affordance.
 - Let a consumer `id` and label name `CommandInput` and `TagAutocomplete`. Tag inputs ignore Enter during IME composition, keep a rejected draft, return focus to the input after a removal, and close their list on the first Escape without closing a parent dialog.
 - Keep external editor `value` updates out of undo history and keep the cursor in place. Add `documentKey` to give each document its own history.
-- Strip line breaks from every change to a single-line input, and let the wheel over it scroll the page or pane.
-- Match variables in linear time within the visible range, and keep the JSON brace after `{{name}}`. Tab accepts a narrowed completion at once, and editor configuration stays stable across parent re-renders.
+- Keep editor configuration stable across parent re-renders.
 - Require `label` or `aria-labelledby` on every editor. A `<label for>` that targets the editor `id` focuses it.
-- Make a collapsed `WorkspaceSplit` pane inert and give each split unique pane ids behind the library-owned `WorkspaceSplitLayout` and `useWorkspaceLayout`.
-- Focus tree items themselves and support arrow keys, Enter and Space activation, typeahead, and `TreeItem expanded` with `onExpandedChange`.
-- Keep focus and a rejected rename in `KeyValueRow` and `EditableText`. `VariableText interactive={false}` renders chips without tab stops.
+- Return focus to the `EditableText` button after Enter commits or Escape cancels.
+- **Breaking:** narrow the library to UI that any Nanostack product can use unchanged. Remove these Echopoint-specific parts, their styles and their subpaths:
+  - graph canvas and flow nodes: `GraphCanvas`, `GraphCanvasHandle`, `GraphViewportControls`, `useGraphNodes`, `useGraphEdges`, `useGraphViewport`, `applyGraphNodeChanges`, `applyGraphEdgeChanges`, `addGraphEdge`, `graphAnchorSideFromHandle`, `isGraphAnchorSide`, the graph data, change and presentation types, `GraphNodeFrame`, `GraphNodeHeader`, `GraphNodeBody`, `GraphNodeFooter`, every `Node*` presentation part, and the `Dock` parts;
+  - fleet: `WorkerAvatar`, `CapacityMeter` and the `ResourceTile` parts;
+  - `HttpMethodBadge`;
+  - variable editing: `VariableAwareInput`, `VariableText`, `getVariableMatches`, `getCompletionMatch`, the `Variable` and `VariableTemplate` types, `KeyValueRow`, `KeyValueDraftRow`, and the `CodeEditor` props `variables`, `variablesEnabled`, `variablePattern`, `variableTemplates` and `variableResolver` with the single-line `input` variant;
+  - workbench panes: `Workspace`, `WorkspaceRail`, `WorkspaceMain`, the `Pane` parts, `WorkspaceSplit`, `useWorkspaceLayout`, `DocumentTabs`, `DocumentTab`, the `Tree` parts, `SourcePane` and `tokenizeSourceLine`;
+  - run history visuals: `BarStrip`, `TimelineRange`, `ConversationLog`, `MessageRow` and `MessageBubble`.
+- `CodeEditor` and `CodeViewer` stay as a plain multi-line JSON, XML, HTML and text editor and viewer. `PreviewFrame` moves to the `blocks/preview-frame` subpath. The package no longer depends on `@xyflow/react` or `react-resizable-panels`.
 
 Upgrade: add Phosphor to the application when it is not already a direct dependency with `pnpm add @phosphor-icons/react@^2.1.10`. Glyph imports do not change: `<Icon glyph={GearIcon} label="Settings" />`. The Clerk adapter needs React 19.2.3 or later because of Clerk's own peer range.
 
@@ -30,7 +35,9 @@ Upgrade: a `DialogTrigger` or `DialogClose` inside `AppShell` must belong to its
 
 Upgrade: `DataTable` row selection requires `getRowId`, and `isRowSelected` cannot be combined with `enableRowSelection`: replace `<DataTable enableRowSelection isRowSelected={(row) => row.id === openId} … />` with `<DataTable enableRowSelection getRowId={(row) => row.id} selectedRowIds={ids} onSelectedRowIdsChange={setIds} … />`. Row checkboxes are named "Select <row label>" instead of "Select row", so tests that query "Select row" must change.
 
-Upgrade: name every editor: replace `<VariableAwareInput id="request-url" aria-label="Request URL" />` with `<VariableAwareInput id="request-url" label="Request URL" />`, or point `aria-labelledby` at a visible label. Pass `documentKey={activeRequest.id}` when one editor shows several documents. Replace engine layout mapping with `const persistence = useWorkspaceLayout({ id: SPLIT_STORAGE_KEY })` and `<WorkspaceSplit defaultLayout={persistence.defaultLayout} onLayoutChanged={persistence.onLayoutChanged} />`. Layouts stored in the old shape are ignored once, so the split starts again at its default ratio.
+Upgrade: name every editor: replace `<CodeEditor id="payload" aria-label="Payload" />` with `<CodeEditor id="payload" label="Payload" />`, or point `aria-labelledby` at a visible label. Pass `documentKey={activeDocument.id}` when one editor shows several documents.
+
+Upgrade: Echopoint now owns the removed parts under its own source tree, built from `--ns-*` tokens and library primitives; other applications did not use them. The scope rule in AGENTS.md decides what the library holds. Import `PreviewFrame` from the root or its new subpath: replace `import { PreviewFrame } from '@nanostackorg/design-system/blocks/workspace'` with `import { PreviewFrame } from '@nanostackorg/design-system/blocks/preview-frame'`. A plain editor drops the variable props: replace `<CodeEditor label="Body" language="json" variables={variables} />` with `<CodeEditor label="Body" language="json" />`, and keep a single-line template input such as a URL bar in the application.
 
 ## 0.2.0-beta.4
 
