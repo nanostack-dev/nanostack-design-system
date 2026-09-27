@@ -106,6 +106,9 @@
 .ns-theme :where([class^='ns-'], [class*=' ns-']) {
   box-sizing: border-box;
 }
+.ns-theme :where([class^='ns-'], [class*=' ns-'])[hidden]:not([hidden='until-found']) {
+  display: none !important;
+}
 .ns-theme ::selection {
   background: var(--ns-accent-soft);
   color: var(--ns-text);
