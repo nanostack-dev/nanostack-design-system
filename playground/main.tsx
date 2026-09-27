@@ -245,12 +245,9 @@ function Controls() {
                 />
                 <FieldDescription>The address that receives your test request.</FieldDescription>
               </Field>
-              <Field name="environment-example">
-                <FieldLabel htmlFor="environment-example">Environment</FieldLabel>
+              <Field name="environment">
+                <FieldLabel>Environment</FieldLabel>
                 <Select
-                  id="environment-example"
-                  name="environment"
-                  aria-describedby="environment-help"
                   options={[
                     { value: 'all', label: 'All environments' },
                     { value: 'dev', label: 'Development' },
@@ -259,9 +256,7 @@ function Controls() {
                   defaultValue="all"
                   size="sm"
                 />
-                <FieldDescription id="environment-help">
-                  Filter the currently shown records.
-                </FieldDescription>
+                <FieldDescription>Filter the currently shown records.</FieldDescription>
               </Field>
               <Field name="locked" disabled>
                 <FieldLabel>Organization</FieldLabel>

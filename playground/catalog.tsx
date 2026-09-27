@@ -977,9 +977,8 @@ export function Catalog() {
             <UI.Surface tone="subtle">
               <UI.Grid columns={3}>
                 <UI.Field>
-                  <UI.FieldLabel htmlFor="catalog-brand">Brand</UI.FieldLabel>
+                  <UI.FieldLabel>Brand</UI.FieldLabel>
                   <UI.Select
-                    id="catalog-brand"
                     value={brand}
                     onChange={(event) => setBrand(event.target.value as UI.Brand)}
                     options={[
@@ -990,9 +989,8 @@ export function Catalog() {
                   />
                 </UI.Field>
                 <UI.Field>
-                  <UI.FieldLabel htmlFor="catalog-scheme">Color scheme</UI.FieldLabel>
+                  <UI.FieldLabel>Color scheme</UI.FieldLabel>
                   <UI.Select
-                    id="catalog-scheme"
                     value={scheme}
                     onChange={(event) => setScheme(event.target.value as UI.ColorScheme)}
                     options={[
@@ -1002,9 +1000,8 @@ export function Catalog() {
                   />
                 </UI.Field>
                 <UI.Field>
-                  <UI.FieldLabel htmlFor="catalog-density">Density</UI.FieldLabel>
+                  <UI.FieldLabel>Density</UI.FieldLabel>
                   <UI.Select
-                    id="catalog-density"
                     value={density}
                     onChange={(event) => setDensity(event.target.value as UI.Density)}
                     options={[
