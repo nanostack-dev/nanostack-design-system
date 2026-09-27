@@ -10,6 +10,7 @@ import {
   AppShellMain,
   AppShellNav,
   AppShellNavLink,
+  AppShellSidebarToggle,
   AppShellSidebar,
   Badge,
   Button,
@@ -54,18 +55,31 @@ function Shell() {
   return (
     <Theme colorScheme={colorScheme}>
       <AppShell
+        collapsibleSidebar
+        onSidebarCollapsedChange={(collapsed) => {
+          document.body.dataset.sidebarCollapsed = String(collapsed);
+        }}
         navigationLabel="Espace de travail"
         openNavigationLabel="Ouvrir la navigation"
         closeNavigationLabel="Fermer la navigation"
       >
         <AppShellSidebar>
           <AppShellNav label="Sections">
-            <AppShellNavLink href="#overview" active>
+            <AppShellNavLink
+              href="#overview"
+              active
+              icon={
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <rect x="2" y="2" width="12" height="12" rx="2" fill="currentColor" />
+                </svg>
+              }
+            >
               Overview
             </AppShellNavLink>
           </AppShellNav>
         </AppShellSidebar>
         <AppShellHeader>
+          <AppShellSidebarToggle />
           <AppShellHeaderTitle>Shell overlays with a long workspace screen name</AppShellHeaderTitle>
           <AppShellHeaderActions>
             <Button variant="secondary" size="sm">

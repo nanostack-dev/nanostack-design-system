@@ -5,6 +5,7 @@ import {
   createContext,
   use,
   useCallback,
+  useEffect,
   useId,
   useState,
   useSyncExternalStore,
@@ -30,6 +31,11 @@ type ShellState = {
   navigation: Dialog.Handle<unknown>;
   navigationOpen: boolean;
   setNavigationOpen: (open: boolean) => void;
+  sidebarCollapsible: boolean;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  collapseSidebarLabel: string;
+  expandSidebarLabel: string;
 };
 
 const ShellContext = createContext<ShellState | null>(null);
@@ -47,7 +53,21 @@ export type AppShellProps = ElementProps<'div'> & {
   openNavigationLabel?: string;
   closeNavigationLabel?: string;
   skipLabel?: string;
+  /** Lets the desktop sidebar collapse to an icon rail: its edge, `AppShellSidebarToggle`, or Ctrl/⌘ B. */
+  collapsibleSidebar?: boolean;
+  sidebarCollapsed?: boolean;
+  defaultSidebarCollapsed?: boolean;
+  onSidebarCollapsedChange?: (collapsed: boolean) => void;
+  collapseSidebarLabel?: string;
+  expandSidebarLabel?: string;
 };
+
+function isEditable(target: EventTarget | null) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(input|textarea|select)$/i.test(target.tagName))
+  );
+}
 
 export function AppShell({
   children,
@@ -57,6 +77,12 @@ export function AppShell({
   openNavigationLabel = 'Open navigation',
   closeNavigationLabel = 'Close navigation',
   skipLabel = 'Skip to main content',
+  collapsibleSidebar = false,
+  sidebarCollapsed: sidebarCollapsedProp,
+  defaultSidebarCollapsed = false,
+  onSidebarCollapsedChange,
+  collapseSidebarLabel = 'Collapse sidebar',
+  expandSidebarLabel = 'Expand sidebar',
   ...props
 }: AppShellProps) {
   const id = useId();
@@ -76,6 +102,33 @@ export function AppShell({
     [setOpen],
   );
   const mobile = useSyncExternalStore(subscribeMobile, mobileSnapshot, desktopSnapshot);
+  const [localCollapsed, setLocalCollapsed] = useState(defaultSidebarCollapsed);
+  const sidebarCollapsed = sidebarCollapsedProp ?? localCollapsed;
+  const setSidebarCollapsed = useCallback(
+    (collapsed: boolean) => {
+      if (sidebarCollapsedProp === undefined) setLocalCollapsed(collapsed);
+      onSidebarCollapsedChange?.(collapsed);
+    },
+    [sidebarCollapsedProp, onSidebarCollapsedChange],
+  );
+  const railActive = collapsibleSidebar && !mobile;
+  useEffect(() => {
+    if (!railActive) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key.toLowerCase() !== 'b' ||
+        !(event.metaKey || event.ctrlKey) ||
+        event.altKey ||
+        event.shiftKey ||
+        isEditable(event.target)
+      )
+        return;
+      event.preventDefault();
+      setSidebarCollapsed(!sidebarCollapsed);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [railActive, sidebarCollapsed, setSidebarCollapsed]);
 
   return (
     <ShellContext
@@ -88,9 +141,19 @@ export function AppShell({
         navigation,
         navigationOpen: mobile && open,
         setNavigationOpen: setOpen,
+        sidebarCollapsible: railActive,
+        sidebarCollapsed: railActive && sidebarCollapsed,
+        setSidebarCollapsed,
+        collapseSidebarLabel,
+        expandSidebarLabel,
       }}
     >
-      <div {...safeProps(props)} className="ns-shell" data-layout={layout}>
+      <div
+        {...safeProps(props)}
+        className="ns-shell"
+        data-layout={layout}
+        data-ns-sidebar={railActive ? (sidebarCollapsed ? 'collapsed' : 'expanded') : undefined}
+      >
         <a className="ns-shell-skip" href={`#${mainId}`}>
           {skipLabel}
         </a>
@@ -110,6 +173,11 @@ export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
     navigation,
     navigationOpen,
     setNavigationOpen,
+    sidebarCollapsible,
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    collapseSidebarLabel,
+    expandSidebarLabel,
   } = useShell();
   const theme = useThemeSettings();
 
@@ -119,6 +187,16 @@ export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
       {!mobile ? (
         <aside {...safeProps(props)} className="ns-shell-sidebar">
           {children}
+          {sidebarCollapsible ? (
+            <button
+              type="button"
+              className="ns-shell-sidebar-rail"
+              tabIndex={-1}
+              aria-hidden="true"
+              title={sidebarCollapsed ? expandSidebarLabel : collapseSidebarLabel}
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            />
+          ) : null}
         </aside>
       ) : null}
       <Dialog.Root handle={navigation} open={navigationOpen} onOpenChange={setNavigationOpen}>
@@ -187,6 +265,39 @@ export function AppShellHeaderActions(props: ElementProps<'div'>) {
   return <div {...safeProps(props)} className="ns-shell-header-actions" />;
 }
 
+/** Collapses or expands a `collapsibleSidebar` from the top bar. It renders nothing on a phone. */
+export function AppShellSidebarToggle(props: Omit<ElementProps<'button'>, 'children' | 'onClick'>) {
+  const {
+    sidebarCollapsible,
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    collapseSidebarLabel,
+    expandSidebarLabel,
+  } = useShell();
+  if (!sidebarCollapsible) return null;
+  return (
+    <button
+      {...safeProps(props)}
+      type="button"
+      className="ns-shell-sidebar-toggle"
+      aria-label={sidebarCollapsed ? expandSidebarLabel : collapseSidebarLabel}
+      aria-expanded={!sidebarCollapsed}
+      onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+        <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+        <path d="M9.5 4.5v15" />
+      </svg>
+    </button>
+  );
+}
+
+/** Whether the desktop sidebar is collapsed to its icon rail, for sidebars that render differently. */
+export function useAppShellSidebar() {
+  const { sidebarCollapsible, sidebarCollapsed, setSidebarCollapsed } = useShell();
+  return { collapsible: sidebarCollapsible, collapsed: sidebarCollapsed, setCollapsed: setSidebarCollapsed };
+}
+
 export type AppShellMainProps = Omit<ElementProps<'main'>, 'id'>;
 
 export function AppShellMain(props: AppShellMainProps) {
@@ -227,11 +338,12 @@ export function AppShellNavLink({
   onClick,
   ...props
 }: AppShellNavLinkProps) {
-  const { setNavigationOpen } = useShell();
+  const { setNavigationOpen, sidebarCollapsed } = useShell();
   return (
     <a
       {...safeProps(props)}
       href={href}
+      title={sidebarCollapsed && typeof children === 'string' ? children : undefined}
       className="ns-shell-nav-link"
       data-active={active || undefined}
       aria-current={active ? 'page' : undefined}

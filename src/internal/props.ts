@@ -58,6 +58,7 @@ const ownedAttributes = [
   'data-ns-placement',
   'data-ns-readonly',
   'data-ns-selected',
+  'data-ns-sidebar',
   'data-ns-sticky',
   'data-ns-visibility',
   'data-ns-theme',

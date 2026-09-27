@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.6
+
+- Let the desktop sidebar collapse to an icon rail. `AppShell collapsibleSidebar` adds a rail on the sidebar edge and the Ctrl/⌘ B shortcut, `AppShellSidebarToggle` gives the top bar a button, and `useAppShellSidebar()` reports the state. The application can keep the choice with `defaultSidebarCollapsed`, or with `sidebarCollapsed` and `onSidebarCollapsedChange`. A collapsed nav link shows only its icon and keeps its accessible name.
+- Give `brand="echopoint"` its original neutral palette: the blue-grey light theme and the navy dark theme it had before the migration, with the same text contrast checks.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.0.6`. Opt in with `<AppShell collapsibleSidebar defaultSidebarCollapsed={saved} onSidebarCollapsedChange={save}>` and place `<AppShellSidebarToggle />` in `AppShellHeader`. Give each `AppShellNavLink` an `icon`, which is all a collapsed rail shows.
+
 ## 0.0.5
 
 - Add `Input icon`: a glyph at the start of the field, for search fields. The `DataTable` search shows a magnifier.
