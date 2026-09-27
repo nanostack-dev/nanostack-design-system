@@ -1,6 +1,6 @@
 # Nanostack design system
 
-Composable React building blocks for Echopoint and Anchor. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
+Composable React building blocks that any Nanostack product can use unchanged, starting with Echopoint and Anchor. Product-specific visuals stay in the product that owns their meaning. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
 Status: **0.2.0-beta.5**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
@@ -11,7 +11,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive block catalog](http://127.0.0.1:4317/?catalog) for foundations, controls, resource lists, typed tables, a resizable editor, a graph, measured history and conversation parts. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
+The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive block catalog](http://127.0.0.1:4317/?catalog) for foundations, controls, resource lists, typed tables, a code editor and viewer, and measured history. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
 
 ## Install the beta
 
@@ -74,15 +74,14 @@ The [component catalog](docs/components.md) covers the full set of named parts, 
 | Application structure | AppShell, Page, Section, Card, screen and responsive-panel parts |
 | Forms and actions | Field, Input, Select, Checkbox, Autocomplete, tags, Menu, Dialog, Popover |
 | Collections and detail | ResourceList, DataTable, Table, VirtualList, Inspector, DefinitionList |
-| Dense tools | Workspace, Pane, WorkspaceSplit, DocumentTabs, Tree, Dock |
-| Editors and graphs | CodeEditor, VariableAwareInput, SourcePane, KeyValueRow, GraphCanvas and GraphNode parts |
-| Activity and feedback | TimelineItem, Report, ConversationLog, StatusMarker, Sparkline, Progress, WorkerAvatar |
+| Editing | CodeEditor, CodeViewer, EditableText, ChoiceCard |
+| Activity and feedback | TimelineItem, Report, StatusMarker, Sparkline, Progress |
 
-Applications own data, routes, permissions, copy, and assemblies of library parts. This rule also covers cell callbacks, graph content, child slots, and stories. A missing visual element becomes a common primitive or block here. Native markup, SVG, visual-engine adapters, and styles belong in this package.
+Applications own data, routes, permissions, copy, assemblies of library parts, and the visuals that only their product explains, such as Echopoint's flow nodes or runner avatars. The [scope rule](AGENTS.md#scope) decides where a part lives: the library holds UI that a second Nanostack product would use unchanged, with no product vocabulary. A missing common element becomes a primitive or block here. A product visual stays in its app, built from `--ns-*` tokens and library primitives.
 
 A router adapter can wrap a library link while preserving its native anchor and ref. Keep independent controls in ResourceRowActions rather than inside ResourceRowLink. DialogPopup contains DialogTitle; Field composes its label, control, description and error. Native semantics and keyboard behavior are part of the public contract.
 
-Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `render`, and `asChild`. Compile-time checks and runtime sanitization enforce this component contract. Consumer CI enforces the assembly boundary, including nested content and visual-engine imports. This is not browser CSS isolation: host styles and imperative DOM access remain technically possible, so product teams evolve variants here instead of overriding selectors or CSS variables.
+Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `render`, and `asChild`. Compile-time checks and runtime sanitization enforce this component contract. Consumer CI enforces the assembly boundary around library parts, including nested content. This is not browser CSS isolation: host styles and imperative DOM access remain technically possible, so product teams evolve variants here instead of overriding selectors or CSS variables.
 
 ## shadcn source distribution
 

@@ -2,9 +2,9 @@
 
 Use this catalog when assembling a product surface, choosing a variant, or deciding where a missing capability belongs. The exported TypeScript props are authoritative for exact options and required fields. Import from `@nanostackorg/design-system` or a documented module subpath; import `@nanostackorg/design-system/styles.css` once at the application boundary.
 
-Run `pnpm dev` and open [the interactive catalog](http://127.0.0.1:4317/?catalog) to inspect representative compositions. The six sections exercise controls, overlays, tables, editors, graphs, virtual history and conversations with local example data. Brand, color scheme and density controls expose only the supported finite options. The default `/` workspace preview remains available separately.
+Run `pnpm dev` and open [the interactive catalog](http://127.0.0.1:4317/?catalog) to inspect representative compositions. The five sections exercise controls, overlays, tables, the code editor and virtual history with local example data. Brand, color scheme and density controls expose only the supported finite options. The default `/` workspace preview remains available separately.
 
-All appearances use finite options. Children and content callbacks contain text, library parts, and application assemblies of those parts. Their presence does not permit native JSX, third-party visual components, replacement elements, or CSS in the consumer. The full contract and change process live in [contributing.md](contributing.md); the primary-source rationale lives in [research.md](research.md).
+This catalog lists UI that any Nanostack product can use unchanged; a visual that only one product explains stays in that product (see the [scope rule](../AGENTS.md#scope)). All appearances use finite options. Children and content callbacks contain text, library parts, application assemblies of those parts, and the application's own product visuals. They never replace a library part's elements or add CSS to library markup. The full contract and change process live in [contributing.md](contributing.md); the primary-source rationale lives in [research.md](research.md).
 
 ## Scope and foundations
 
@@ -153,4 +153,4 @@ Name every editor with `label`, or with `aria-labelledby` pointing at visible te
 4. Migrate complete surfaces: shell and navigation, then forms/collections, detail inspectors and complex editors. Select finite library options and add genuinely missing common parts here.
 5. Run the consumer assembly boundary on production code and stories, then verify native links, permission gates, loading/error states, keyboard navigation and responsive layouts against the packed dependency.
 
-Echopoint assemblies are working integration examples for editor, graph, resource-list, fleet, monitor, webhook and history workflows. Copy their composition pattern, not their domain vocabulary or API dependencies. An Anchor-specific API hook remains in Anchor; a generally useful interaction discovered during adoption belongs in this library with behavior and contract tests.
+Echopoint assemblies are working integration examples for editor, resource-list, monitor, webhook and history workflows. Copy their composition pattern, not their domain vocabulary, product visuals or API dependencies. An Anchor-specific API hook remains in Anchor; a generally useful interaction discovered during adoption belongs in this library with behavior and contract tests.

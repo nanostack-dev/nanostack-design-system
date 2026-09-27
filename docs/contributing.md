@@ -2,29 +2,42 @@
 
 ## Choose the correct layer
 
-A foundation defines a shared visual decision. A primitive provides one interaction or semantic element. A block combines primitives into a reusable workflow structure. Applications own routes, requests, permissions, domain state, product copy, and assemblies of exported library parts.
+A foundation defines a shared visual decision. A primitive provides one interaction or semantic element. A block combines primitives into a reusable workflow structure. Applications own routes, requests, permissions, domain state, product copy, assemblies of exported library parts, and the product-specific visuals that carry their meaning.
+
+### Library scope
+
+The library holds UI that any Nanostack product can use unchanged: primitives, layout, forms, overlays, navigation and the application shell, collections and tables, generic data display, a plain code editor and viewer, and theming. Before adding a part, answer two questions:
+
+1. Would a second Nanostack product use it unchanged?
+2. Are its names, props and variants free of product vocabulary, such as flow, node, run, runner, worker, request, HTTP method or variable template?
+
+A part belongs here only when both answers are yes. Otherwise it stays in the product that owns its meaning. For example, Echopoint keeps its flow canvas and node parts, its Pebble runner avatars, fleet capacity tiles, request editors with `{{variables}}`, workbench panes and trees, run-history strips and timelines, its assistant conversation and its HTTP method badges.
 
 Consult [the component catalog](components.md) before adding a part. Before introducing an abstraction, demonstrate its use in a real consumer or documented example. Prefer a small composition of parts over a component whose many booleans select unrelated layouts. Keep state near its owner and expose conventional controlled/uncontrolled behavior only when consumers need it.
 
-### Assembly or common component
+### Assembly, product visual, or common component
 
-An application assembly selects and composes existing parts, passes content and behavior, and chooses supported variants. It can be a React function, route, or feature module. Its JSX is made from library components and other such assemblies, with React fragments/providers for behavior. It owns no DOM/SVG markup, CSS, visual third-party dependency, or copied library implementation. The same rule applies inside children, render callbacks and named content slots.
+An application assembly selects and composes existing parts, passes content and behavior, and chooses supported variants. It can be a React function, route, or feature module. Its JSX is made from library components and other such assemblies, with React fragments/providers for behavior. It adds no CSS to library parts and copies no library implementation. The same rule applies inside children, render callbacks and named content slots.
 
 For example, an Echopoint run summary can combine `Section`, `SectionHeader`, `SectionTitle`, `SectionBody`, `ActivityList`, `ActivityItem` and `Badge`. The application maps its run status to a supported badge tone, supplies links and copy, and fetches the runs. It does not implement a second badge or attach CSS to a row.
 
-When that composition needs a missing visual capability, add the smallest common primitive or block here and give it finite semantic variants. A generic progress indicator belongs here; an Echopoint hook that queries run progress belongs in Echopoint. Icons, images, forms, tables, editors, charts, navigation and third-party widget adapters follow the same ownership boundary. Keep domain-aware data preparation outside their visual API.
+A product visual is markup that only one product's meaning explains, such as an Echopoint flow node. It lives in that product's source tree, reads `--ns-*` tokens so it follows the theme, composes library primitives where they fit, and carries its own namespaced CSS. It restyles no library component and selects no library class.
+
+When a composition needs a missing common capability, add the smallest primitive or block here and give it finite semantic variants. A generic progress indicator belongs here; an Echopoint hook that queries run progress, or a meter that shows runner capacity, belongs in Echopoint. Keep domain-aware data preparation outside the visual API.
+
+Promote a product visual into the library only when a second product needs it. First remove its product vocabulary: a runner capacity tile becomes a neutral selectable tile with a meter, not a `WorkerTile`.
 
 Consumers import the package's public entry point or documented subpaths and its stylesheet once. Generated registry sources are a distribution artifact of this repository, not a consumer customization surface. Change the canonical source and update the dependency when a new variant is needed.
 
 ## Contribution recipe
 
-1. Write the consumer assembly with existing parts and identify the exact capability it lacks. Completion: a real use case and a second composition demonstrate a reusable boundary; domain fetching and policy remain in the app.
+1. Write the consumer assembly with existing parts and identify the exact capability it lacks. Completion: the capability passes the [library scope](#library-scope) test, a second product's composition demonstrates the reusable boundary, and domain fetching and policy remain in the app.
 2. Define the smallest public part and its finite semantic variations. Derive native/Base UI behavior types, apply `NoCustomStyle`, and preserve names, refs and events. Completion: supported examples type-check and unsupported styling/replacement props fail, including spread objects.
 3. Implement the anatomy and any visual-engine adapter inside the library. Forward props through `safeProps`; add namespaced rules to a style module imported by `src/styles.css`; export the component from `src/index.ts`. Completion: one canonical source supplies both package and registry outputs, with no application dependency.
 4. Exercise the interaction and visual states that changed. Completion: focused behavior/type tests and relevant browser checks prove labels, disabled/pending behavior, keyboard focus, portal theming, long content and responsive bounds. Test observable results instead of private CSS selectors.
 5. Integrate the packed dependency into the consumer and update this catalog, the change record and any migration example. Completion: the consumer's assembly guard, type/build checks and affected interaction tests pass against the artifact, not a source alias.
 
-If the requirement is merely a new arrangement of existing parts, stop at the application assembly. For example, mapping a monitor's status to `Badge` and placing `Progress` beside it needs no new library component. A reusable disclosure, measured virtual list, or new accessible input interaction belongs here. Product names are not variant names.
+If the requirement is merely a new arrangement of existing parts, stop at the application assembly. For example, mapping a monitor's status to `Badge` and placing `Progress` beside it needs no new library component. A reusable disclosure, measured virtual list, or new accessible input interaction belongs here. Product names are not variant names, and a visual that only one product explains stays in that product.
 
 ## Public API contract
 
@@ -34,7 +47,7 @@ Derive internal adapter types from native or Base UI types, then explicitly excl
 
 Separate appearance from behavior. A disabled control must have native disabled semantics, a selected navigation item must expose its current state, and a link must remain a link. Give icon-only controls accessible names. Keep Base UI's focus and keyboard behavior intact when wrapping it.
 
-Tokens and stylesheet rules belong to this repository. Change token values alongside the representative compositions they affect. Product apps choose supported presets without reaching into internal selectors. Ordinary accessibility attributes, native events, form semantics, refs and consumer telemetry attributes remain available. `data-ns-*` and the library's CSS state attributes are implementation details and are stripped at forwarding boundaries.
+Tokens and stylesheet rules belong to this repository. Change token values alongside the representative compositions they affect. Product apps choose supported presets without reaching into internal selectors. A product visual may read `--ns-*` tokens; it never redefines them. Ordinary accessibility attributes, native events, form semantics, refs and consumer telemetry attributes remain available. `data-ns-*` and the library's CSS state attributes are implementation details and are stripped at forwarding boundaries.
 
 The package contract is enforced in two layers: compile-time checks cover every public component's props (including structural spreads), and runtime forwarding removes forbidden keys from JavaScript callers. Consumer source checks enforce the assembly boundary. These are maintainability guarantees, not a sandbox: a host stylesheet, imperative DOM mutation through a ref, or arbitrary JSX children cannot be prevented by a React prop type. Enforce their ownership in application CI instead of claiming the library can isolate hostile host code.
 
