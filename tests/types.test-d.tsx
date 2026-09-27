@@ -305,7 +305,7 @@ const internalTokenSpread = { 'data-ns-theme': 'dark' };
 // Library-owned CSS states are not alternate public variants.
 // @ts-expect-error The orientation comes from the component, never raw CSS state.
 export const ownedOrientation = <DS.Button data-orientation="vertical" />;
-// @ts-expect-error Token styling stays inside syntax/variable adapters.
-export const ownedToken = <DS.Text data-token="comment" />;
-// @ts-expect-error Graph overlay state is private.
-export const ownedInert = <DS.Surface data-inert="false" />;
+// @ts-expect-error Text weight is a prop, never raw CSS state.
+export const ownedWeight = <DS.Text data-weight="semibold" />;
+// @ts-expect-error Checked state comes from the control, never raw CSS state.
+export const ownedChecked = <DS.Checkbox data-checked="" />;
