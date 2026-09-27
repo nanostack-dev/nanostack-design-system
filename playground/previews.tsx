@@ -37,7 +37,7 @@ export function readPreview(parameters: URLSearchParams) {
 function WorkspacePreview() {
   const { brand } = UI.useThemeSettings();
   return (
-    <UI.AppShell layout="workspace" mainId="preview-main" navigationLabel="Example navigation">
+    <UI.AppShell collapsibleSidebar layout="workspace" mainId="preview-main" navigationLabel="Example navigation">
       <UI.AppShellSidebar>
         <UI.AppShellBrand>
           <UI.BrandMark brand={brand} />
@@ -62,6 +62,7 @@ function WorkspacePreview() {
       </UI.AppShellSidebar>
       <UI.AppShellBody>
         <UI.AppShellHeader>
+          <UI.AppShellSidebarToggle />
           <UI.AppShellHeaderTitle>Home</UI.AppShellHeaderTitle>
           <UI.AppShellHeaderActions>
             <UI.Button variant="secondary" size="sm">

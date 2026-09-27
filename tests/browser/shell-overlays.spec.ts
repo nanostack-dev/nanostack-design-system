@@ -175,3 +175,28 @@ test('the top bar keeps its title and actions on one line', async ({ page }) => 
     expect(await title.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
   }
 });
+
+test('the desktop sidebar collapses to an icon rail and opens again', async ({ page }) => {
+  await page.goto(fixture);
+  const toggle = page.getByRole('button', { name: 'Collapse sidebar' });
+  if (page.viewportSize()!.width < 768) {
+    await expect(toggle).toHaveCount(0);
+    return;
+  }
+  const sidebar = page.locator('aside.ns-shell-sidebar');
+  const link = page.getByRole('link', { name: 'Overview' });
+  const expanded = (await sidebar.boundingBox())!.width;
+  await toggle.click();
+  await expect(page.getByRole('button', { name: 'Expand sidebar' })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  );
+  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeLessThan(80);
+  expect(expanded).toBeGreaterThan(150);
+  await expect(link).toHaveAttribute('title', 'Overview');
+  await expect(page.locator('body')).toHaveAttribute('data-sidebar-collapsed', 'true');
+  await page.keyboard.press('ControlOrMeta+b');
+  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeGreaterThan(150);
+  await page.getByTitle('Collapse sidebar').click();
+  await expect.poll(async () => (await sidebar.boundingBox())!.width).toBeLessThan(80);
+});
