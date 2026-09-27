@@ -1,57 +1,81 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { chooseAppearance, expectFitsAndAccessible } from './site-helpers';
 
-const sections = ['Foundations', 'Controls', 'Collections', 'Editors', 'History'];
+const sections = [
+  'Foundations',
+  'Forms',
+  'Overlays and navigation',
+  'Pages and screens',
+  'Collections',
+  'Editors',
+  'Data display',
+];
+const screenFrames = ['Workspace shell example', 'Centered screen example', 'Split screen example'];
+
+async function waitForScreenFrames(page: Page, colorScheme: string) {
+  for (const title of screenFrames) {
+    const frame = page.frameLocator(`iframe[title="${title}"]`);
+    await expect(frame.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(frame.locator('.ns-theme').first()).toHaveAttribute('data-ns-theme', colorScheme);
+  }
+}
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/?catalog');
-  await expect(page.getByRole('heading', { name: 'The block catalog' })).toBeVisible();
+  await page.goto('/?page=components');
+  await expect(page.getByRole('heading', { level: 1, name: 'Components' })).toBeVisible();
 });
 
 test('catalog compositions fit the viewport and remain accessible in both themes', async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   for (const colorScheme of ['light', 'dark']) {
-    await page.getByRole('combobox', { name: 'Color scheme' }).selectOption(colorScheme);
+    await chooseAppearance(page, 'Color scheme', colorScheme);
     for (const section of sections) {
       await page.getByRole('tab', { name: section, exact: true }).click();
       await expect(page.getByRole('tabpanel', { name: section })).toBeVisible();
-      await page.getByRole('tabpanel', { name: section }).evaluate(async (element) => {
-        const entrances = element.getAnimations({ subtree: true }).filter(
-          (animation) => animation.effect?.getTiming().iterations !== Infinity,
-        );
-        await Promise.all(entrances.map((animation) => animation.finished.catch(() => undefined)));
-      });
-      expect(
-        await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
-        `${section}, ${colorScheme}: horizontal page overflow`,
-      ).toBe(false);
-      const result = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
-        .exclude('[data-base-ui-focus-guard]')
-        .analyze();
-      expect(result.violations, `${section}, ${colorScheme}`).toEqual([]);
+      if (section === 'Pages and screens') await waitForScreenFrames(page, colorScheme);
+      await expectFitsAndAccessible(page, `${section}, ${colorScheme}`);
     }
   }
+});
+
+test('each section has its own address', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Editors', exact: true }).click();
+  await expect(page).toHaveURL(/\?page=components&tab=editors$/);
+  await page.reload();
+  await expect(page.getByRole('tab', { name: 'Editors', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.getByRole('textbox', { name: 'Example document' })).toBeVisible();
 });
 
 test('keyboard navigation, dialog focus and menu choices work with finite themes', async ({
   page,
 }) => {
-  await page.getByRole('combobox', { name: 'Brand', exact: true }).selectOption('echopoint');
-  await page.getByRole('combobox', { name: 'Density', exact: true }).selectOption('compact');
-  await page.getByRole('combobox', { name: 'Color scheme' }).selectOption('dark');
+  await chooseAppearance(page, 'Brand', 'echopoint');
+  await chooseAppearance(page, 'Density', 'compact');
+  await chooseAppearance(page, 'Color scheme', 'dark');
   await page.getByRole('tab', { name: 'Foundations', exact: true }).focus();
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByRole('tab', { name: 'Controls', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('tab', { name: 'Forms', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
+  await page.keyboard.press('ArrowRight');
+  await expect(
+    page.getByRole('tab', { name: 'Overlays and navigation', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
   const trigger = page.getByRole('button', { name: 'Open example dialog' });
   await trigger.focus();
   await page.keyboard.press('Enter');
   const dialog = page.getByRole('dialog', { name: 'A composed dialog' });
   await expect(dialog).toBeVisible();
+  await expect(dialog.locator('xpath=ancestor::*[@data-ns-theme][1]')).toHaveAttribute(
+    'data-ns-theme',
+    'dark',
+  );
   await expect(page.getByRole('textbox', { name: 'Example name' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
@@ -76,6 +100,51 @@ test('keyboard navigation, dialog focus and menu choices work with finite themes
   await expect(menu).toBeFocused();
 });
 
+test('confirmation stays busy until the work finishes, then a toast reports it', async ({
+  page,
+}) => {
+  await page.getByRole('tab', { name: 'Overlays and navigation', exact: true }).click();
+  const archive = page.getByRole('button', { name: 'Archive record' });
+  await archive.click();
+  const dialog = page.getByRole('alertdialog', { name: 'Archive this record?' });
+  await dialog.getByRole('button', { name: 'Archive', exact: true }).click();
+  await expect(dialog.getByRole('button', { name: 'Archive', exact: true })).toHaveAttribute(
+    'aria-busy',
+    'true',
+  );
+  await expect(dialog).toBeHidden();
+  await expect(page.getByText('Record archived', { exact: true })).toBeVisible();
+  await expect(archive).toBeFocused();
+});
+
+test('command palette filters, chooses and reports loading', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Overlays and navigation', exact: true }).click();
+  const input = page.getByRole('combobox', { name: 'Example commands' });
+  await input.fill('invite');
+  const results = page.getByRole('listbox', { name: 'Example command results' });
+  await expect(results.getByRole('option')).toHaveCount(1);
+  await page.keyboard.press('Enter');
+  await expect(page.getByText('Chosen: Invite a teammate', { exact: true })).toBeVisible();
+  await input.fill('nothing like this');
+  await expect(page.getByText('No commands match.')).toBeVisible();
+  await page.getByRole('button', { name: 'Show loading state' }).click();
+  await expect(page.getByText('Loading commands…')).toBeVisible();
+});
+
+test('pinned rows reorder from the keyboard and announce the move', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Collections', exact: true }).click();
+  const list = page.getByRole('list', { name: 'Pinned pages' });
+  await page.getByRole('button', { name: 'Move Overview down' }).click();
+  await expect(list.getByRole('link')).toHaveText([
+    'Components',
+    'Overview',
+    'Guidelines',
+    'Changelog',
+  ]);
+  await expect(page.getByText('Overview moved to position 2.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move Components up' })).toBeDisabled();
+});
+
 test('composed table, editor and history examples retain local behavior', async ({ page }) => {
   await page.getByRole('tab', { name: 'Collections', exact: true }).click();
   const table = page.getByRole('table', { name: 'Example records' });
@@ -97,7 +166,7 @@ test('composed table, editor and history examples retain local behavior', async 
   await page.getByRole('textbox', { name: 'Document name' }).fill('event.json');
   await page.keyboard.press('Enter');
   await expect(page.getByRole('button', { name: 'event.json', exact: true })).toBeFocused();
-  await page.getByRole('tab', { name: 'History', exact: true }).click();
+  await page.getByRole('tab', { name: 'Data display', exact: true }).click();
   await page.getByRole('button', { name: /^Example run 2\b/ }).click();
   await expect(page.getByText('Selected: run_2', { exact: true })).toBeVisible();
 });
