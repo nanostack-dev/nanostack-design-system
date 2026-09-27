@@ -38,4 +38,14 @@ describe('GitHub workflows', () => {
     );
     expect(release).toMatch(/^concurrency:\n {2}group: .+\n {2}cancel-in-progress: false$/m);
   });
+
+  it('publishes with the npm tag and release kind that the release identity chose', () => {
+    const release = workflows.find((workflow) => workflow.name === 'release.yml')!.text;
+    expect(release).toMatch(/^ {10}node scripts\/release-identity\.mjs$/m);
+    expect(release).toContain('DIST_TAG: ${{ needs.verify.outputs.dist_tag }}');
+    expect(release).toContain('PRERELEASE: ${{ needs.verify.outputs.prerelease }}');
+    expect(release).toMatch(/npm publish .*--tag "\$DIST_TAG"/);
+    expect(release).toMatch(/gh release create .*--prerelease="\$PRERELEASE"/);
+    expect(release).not.toMatch(/--tag beta|--prerelease(?!=)/);
+  });
 });

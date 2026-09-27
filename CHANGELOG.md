@@ -5,6 +5,7 @@
 Numbering restarts at 0.0.1 for the first release with the common-only scope. It supersedes the 0.2.0 betas: 0.2.0-beta.4 and 0.2.0-beta.5 were never published, and the inspector sidebar, `DockSheet`, `GraphCanvasHandle.revealNode` and `BarStrip` selection that beta.4 added left the library with those parts.
 
 - Publish the component catalog, the guidelines and this changelog at https://nanostack-dev.github.io/nanostack-design-system/.
+- Publish stable versions under npm's `latest` tag and GitHub releases; betas keep the `beta` tag and GitHub prereleases.
 - Require `@phosphor-icons/react` (^2.1.10) as a peer dependency. `Icon` glyphs and the library's own icons share the application's single copy.
 - Resolve every export through a `default` condition and export `package.json`, so CommonJS-aware resolvers and test runners find the package.
 - Ship JavaScript source maps with inline sources. Declaration maps are removed because their sources were never shipped.

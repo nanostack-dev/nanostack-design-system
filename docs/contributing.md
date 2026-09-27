@@ -72,7 +72,7 @@ Capture before/after pairs using the same viewport, theme, and representative da
 
 ## Version and distribute deliberately
 
-The beta line is a coordinated adoption period. Pin an exact beta release or commit in consumers; every beta can require coordinated migration. Record public API, visual, interaction, and token changes in release notes with a consumer action when needed.
+Every release before 1.0 is a coordinated adoption period. Pin an exact release or commit in consumers; any 0.x release can require coordinated migration. Record public API, visual, interaction, and token changes in release notes with a consumer action when needed.
 
 After 1.0, compatible additions are minor releases, compatible fixes are patches, and removals or incompatible semantics are major releases. Visual changes need review even when TypeScript still compiles. Mark deprecated APIs, provide a replacement, and allow a documented migration period before removal.
 
