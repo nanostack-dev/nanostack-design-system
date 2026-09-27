@@ -7,6 +7,21 @@ test('virtual rows measure, paginate and preserve a focused row across scrolling
   page,
 }) => {
   const viewport = page.getByRole('region', { name: 'Records' });
+  const rows = await viewport.evaluate((element) =>
+    [...element.querySelectorAll<HTMLElement>('[role="listitem"]')]
+      .map((row) => ({
+        index: Number(row.getAttribute('aria-posinset')) - 1,
+        top: row.getBoundingClientRect().top,
+        height: row.getBoundingClientRect().height,
+      }))
+      .sort((a, b) => a.index - b.index)
+      .slice(0, 6),
+  );
+  expect(rows.map((row) => row.index)).toEqual([0, 1, 2, 3, 4, 5]);
+  // Even records carry long text, so measured rows differ from the fixed estimate.
+  expect(rows[0]!.height).toBeGreaterThan(rows[1]!.height);
+  for (const [previous, row] of rows.slice(0, -1).map((row, i) => [row, rows[i + 1]!] as const))
+    expect(Math.abs(row.top - (previous.top + previous.height))).toBeLessThanOrEqual(1);
   const first = page.getByRole('button', { name: /^Record 0 / });
   await first.focus();
   await expect(first).toBeFocused();
