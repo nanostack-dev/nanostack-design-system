@@ -18,7 +18,7 @@ Editors, graphs, virtual collections, data visualizations, workspace resize hand
 
 ## Validation boundaries
 
-`pnpm check` regenerates the registry and checks lint, types (including rejected props), behavior, package build, and documentation build. `pnpm test:browser` checks actual CSS, keyboard interactions, accessibility scans and responsive overflow. Packaging or exports changes additionally require `pnpm test:package` against the packed artifact and a consumer build. Consumer assembly checks include production code and stories. `pnpm registry:build` regenerates installable recipes; do not hand-edit output.
+`pnpm check` fails when the committed registry differs from the source, then checks lint, types (including rejected props), behavior, package build, and documentation build. `pnpm test:browser` checks actual CSS, keyboard interactions, accessibility scans and responsive overflow. Packaging or exports changes additionally require `pnpm test:package` against the packed artifact and a consumer build. Consumer assembly checks include production code and stories. `pnpm registry:build` regenerates installable recipes; commit its output and do not hand-edit it.
 
 Test what a person can observe. Include disabled, pending, empty, failed, long-content, touch, keyboard and dark states when applicable. Axe is one check, not a conformance claim. Token changes require contrast checks and both-theme screenshots. Capture images locally in `.ui-craft/` and attach them to PRs, never commit them.
 

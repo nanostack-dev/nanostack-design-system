@@ -57,8 +57,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:browser": "playwright test",
-    "check": "pnpm registry:build && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:docs",
+    "check": "pnpm registry:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm build:docs",
     "registry:build": "node scripts/build-registry.mjs",
+    "registry:check": "node scripts/build-registry.mjs --check",
     "test:package": "pnpm build && node scripts/test-package.mjs",
     "prepack": "pnpm build"
   },

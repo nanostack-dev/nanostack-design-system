@@ -5,7 +5,7 @@ Applications install an exact public package version. The npm `beta` tag is a di
 ## Prepare and validate
 
 1. Work in an isolated worktree. Bump the beta version, describe the consumer upgrade in `CHANGELOG.md`, and update the README install example. Component, token and variation changes follow the normal contribution checks.
-2. Run `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test:browser` and `pnpm test:package`. Confirm generated registry files are unchanged after generation.
+2. Run `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test:browser` and `pnpm test:package`. `pnpm check` fails when the committed registry differs from the source; run `pnpm registry:build` and commit its output.
 3. Pack the built output with `npm pack --ignore-scripts --pack-destination artifacts`. Inspect the archive: only `dist`, the package manifest, README, license and third-party notices belong in it. Test the packed package in the real consumer before publishing.
 4. Merge the reviewed release change into `main`, then tag that exact commit as `v<package-version>`. The release workflow refuses a tag whose version differs from the manifest or whose commit is not on `main`.
 
