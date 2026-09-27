@@ -601,15 +601,11 @@ const historyRows = Array.from({ length: 30 }, (_, index) => ({
 }));
 function History() {
   const [selected, setSelected] = useState('run_1');
-  const [messages, setMessages] = useState([
-    'The shared library owns this conversation layout.',
-    'Applications supply the messages and actions.',
-  ]);
   return (
     <UI.Stack gap="xl">
       <Example
-        title="Measured history and data"
-        description="Virtual rows and charts accept records and numeric observations. Their dimensions and visual treatment remain private."
+        title="Measured history"
+        description="Virtual rows accept records and measure each row. Timeline items place numeric intervals. Their dimensions and visual treatment remain private."
       >
         <UI.Grid columns={2} gap="lg">
           <UI.VirtualList
@@ -637,19 +633,7 @@ function History() {
           />
           <UI.Surface>
             <UI.Stack gap="lg">
-              <UI.Heading level={3}>Duration by run</UI.Heading>
-              <UI.BarStrip
-                label="Example run durations"
-                points={historyRows.slice(0, 8).map((row) => ({
-                  id: row.id,
-                  value: row.duration,
-                  label: `${row.name}, ${row.duration} milliseconds`,
-                  tone: row.failed ? 'danger' : 'success',
-                }))}
-                reference={300}
-                selectedId={selected}
-                onSelect={setSelected}
-              />
+              <UI.Heading level={3}>Selected record</UI.Heading>
               <UI.Text size="sm" role="status">
                 Selected: {selected}
               </UI.Text>
@@ -673,41 +657,6 @@ function History() {
             </UI.Stack>
           </UI.Surface>
         </UI.Grid>
-      </Example>
-      <Example
-        title="Conversation composition"
-        description="Log scrolling, message alignment and bubble tones are reusable parts. No assistant service is connected."
-      >
-        <UI.PreviewFrame width="wide" height="panel">
-          <UI.Stack height="fill">
-            <UI.ConversationLog label="Example conversation" entryCount={messages.length}>
-              {messages.map((message, index) => (
-                <UI.MessageRow
-                  key={index}
-                  side={index % 2 ? 'end' : 'start'}
-                  avatar={index % 2 ? undefined : <UI.BrandMark brand="nanostack" size="sm" />}
-                >
-                  <UI.MessageBubble tone={index % 2 ? 'accent' : 'neutral'}>
-                    <UI.Text size="sm">{message}</UI.Text>
-                  </UI.MessageBubble>
-                </UI.MessageRow>
-              ))}
-            </UI.ConversationLog>
-            <UI.Cluster justify="end">
-              <UI.Button
-                variant="secondary"
-                onClick={() =>
-                  setMessages((current) => [
-                    ...current,
-                    `Example message ${current.length + 1}: a new entry anchors without moving the reader during streaming.`,
-                  ])
-                }
-              >
-                Add example message
-              </UI.Button>
-            </UI.Cluster>
-          </UI.Stack>
-        </UI.PreviewFrame>
       </Example>
     </UI.Stack>
   );

@@ -41,19 +41,19 @@ test('virtual rows measure, paginate and preserve a focused row across scrolling
   await page.getByRole('button', { name: /^Record 79 / }).click();
   await expect(page.getByText('Selected: 79')).toBeVisible();
 });
-test('chart keyboard selection and mobile panel focus restore work in both themes', async ({
+test('keyboard row selection and mobile panel focus restore work in both themes', async ({
   page,
   isMobile,
 }) => {
   for (const theme of ['light', 'dark']) {
     if (theme === 'dark') await page.getByRole('button', { name: 'Toggle theme' }).click();
-    const bar = page.getByRole('button', { name: 'Slow, 100 milliseconds' });
-    await bar.focus();
+    const row = page.getByRole('button', { name: /^Record 1 / });
+    await row.focus();
     await page.keyboard.press('Enter');
-    await expect(bar).toHaveAttribute('aria-current', 'true');
+    await expect(page.getByText('Selected: 1', { exact: true })).toBeVisible();
     const trigger = page.getByRole('button', { name: 'Open detail' });
     await trigger.click();
-    await expect(page.getByText('Selected record slow')).toBeVisible();
+    await expect(page.getByText('Selected record 1')).toBeVisible();
     if (isMobile && page.viewportSize()!.width < 768) {
       const dialog = page.getByRole('dialog', { name: 'Details' });
       await expect(dialog).toBeVisible();

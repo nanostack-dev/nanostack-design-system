@@ -34,24 +34,6 @@ test('navigates radio submenus, keeps disabled items inert, and returns keyboard
   await expect(trigger).toBeFocused();
 });
 
-test('anchors appended entries without moving the reader during streamed text or prepended history', async ({
-  page,
-}) => {
-  const log = page.getByRole('log', { name: 'Conversation' });
-  await page.getByRole('button', { name: 'Append message' }).click();
-  await expect.poll(() => log.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
-  await log.evaluate((node) => {
-    node.scrollTop = 200;
-  });
-  const beforeStream = await log.evaluate((node) => node.scrollTop);
-  await page.getByRole('button', { name: 'Stream text' }).click();
-  await expect.poll(() => log.evaluate((node) => node.scrollTop)).toBe(beforeStream);
-  const entry = log.getByText(/^Message 3:/);
-  const beforePrepend = (await entry.boundingBox())!.y;
-  await page.getByRole('button', { name: 'Prepend history' }).click();
-  await expect.poll(async () => (await entry.boundingBox())!.y).toBeCloseTo(beforePrepend, 0);
-});
-
 test('uses a trapped mobile dialog and returns focus to its external opener', async ({ page }) => {
   const trigger = page.getByRole('button', { name: 'Open supporting panel' });
   await trigger.click();

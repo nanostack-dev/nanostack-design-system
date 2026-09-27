@@ -92,10 +92,6 @@ test('composed table, editor and history examples retain local behavior', async 
   await page.getByRole('button', { name: 'Open payload' }).click();
   await expect(page.getByRole('textbox', { name: 'Example request body' })).toBeVisible();
   await page.getByRole('tab', { name: 'History', exact: true }).click();
-  await page.getByRole('button', { name: 'Example run 2, 157 milliseconds' }).click();
+  await page.getByRole('button', { name: /^Example run 2\b/ }).click();
   await expect(page.getByText('Selected: run_2', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Add example message' }).click();
-  await expect(page.getByRole('log', { name: 'Example conversation' })).toContainText(
-    'Example message 3',
-  );
 });
