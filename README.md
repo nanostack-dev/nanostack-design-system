@@ -15,13 +15,15 @@ The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive bl
 
 ## Install the beta
 
-Install an exact beta version from the public npm registry:
+Install the versioned package from the public [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.3):
 
 ```sh
-pnpm add --save-exact @nanostack/design-system@0.2.0-beta.3
+pnpm add --save-exact https://github.com/nanostack-dev/nanostack-design-system/releases/download/v0.2.0-beta.3/nanostack-design-system-0.2.0-beta.3.tgz
 ```
 
-Commit the manifest and lockfile together. Beta releases use npm's `beta` tag and may require a coordinated upgrade; product applications pin a reviewed version instead of following that tag automatically. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
+Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
+
+The package is also prepared for npm publication under `@nanostack/design-system` with the `beta` tag. Until an npm scope owner completes the first upload, use the GitHub release above. Once the version appears on npm, `pnpm add --save-exact @nanostack/design-system@0.2.0-beta.3` provides the equivalent package. Product applications pin reviewed versions; beta updates may require a coordinated migration.
 
 ```tsx
 import '@nanostack/design-system/styles.css';

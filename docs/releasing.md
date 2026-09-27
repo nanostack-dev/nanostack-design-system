@@ -1,6 +1,6 @@
 # Release the public beta
 
-Applications install an exact public package version. The npm `beta` tag is a discovery channel, not a floating application dependency. Keep the version in `package.json`, the changelog and the Git tag aligned; never replace a reviewed archive or reuse a published version.
+Applications install an exact public package version. The first release is available as a GitHub release archive, so consumption does not depend on npm account setup. Once npm publishing is configured, its `beta` tag is a discovery channel, not a floating application dependency. Keep the version in `package.json`, the changelog and the Git tag aligned; never replace a reviewed archive or reuse a published version.
 
 ## Prepare and validate
 
@@ -18,7 +18,7 @@ npm login --auth-type=web --registry https://registry.npmjs.org/
 npm publish artifacts/nanostack-design-system-0.2.0-beta.3.tgz --access public --tag beta --ignore-scripts
 ```
 
-The first local publication has no GitHub Actions provenance. Record its source commit and archive checksum in the GitHub prerelease. After publication, configure the package's npm trusted publisher:
+Publish the same verified archive attached to the GitHub prerelease; do not rebuild it. The first local npm publication has no GitHub Actions provenance. Record the source commit and archive checksum in the GitHub prerelease. After publication, configure the package's npm trusted publisher:
 
 | Field | Value |
 | --- | --- |
