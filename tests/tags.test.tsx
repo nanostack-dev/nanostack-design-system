@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { TagAutocomplete } from '../src/components/tag-autocomplete.js';
 import { TagInput } from '../src/components/tag-input.js';
-import { Command, CommandInput, CommandItem, CommandList } from '../src/components/command.js';
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '../src/components/command.js';
 import { Dialog, DialogPopup, DialogTitle } from '../src/components/dialog.js';
 import { Button } from '../src/components/button.js';
 import { Label } from '../src/components/layout.js';
@@ -153,6 +160,30 @@ describe('CommandInput', () => {
     );
     const input = screen.getByRole('combobox', { name: 'Search commands' });
     expect(input).toHaveAttribute('id', 'command-query');
+  });
+});
+
+describe('CommandSeparator', () => {
+  it('divides groups without a role the listbox cannot own, and hides during a search', async () => {
+    const user = userEvent.setup();
+    render(
+      <Command label="Commands">
+        <CommandInput />
+        <CommandList>
+          <CommandGroup heading="Go to">
+            <CommandItem value="home">Home</CommandItem>
+          </CommandGroup>
+          <CommandSeparator data-testid="divider" />
+          <CommandGroup heading="Actions">
+            <CommandItem value="deploy">Deploy</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </Command>,
+    );
+    expect(within(screen.getByRole('listbox')).queryByRole('separator')).toBeNull();
+    expect(screen.getByTestId('divider')).toHaveAttribute('role', 'presentation');
+    await user.type(screen.getByRole('combobox', { name: 'Commands' }), 'dep');
+    expect(screen.queryByTestId('divider')).toBeNull();
   });
 });
 

@@ -19,6 +19,7 @@ Numbering restarts at 0.0.1 for the first release with the common-only scope. It
 - Add `ConfirmationDialog pending`: the action is busy, shows a spinner and ignores repeated activation.
 - Key `DataTable` row selection by row id. Add controlled `selectedRowIds` and `onSelectedRowIdsChange`, and `getRowLabel` for per-row checkbox names.
 - Stop `VirtualList` from re-requesting a failed page. Add `loadMoreFailed`, `loadMoreFailedMessage` and `retryLabel` for a retry affordance.
+- Render `CommandSeparator` as a presentational divider. A listbox may own only options and groups, so the previous `separator` role failed accessibility checks. It still hides during a search unless `alwaysRender` is set.
 - Let a consumer `id` and label name `CommandInput` and `TagAutocomplete`. Tag inputs ignore Enter during IME composition, keep a rejected draft, return focus to the input after a removal, and close their list on the first Escape without closing a parent dialog.
 - Keep external editor `value` updates out of undo history and keep the cursor in place. Add `documentKey` to give each document its own history.
 - Keep editor configuration stable across parent re-renders.

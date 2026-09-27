@@ -1,4 +1,4 @@
-import { CommandInput, CommandStatus } from '../src/components/command.js';
+import { CommandInput, CommandSeparator, CommandStatus } from '../src/components/command.js';
 
 <CommandInput expanded={false} />;
 <CommandStatus>Loading results.</CommandStatus>;
@@ -10,3 +10,6 @@ import { CommandInput, CommandStatus } from '../src/components/command.js';
 <CommandStatus role="button" />;
 // @ts-expect-error Loading/empty content has no consumer CSS escape.
 <CommandStatus className="custom" />;
+<CommandSeparator alwaysRender />;
+// @ts-expect-error The separator stays presentational inside the listbox.
+<CommandSeparator role="separator" />;

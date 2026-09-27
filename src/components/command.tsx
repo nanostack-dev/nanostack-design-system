@@ -86,9 +86,15 @@ export function CommandEmpty(props: CommandEmptyProps) {
   const empty = useCommandState((state) => state.filtered.count === 0);
   return empty ? <CommandStatus {...props} /> : null;
 }
-export type CommandSeparatorProps = Closed<ComponentProps<typeof BaseCommand.Separator>>;
-export function CommandSeparator(props: CommandSeparatorProps) {
-  return <BaseCommand.Separator {...safeProps(props)} className="ns-command-separator" />;
+export type CommandSeparatorProps = Omit<ElementProps<'div'>, 'role' | 'children'> & {
+  /** Keep the divider while a search filters the list. */
+  alwaysRender?: boolean;
+};
+/** A presentational divider: a listbox may own only options and groups, never a separator. */
+export function CommandSeparator({ alwaysRender = false, ...props }: CommandSeparatorProps) {
+  const searching = useCommandState((state) => state.search !== '');
+  if (searching && !alwaysRender) return null;
+  return <div {...safeProps(props)} className="ns-command-separator" role="presentation" />;
 }
 export type CommandFooterProps = ElementProps<'footer'>;
 export function CommandFooter(props: CommandFooterProps) {
