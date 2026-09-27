@@ -759,7 +759,8 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.ns-bar-strip-point[aria-current='true'] {
+.ns-bar-strip-point[aria-current='true'],
+.ns-bar-strip-point[aria-checked='true'] {
   background: var(--ns-subtle);
   box-shadow: inset 0 0 0 1px var(--ns-accent);
 }
@@ -781,6 +782,9 @@
 }
 .ns-bar-strip-value[data-tone='danger'] {
   background: var(--ns-danger);
+}
+.ns-bar-strip-value[data-tone='info'] {
+  background: var(--ns-accent);
 }
 @media (pointer: coarse) {
   .ns-bar-strip-point {

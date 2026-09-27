@@ -121,9 +121,16 @@ export type GraphBeforeDelete<
   items: GraphDeleteItems<NodeType, EdgeType>,
 ) => Promise<boolean | GraphDeleteItems<NodeType, EdgeType>>;
 
+export type GraphRevealOptions = NoCustomStyle & {
+  occlusion?: 'none' | 'sidebar' | 'bottom-sheet';
+  /** Reserve the inspector width while the canvas is beginning to shrink. */
+  entering?: boolean;
+};
+
 export interface GraphCanvasHandle {
   fit(): void;
   center(nodeId: string): void;
+  revealNode(nodeId: string, options?: GraphRevealOptions): void;
   animateLayout(): void;
 }
 

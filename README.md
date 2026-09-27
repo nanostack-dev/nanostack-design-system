@@ -2,7 +2,7 @@
 
 Composable React building blocks for Echopoint and Anchor. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
-Status: **0.2.0-beta.3**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
+Status: **0.2.0-beta.4**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
 ## Try it
 
@@ -18,14 +18,14 @@ The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive bl
 Install an exact version from the public npm registry:
 
 ```sh
-pnpm add --save-exact @nanostackorg/design-system@0.2.0-beta.3
+pnpm add --save-exact @nanostackorg/design-system@0.2.0-beta.4
 ```
 
 Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
 
-Beta releases use npm's `beta` tag. Product applications pin reviewed versions; beta updates may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.3).
+Beta releases use npm's `beta` tag. Product applications pin reviewed versions; beta updates may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.4).
 
-Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.2.0-beta.3`. New consumers can import the public package directly as shown below.
+Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.2.0-beta.4`. New consumers can import the public package directly as shown below.
 
 ```tsx
 import '@nanostackorg/design-system/styles.css';

@@ -450,6 +450,11 @@
           "target": "~/src/components/nanostack/internal/graph/presentation.tsx"
         },
         {
+          "path": "src/internal/graph/reveal.ts",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/internal/graph/reveal.ts"
+        },
+        {
           "path": "src/internal/graph/use-edge-settle.ts",
           "type": "registry:file",
           "target": "~/src/components/nanostack/internal/graph/use-edge-settle.ts"
