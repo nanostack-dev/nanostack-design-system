@@ -114,7 +114,7 @@ try {
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createElement as h, version } from 'react';
 import { renderToString } from 'react-dom/server';
@@ -125,6 +125,20 @@ assert.equal(version, '19.2.0', 'The consumer must exercise the minimum React pe
 const packageRoot = fileURLToPath(new URL('../', import.meta.resolve('@nanostackorg/design-system')));
 assert.throws(() => createRequire(import.meta.url).resolve('@clerk/clerk-react'), { code: 'MODULE_NOT_FOUND' }, 'The root entry must be checked without the optional Clerk peer');
 assert(!existsSync(join(packageRoot, 'src')), 'Source must not be available to the consumer');
+const distRoot = join(packageRoot, 'dist');
+const distFiles = readdirSync(distRoot, { recursive: true });
+const mapMarker = '//# sourceMappingURL=';
+for (const file of distFiles.filter((file) => file.endsWith('.js') || file.endsWith('.d.ts'))) {
+  const content = readFileSync(join(distRoot, file), 'utf8');
+  if (content.includes(mapMarker)) assert(existsSync(join(distRoot, dirname(file), content.split(mapMarker).at(-1).trim())), file + ' references a missing source map');
+}
+for (const file of distFiles.filter((file) => file.endsWith('.map'))) {
+  const map = JSON.parse(readFileSync(join(distRoot, file), 'utf8'));
+  map.sources.forEach((source, index) => assert(
+    typeof map.sourcesContent?.[index] === 'string' || existsSync(join(distRoot, dirname(file), map.sourceRoot ?? '', source)),
+    file + ' references ' + source + ', which is neither shipped nor inlined',
+  ));
+}
 const packedManifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 assert.deepEqual(packedManifest.sideEffects, ['**/*.css'], 'Bundlers must preserve imported CSS');
 assert(packedManifest.peerDependencies['@phosphor-icons/react'] && !packedManifest.dependencies['@phosphor-icons/react'], 'Icon glyphs are public props, so Phosphor must be a peer');
