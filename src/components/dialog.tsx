@@ -40,12 +40,14 @@ export type DialogPopupProps = ElementProps<'div'> & {
   size?: 'sm' | 'md' | 'lg';
   placement?: 'center' | 'search' | 'side' | 'bottom';
   initialFocus?: BaseDialog.Popup.Props['initialFocus'];
+  closeLabel?: string;
 };
 
 /** Include DialogTitle inside every popup so assistive technology can name it. */
 export function DialogPopup({
   size = 'md',
   placement = 'center',
+  closeLabel = 'Close dialog',
   children,
   ...props
 }: DialogPopupProps) {
@@ -67,7 +69,7 @@ export function DialogPopup({
             className="ns-button ns-dialog-dismiss"
             data-variant="ghost"
             data-size="sm"
-            aria-label="Close dialog"
+            aria-label={closeLabel}
           >
             <svg
               viewBox="0 0 24 24"

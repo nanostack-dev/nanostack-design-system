@@ -21,6 +21,7 @@ export type ConfirmationDialogProps = NoCustomStyle & {
   description: ReactNode;
   actionLabel: string;
   cancelLabel?: string;
+  closeLabel?: string;
   onAction: () => void;
   actionDisabled?: boolean;
   cancelDisabled?: boolean;
@@ -37,6 +38,7 @@ export function ConfirmationDialog({
   description,
   actionLabel,
   cancelLabel = 'Cancel',
+  closeLabel = 'Close dialog',
   onAction,
   actionDisabled = false,
   cancelDisabled = false,
@@ -90,7 +92,7 @@ export function ConfirmationDialog({
                 disabled={cancelDisabled}
                 className="ns-button ns-dialog-dismiss"
                 data-variant="ghost"
-                aria-label="Close dialog"
+                aria-label={closeLabel}
               >
                 ×
               </AlertDialog.Close>

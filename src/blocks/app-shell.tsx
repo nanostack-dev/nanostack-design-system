@@ -25,6 +25,8 @@ type ShellState = {
   mobile: boolean;
   mainId: string;
   navigationLabel: string;
+  openNavigationLabel: string;
+  closeNavigationLabel: string;
   navigation: Dialog.Handle<unknown>;
   navigationOpen: boolean;
   setNavigationOpen: (open: boolean) => void;
@@ -42,6 +44,8 @@ export type AppShellProps = ElementProps<'div'> & {
   layout?: 'page' | 'workspace';
   mainId?: string;
   navigationLabel?: string;
+  openNavigationLabel?: string;
+  closeNavigationLabel?: string;
   skipLabel?: string;
 };
 
@@ -50,6 +54,8 @@ export function AppShell({
   layout = 'page',
   mainId: providedMainId,
   navigationLabel = 'Workspace navigation',
+  openNavigationLabel = 'Open navigation',
+  closeNavigationLabel = 'Close navigation',
   skipLabel = 'Skip to main content',
   ...props
 }: AppShellProps) {
@@ -77,6 +83,8 @@ export function AppShell({
         mobile,
         mainId,
         navigationLabel,
+        openNavigationLabel,
+        closeNavigationLabel,
         navigation,
         navigationOpen: mobile && open,
         setNavigationOpen: setOpen,
@@ -95,7 +103,14 @@ export function AppShell({
 export type AppShellSidebarProps = ElementProps<'aside'>;
 
 export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
-  const { mobile, navigationLabel, navigation, navigationOpen, setNavigationOpen } = useShell();
+  const {
+    mobile,
+    navigationLabel,
+    closeNavigationLabel,
+    navigation,
+    navigationOpen,
+    setNavigationOpen,
+  } = useShell();
   const theme = useThemeSettings();
 
   // Keep the portal in the tree so Base UI can finish closing across breakpoints.
@@ -113,7 +128,7 @@ export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
             <Dialog.Popup className="ns-shell-drawer">
               <div className="ns-shell-drawer-header">
                 <Dialog.Title className="ns-shell-drawer-title">{navigationLabel}</Dialog.Title>
-                <Dialog.Close className="ns-shell-close" aria-label="Close navigation">
+                <Dialog.Close className="ns-shell-close" aria-label={closeNavigationLabel}>
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -137,14 +152,14 @@ export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
 }
 
 export function AppShellHeader({ children, ...props }: ElementProps<'header'>) {
-  const { mobile, navigation } = useShell();
+  const { mobile, navigation, openNavigationLabel } = useShell();
   return (
     <header {...safeProps(props)} className="ns-shell-header">
       {mobile ? (
         <Dialog.Trigger
           handle={navigation}
           className="ns-shell-mobile-trigger"
-          aria-label="Open navigation"
+          aria-label={openNavigationLabel}
         >
           <svg
             viewBox="0 0 24 24"
