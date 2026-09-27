@@ -71,7 +71,9 @@ const pairs: TokenPair[] = [
   ]),
   ['accent', 'canvas'],
   ['accent', 'surface'],
+  ['accent', 'subtle'],
   ['accent', 'accent-soft'],
+  ['text', 'accent-soft'],
   ['on-accent', 'accent'],
   ['on-accent', 'accent-hover'],
   ...statusTones.flatMap((tone): TokenPair[] => [
@@ -80,7 +82,9 @@ const pairs: TokenPair[] = [
     [tone, 'canvas'],
   ]),
 ];
-const brands: Brand[] = ['nanostack', 'echopoint', 'anchor'];
+const brandNames = { nanostack: true, echopoint: true, anchor: true } satisfies Record<Brand, true>;
+const brands = Object.keys(brandNames) as Brand[];
+const accentTokens = ['accent', 'accent-hover', 'accent-soft', 'on-accent'] as const;
 const colorSchemes: ColorScheme[] = ['light', 'dark'];
 const densities: Density[] = ['comfortable', 'compact'];
 const themes = brands.flatMap((brand) =>
@@ -96,6 +100,14 @@ describe('semantic text contrast (WCAG 2.2 SC 1.4.3)', () => {
     expect(contrast('#767676', '#ffffff')).toBeGreaterThan(4.5);
     expect(contrast('#777777', '#ffffff')).toBeLessThan(4.5);
     expect(tokenRules.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it.each(colorSchemes)('gives every brand its own accent tokens in %s', (colorScheme) => {
+    const accents = brands.map((brand) => {
+      const tokens = themeTokens({ brand, colorScheme, density: 'comfortable' });
+      return accentTokens.map((token) => tokens[`--ns-${token}`]).join(' ');
+    });
+    expect(new Set(accents).size).toBe(brands.length);
   });
 
   it.each(themes)(
