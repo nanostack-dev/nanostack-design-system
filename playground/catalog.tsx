@@ -480,12 +480,9 @@ function Workspace() {
             <UI.WorkspaceMain>
               <UI.PaneToolbar>
                 <UI.Cluster justify="between">
-                  <UI.Cluster>
-                    <UI.HttpMethodBadge method="POST" />
-                    <UI.Text size="sm" weight="medium">
-                      /example/events
-                    </UI.Text>
-                  </UI.Cluster>
+                  <UI.Text size="sm" weight="medium">
+                    /example/events
+                  </UI.Text>
                   <UI.Button
                     size="sm"
                     onClick={() =>

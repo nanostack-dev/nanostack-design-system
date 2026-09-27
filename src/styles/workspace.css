@@ -263,25 +263,6 @@
   text-align: start;
   cursor: pointer;
 }
-.ns-http-method {
-  font:
-    650 11px/1.5 ui-monospace,
-    monospace;
-  white-space: nowrap;
-  color: var(--ns-muted);
-}
-.ns-http-method[data-tone='success'] {
-  color: var(--ns-success);
-}
-.ns-http-method[data-tone='info'] {
-  color: var(--ns-accent);
-}
-.ns-http-method[data-tone='warning'] {
-  color: var(--ns-warning);
-}
-.ns-http-method[data-tone='danger'] {
-  color: var(--ns-danger);
-}
 .ns-variable-text {
   font:
     13px/1.5 ui-monospace,

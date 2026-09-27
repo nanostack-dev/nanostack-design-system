@@ -37,7 +37,6 @@ export * from './components/toast.js';
 export * from './blocks/table.js';
 export * from './blocks/workspace.js';
 export * from './components/variable-text.js';
-export * from './components/http-method-badge.js';
 export * from './components/editable-text.js';
 export * from './components/key-value-editor.js';
 export * from './components/document-theme.js';
