@@ -90,10 +90,10 @@ Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `r
 
 ```sh
 # From a configured React 19.2+ shadcn consumer; point to your cloned payload:
-pnpm dlx shadcn@latest add /path/to/nanostack-design-system/public/r/system.json
+pnpm dlx shadcn@4.21.0 add /path/to/nanostack-design-system/public/r/system.json
 ```
 
-The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. A hosted shadcn registry has not been deployed; package consumers do not need one.
+The command pins the shadcn CLI whose schema validates this registry. The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. A hosted shadcn registry has not been deployed; package consumers do not need one.
 
 ## Verify and evolve
 

@@ -43,4 +43,13 @@ describe('source registry', () => {
     expect(imported).toContain('@phosphor-icons/react');
     expect(undeclared).toEqual([]);
   });
+
+  it('documents the shadcn CLI version that validates the registry', () => {
+    const { version } = JSON.parse(readFileSync('node_modules/shadcn/package.json', 'utf8'));
+    const documented = [...readFileSync('README.md', 'utf8').matchAll(/\bshadcn@(\S+)/g)].map(
+      ([, reference]) => reference,
+    );
+    expect(documented.length).toBeGreaterThan(0);
+    expect(documented.every((reference) => reference === version)).toBe(true);
+  });
 });
