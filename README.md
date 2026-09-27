@@ -2,6 +2,8 @@
 
 Composable React building blocks that any Nanostack product can use unchanged, starting with Echopoint and Anchor. Product-specific visuals stay in the product that owns their meaning. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
+**[Documentation site](https://nanostack-dev.github.io/nanostack-design-system/)**: every component with a working example, the guidelines and the changelog.
+
 Status: **0.0.1**, the first release of the common-only library. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
 ## Try it
@@ -11,7 +13,9 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive block catalog](http://127.0.0.1:4317/?catalog) for foundations, controls, resource lists, typed tables, a code editor and viewer, and measured history. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
+The documentation site opens at `http://127.0.0.1:4317`: an overview, the [component catalog](http://127.0.0.1:4317/?page=components), the guidelines rendered from this repository's documents, and the changelog. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
+
+`pnpm build:docs` writes the static site to `site/`. The Pages workflow builds it with `DOCS_BASE=/nanostack-design-system/ pnpm build:docs` and deploys every push to `main`.
 
 ## Install
 
