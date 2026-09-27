@@ -1,7 +1,10 @@
 # Changelog
 
-## 0.2.0-beta.5
+## 0.0.1
 
+Numbering restarts at 0.0.1 for the first release with the common-only scope. It supersedes the 0.2.0 betas: 0.2.0-beta.4 and 0.2.0-beta.5 were never published, and the inspector sidebar, `DockSheet`, `GraphCanvasHandle.revealNode` and `BarStrip` selection that beta.4 added left the library with those parts.
+
+- Publish the component catalog, the guidelines and this changelog at https://nanostack-dev.github.io/nanostack-design-system/.
 - Require `@phosphor-icons/react` (^2.1.10) as a peer dependency. `Icon` glyphs and the library's own icons share the application's single copy.
 - Resolve every export through a `default` condition and export `package.json`, so CommonJS-aware resolvers and test runners find the package.
 - Ship JavaScript source maps with inline sources. Declaration maps are removed because their sources were never shipped.
@@ -29,7 +32,7 @@
   - run history visuals: `BarStrip`, `TimelineRange`, `ConversationLog`, `MessageRow` and `MessageBubble`.
 - `CodeEditor` and `CodeViewer` stay as a plain multi-line JSON, XML, HTML and text editor and viewer. `PreviewFrame` moves to the `blocks/preview-frame` subpath. The package no longer depends on `@xyflow/react` or `react-resizable-panels`.
 
-Upgrade: add Phosphor to the application when it is not already a direct dependency with `pnpm add @phosphor-icons/react@^2.1.10`. Glyph imports do not change: `<Icon glyph={GearIcon} label="Settings" />`. The Clerk adapter needs React 19.2.3 or later because of Clerk's own peer range.
+Upgrade: install the exact version and the Phosphor peer with `pnpm add --save-exact @nanostackorg/design-system@0.0.1` and `pnpm add @phosphor-icons/react@^2.1.10`. 0.0.1 sorts below the 0.2.0 betas, so a range such as `^0.2.0-beta.3` never resolves to it: pin it exactly. Glyph imports do not change: `<Icon glyph={GearIcon} label="Settings" />`. The Clerk adapter needs React 19.2.3 or later because of Clerk's own peer range.
 
 Upgrade: a `DialogTrigger` or `DialogClose` inside `AppShell` must belong to its own `Dialog`, for example `<Dialog><DialogTrigger>Edit</DialogTrigger><DialogPopup>…</DialogPopup></Dialog>`. Inside a `Field`, the Field's `name` wins over the `Select`'s `name`, and manual `id`, `htmlFor` and `aria-describedby` wiring can be removed: `<Field name="environment"><FieldLabel>Environment</FieldLabel><Select options={options} /></Field>`.
 
@@ -38,14 +41,6 @@ Upgrade: `DataTable` row selection requires `getRowId`, and `isRowSelected` cann
 Upgrade: name every editor: replace `<CodeEditor id="payload" aria-label="Payload" />` with `<CodeEditor id="payload" label="Payload" />`, or point `aria-labelledby` at a visible label. Pass `documentKey={activeDocument.id}` when one editor shows several documents.
 
 Upgrade: Echopoint now owns the removed parts under its own source tree, built from `--ns-*` tokens and library primitives; other applications did not use them. The scope rule in AGENTS.md decides what the library holds. Import `PreviewFrame` from the root or its new subpath: replace `import { PreviewFrame } from '@nanostackorg/design-system/blocks/workspace'` with `import { PreviewFrame } from '@nanostackorg/design-system/blocks/preview-frame'`. A plain editor drops the variable props: replace `<CodeEditor label="Body" language="json" variables={variables} />` with `<CodeEditor label="Body" language="json" />`, and keep a single-line template input such as a URL bar in the application.
-
-## 0.2.0-beta.4
-
-- Add a nonmodal inspector: `DockSidebar` accepts `size="inspector"` and `side="end"`, and the new `DockSheet` covers the lower part of `DockMain` while the canvas stays interactive.
-- Add `GraphCanvasHandle.revealNode(nodeId, { occlusion, entering })`. It moves the viewport only enough to keep a node clear of the sidebar or sheet. An item larger than the free area keeps its start visible. Reduced motion shortens the move.
-- `BarStrip` accepts `selection="single"` for keyboard radio selection and `onPreview` for hover and focus previews. Points accept the `info` tone.
-
-Upgrade: install `@nanostackorg/design-system@0.2.0-beta.4`. Existing props keep their behavior. To inspect a node, render the detail inside `DockSidebar size="inspector" side="end"` or `DockSheet`, then call `canvas.current?.revealNode(id, { occlusion: 'sidebar', entering: true })` when the panel opens.
 
 ## 0.2.0-beta.3
 

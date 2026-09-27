@@ -2,7 +2,7 @@
 
 Composable React building blocks that any Nanostack product can use unchanged, starting with Echopoint and Anchor. Product-specific visuals stay in the product that owns their meaning. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
-Status: **0.2.0-beta.5**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
+Status: **0.0.1**, the first release of the common-only library. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
 ## Try it
 
@@ -13,12 +13,12 @@ pnpm dev
 
 The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive block catalog](http://127.0.0.1:4317/?catalog) for foundations, controls, resource lists, typed tables, a code editor and viewer, and measured history. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
 
-## Install the beta
+## Install
 
 Install an exact version from the public npm registry:
 
 ```sh
-pnpm add --save-exact @nanostackorg/design-system@0.2.0-beta.5
+pnpm add --save-exact @nanostackorg/design-system@0.0.1
 pnpm add @phosphor-icons/react@^2.1.10
 ```
 
@@ -26,9 +26,9 @@ The application provides the peer dependencies: React 19.2+ and `@phosphor-icons
 
 Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
 
-Beta releases use npm's `beta` tag. Product applications pin reviewed versions; beta updates may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.5).
+Stable versions use npm's `latest` tag and prereleases use `beta`. Numbering restarted at 0.0.1, which sorts below the earlier 0.2.0 betas, so pin the exact version instead of a range. Product applications pin reviewed versions; any update before 1.0 may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.0.1).
 
-Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.2.0-beta.5`. New consumers can import the public package directly as shown below.
+Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.0.1`. New consumers can import the public package directly as shown below.
 
 ```tsx
 import '@nanostackorg/design-system/styles.css';

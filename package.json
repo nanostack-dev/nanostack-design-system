@@ -1,6 +1,6 @@
 {
   "name": "@nanostackorg/design-system",
-  "version": "0.2.0-beta.5",
+  "version": "0.0.1",
   "description": "Typed, accessible UI building blocks for Nanostack products",
   "type": "module",
   "license": "MIT",
