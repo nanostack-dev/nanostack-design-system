@@ -1,0 +1,180 @@
+.ns-checkbox {
+  display: inline-flex;
+  position: relative;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--ns-control-border);
+  border-radius: 4px;
+  background: var(--ns-surface);
+  color: var(--ns-on-accent);
+  cursor: pointer;
+  vertical-align: middle;
+}
+.ns-checkbox[data-checked],
+.ns-checkbox[data-indeterminate] {
+  background: var(--ns-accent);
+  border-color: var(--ns-accent);
+}
+.ns-checkbox-indicator,
+.ns-checkbox-indicator svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.ns-checkbox[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ns-input.ns-textarea {
+  display: block;
+  width: 100%;
+  min-height: 144px;
+  resize: vertical;
+}
+.ns-textarea[data-height='compact'] {
+  min-height: 80px;
+}
+.ns-textarea[data-height='fill'] {
+  height: 100%;
+  resize: none;
+}
+.ns-button[data-size='icon'] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+}
+.ns-menu-positioner {
+  z-index: 60;
+}
+.ns-menu-content {
+  min-width: 180px;
+  max-width: min(360px, var(--available-width));
+  max-height: var(--available-height);
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--ns-border);
+  border-radius: 8px;
+  background: var(--ns-surface);
+  color: var(--ns-text);
+  box-shadow: var(--ns-shadow);
+  outline: none;
+}
+.ns-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  outline: none;
+  color: inherit;
+  text-decoration: none;
+}
+.ns-menu-item[data-highlighted] {
+  background: var(--ns-hover);
+}
+.ns-menu-item[data-tone='danger'] {
+  color: var(--ns-danger);
+}
+.ns-menu-item[data-tone='danger'][data-highlighted] {
+  background: var(--ns-danger-soft);
+}
+.ns-menu-item[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ns-menu-label {
+  padding: 8px;
+  color: var(--ns-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.ns-menu-separator {
+  height: 1px;
+  margin: 4px;
+  background: var(--ns-border);
+}
+.ns-menu-check-indicator,
+.ns-menu-check-indicator svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.ns-menu-check-indicator[data-unchecked] {
+  visibility: hidden;
+}
+.ns-tooltip-positioner {
+  z-index: 70;
+}
+.ns-tooltip-content {
+  max-width: min(280px, var(--available-width));
+  padding: 6px 10px;
+  border: 1px solid var(--ns-border);
+  border-radius: 6px;
+  background: var(--ns-text);
+  color: var(--ns-surface);
+  box-shadow: var(--ns-shadow);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.ns-disclosure {
+  min-width: 0;
+}
+.ns-disclosure-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ns-text);
+  text-align: start;
+  font: inherit;
+  font-weight: 550;
+  cursor: pointer;
+}
+.ns-disclosure-trigger:hover {
+  background: var(--ns-hover);
+}
+.ns-disclosure-trigger svg {
+  width: 16px;
+  height: 16px;
+}
+.ns-disclosure-trigger[data-panel-open] svg {
+  transform: rotate(90deg);
+}
+.ns-disclosure-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ns-disclosure-panel {
+  padding: 8px;
+}
+@media (pointer: coarse) {
+  .ns-checkbox {
+    width: 44px;
+    height: 44px;
+  }
+  .ns-button[data-size='icon'] {
+    width: 44px;
+    height: 44px;
+  }
+  .ns-menu-item,
+  .ns-disclosure-trigger {
+    min-height: 44px;
+  }
+  .ns-input.ns-textarea {
+    font-size: 16px;
+  }
+}
