@@ -193,7 +193,7 @@
   pointer-events: none;
 }
 .ns-editor-popovers .cm-tooltip {
-  z-index: 1000;
+  z-index: var(--ns-layer-popover);
   color: var(--ns-text);
   background: var(--ns-surface);
   border: 1px solid var(--ns-border);

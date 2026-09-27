@@ -45,6 +45,10 @@
   --ns-space-lg: 24px;
   --ns-space-xl: 32px;
   --ns-row-padding: 16px;
+  --ns-layer-modal: 100;
+  --ns-layer-popover: 110;
+  --ns-layer-tooltip: 120;
+  --ns-layer-skip-link: 130;
   color-scheme: light;
   color: var(--ns-text);
   background: var(--ns-canvas);
@@ -464,12 +468,12 @@
 .ns-shell-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--ns-layer-modal);
   background: #050d1c80;
 }
 .ns-dialog-popup {
   position: fixed;
-  z-index: 101;
+  z-index: var(--ns-layer-modal);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -589,7 +593,7 @@
 }
 .ns-shell-drawer {
   position: fixed;
-  z-index: 101;
+  z-index: var(--ns-layer-modal);
   inset: 0 auto 0 0;
   width: min(300px, calc(100vw - 48px));
   overflow-y: auto;
@@ -911,7 +915,7 @@ a.ns-activity-link:hover {
   position: fixed;
   top: 8px;
   left: 8px;
-  z-index: 200;
+  z-index: var(--ns-layer-skip-link);
   padding: 8px 16px;
   background: var(--ns-surface);
   color: var(--ns-accent);

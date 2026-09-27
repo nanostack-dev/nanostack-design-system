@@ -49,7 +49,7 @@
   flex-shrink: 0;
 }
 .ns-menu-positioner {
-  z-index: 60;
+  z-index: var(--ns-layer-popover);
 }
 .ns-menu-content {
   min-width: 180px;
@@ -112,7 +112,7 @@
   visibility: hidden;
 }
 .ns-tooltip-positioner {
-  z-index: 70;
+  z-index: var(--ns-layer-tooltip);
 }
 .ns-tooltip-content {
   max-width: min(280px, var(--available-width));
