@@ -16,12 +16,21 @@
 - Key `DataTable` row selection by row id. Add controlled `selectedRowIds` and `onSelectedRowIdsChange`, and `getRowLabel` for per-row checkbox names.
 - Stop `VirtualList` from re-requesting a failed page. Add `loadMoreFailed`, `loadMoreFailedMessage` and `retryLabel` for a retry affordance.
 - Let a consumer `id` and label name `CommandInput` and `TagAutocomplete`. Tag inputs ignore Enter during IME composition, keep a rejected draft, return focus to the input after a removal, and close their list on the first Escape without closing a parent dialog.
+- Keep external editor `value` updates out of undo history and keep the cursor in place. Add `documentKey` to give each document its own history.
+- Strip line breaks from every change to a single-line input, and let the wheel over it scroll the page or pane.
+- Match variables in linear time within the visible range, and keep the JSON brace after `{{name}}`. Tab accepts a narrowed completion at once, and editor configuration stays stable across parent re-renders.
+- Require `label` or `aria-labelledby` on every editor. A `<label for>` that targets the editor `id` focuses it.
+- Make a collapsed `WorkspaceSplit` pane inert and give each split unique pane ids behind the library-owned `WorkspaceSplitLayout` and `useWorkspaceLayout`.
+- Focus tree items themselves and support arrow keys, Enter and Space activation, typeahead, and `TreeItem expanded` with `onExpandedChange`.
+- Keep focus and a rejected rename in `KeyValueRow` and `EditableText`. `VariableText interactive={false}` renders chips without tab stops.
 
 Upgrade: add Phosphor to the application when it is not already a direct dependency with `pnpm add @phosphor-icons/react@^2.1.10`. Glyph imports do not change: `<Icon glyph={GearIcon} label="Settings" />`. The Clerk adapter needs React 19.2.3 or later because of Clerk's own peer range.
 
 Upgrade: a `DialogTrigger` or `DialogClose` inside `AppShell` must belong to its own `Dialog`, for example `<Dialog><DialogTrigger>Edit</DialogTrigger><DialogPopup>…</DialogPopup></Dialog>`. Inside a `Field`, the Field's `name` wins over the `Select`'s `name`, and manual `id`, `htmlFor` and `aria-describedby` wiring can be removed: `<Field name="environment"><FieldLabel>Environment</FieldLabel><Select options={options} /></Field>`.
 
 Upgrade: `DataTable` row selection requires `getRowId`, and `isRowSelected` cannot be combined with `enableRowSelection`: replace `<DataTable enableRowSelection isRowSelected={(row) => row.id === openId} … />` with `<DataTable enableRowSelection getRowId={(row) => row.id} selectedRowIds={ids} onSelectedRowIdsChange={setIds} … />`. Row checkboxes are named "Select <row label>" instead of "Select row", so tests that query "Select row" must change.
+
+Upgrade: name every editor: replace `<VariableAwareInput id="request-url" aria-label="Request URL" />` with `<VariableAwareInput id="request-url" label="Request URL" />`, or point `aria-labelledby` at a visible label. Pass `documentKey={activeRequest.id}` when one editor shows several documents. Replace engine layout mapping with `const persistence = useWorkspaceLayout({ id: SPLIT_STORAGE_KEY })` and `<WorkspaceSplit defaultLayout={persistence.defaultLayout} onLayoutChanged={persistence.onLayoutChanged} />`. Layouts stored in the old shape are ignored once, so the split starts again at its default ratio.
 
 ## 0.2.0-beta.4
 
