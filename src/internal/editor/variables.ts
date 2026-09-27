@@ -4,7 +4,14 @@ import {
   type CompletionContext,
   type CompletionResult,
 } from '@codemirror/autocomplete';
-import { type Extension, StateEffect, StateField, type Text } from '@codemirror/state';
+import {
+  type Extension,
+  type Range,
+  RangeSetBuilder,
+  StateEffect,
+  StateField,
+  type Text,
+} from '@codemirror/state';
 import {
   Decoration,
   type DecorationSet,
@@ -23,31 +30,51 @@ import {
   type VariableMatchOptions,
 } from '../../components/editor-variables.js';
 
-export function createVariableDecorations(
+const scanMargin = 1000;
+
+type AddVariableMark = (from: number, to: number, mark: Decoration) => void;
+
+function variableMark(name: string, resolved: boolean) {
+  return Decoration.mark({
+    class: resolved ? 'cm-variable cm-variable-resolved' : 'cm-variable',
+    attributes: { 'data-variable': name },
+  });
+}
+
+function markVariables(
   doc: Text,
-  resolver?: (name: string) => string | undefined,
-  options?: VariableMatchOptions,
-): DecorationSet {
-  const decorations: { from: number; to: number; decoration: Decoration }[] = [];
-  const text = doc.toString();
-
-  for (const match of getVariableMatches(text, options)) {
-    const resolved = resolver?.(match.name);
-
-    decorations.push({
-      from: match.from,
-      to: match.to,
-      decoration: Decoration.mark({
-        class: resolved !== undefined ? 'cm-variable cm-variable-resolved' : 'cm-variable',
-        attributes: { 'data-variable': match.name },
-      }),
-    });
+  from: number,
+  to: number,
+  resolver: ((name: string) => string | undefined) | undefined,
+  options: VariableMatchOptions | undefined,
+  add: AddVariableMark,
+) {
+  for (let position = from; position <= to; ) {
+    const line = doc.lineAt(position);
+    const start = Math.max(line.from, from);
+    const end = Math.min(line.to, to);
+    for (const match of getVariableMatches(doc.sliceString(start, end), options)) {
+      add(
+        start + match.from,
+        start + match.to,
+        variableMark(match.name, resolver?.(match.name) !== undefined),
+      );
+    }
+    position = line.to + 1;
   }
+}
 
-  return Decoration.set(
-    decorations.map((decoration) => decoration.decoration.range(decoration.from, decoration.to)),
-    true,
-  );
+function visibleScanRanges(view: EditorView) {
+  const { doc } = view.state;
+  const ranges: { from: number; to: number }[] = [];
+  for (const { from, to } of view.visibleRanges) {
+    const start = Math.max(doc.lineAt(from).from, from - scanMargin);
+    const end = Math.min(doc.lineAt(to).to, to + scanMargin);
+    const previous = ranges.at(-1);
+    if (previous && previous.to >= start) previous.to = Math.max(previous.to, end);
+    else ranges.push({ from: start, to: end });
+  }
+  return ranges;
 }
 
 export const setResolverEffect = StateEffect.define<(name: string) => string | undefined>();
@@ -64,6 +91,7 @@ export const resolverField = StateField.define<((name: string) => string | undef
   },
 });
 
+/** Marks variables in the visible ranges only and rescans just the lines an edit touches. */
 export function variableHighlighting(
   resolver?: (name: string) => string | undefined,
   options?: VariableMatchOptions,
@@ -75,23 +103,65 @@ export function variableHighlighting(
         decorations: DecorationSet;
 
         constructor(view: EditorView) {
-          const nextResolver = view.state.field(resolverField, false);
-          this.decorations = createVariableDecorations(view.state.doc, nextResolver, options);
+          this.decorations = this.build(view);
         }
 
         update(update: ViewUpdate) {
-          if (
-            update.docChanged ||
-            update.transactions.some((transaction) =>
-              transaction.effects.some((effect) => effect.is(setResolverEffect)),
-            )
-          ) {
-            const nextResolver = update.state.field(resolverField, false);
-            this.decorations = createVariableDecorations(update.state.doc, nextResolver, options);
+          const resolverChanged = update.transactions.some((transaction) =>
+            transaction.effects.some((effect) => effect.is(setResolverEffect)),
+          );
+          if (resolverChanged || update.viewportMoved) {
+            this.decorations = this.build(update.view);
+            return;
           }
+          if (!update.docChanged) return;
+          let changedFrom = update.state.doc.length;
+          let changedTo = 0;
+          update.changes.iterChangedRanges((_fromA, _toA, fromB, toB) => {
+            changedFrom = Math.min(changedFrom, fromB);
+            changedTo = Math.max(changedTo, toB);
+          });
+          if (changedTo - changedFrom > scanMargin) {
+            this.decorations = this.build(update.view);
+            return;
+          }
+          const { doc } = update.state;
+          const from = Math.max(doc.lineAt(changedFrom).from, changedFrom - scanMargin);
+          const to = Math.min(doc.lineAt(changedTo).to, changedTo + scanMargin);
+          const added: Range<Decoration>[] = [];
+          markVariables(
+            doc,
+            from,
+            to,
+            update.state.field(resolverField, false),
+            options,
+            (markFrom, markTo, mark) => added.push(mark.range(markFrom, markTo)),
+          );
+          this.decorations = this.decorations.map(update.changes).update({
+            filterFrom: from,
+            filterTo: to,
+            filter: (markFrom, markTo) => markFrom < from || markTo > to,
+            add: added,
+          });
+        }
+
+        build(view: EditorView) {
+          const builder = new RangeSetBuilder<Decoration>();
+          const resolve = view.state.field(resolverField, false);
+          for (const range of visibleScanRanges(view)) {
+            markVariables(
+              view.state.doc,
+              range.from,
+              range.to,
+              resolve,
+              options,
+              (from, to, mark) => builder.add(from, to, mark),
+            );
+          }
+          return builder.finish();
         }
       },
-      { decorations: (view) => view.decorations },
+      { decorations: (plugin) => plugin.decorations },
     ),
   ];
 }
@@ -242,9 +312,12 @@ export function inlineCompletionPreview(options?: VariableMatchOptions): Extensi
 export function variableHoverTooltip(options?: VariableMatchOptions): Extension {
   return hoverTooltip((view, pos) => {
     const resolver = view.state.field(resolverField, false);
-    const text = view.state.doc.toString();
+    const line = view.state.doc.lineAt(pos);
+    const start = Math.max(line.from, pos - scanMargin);
+    const end = Math.min(line.to, pos + scanMargin);
 
-    for (const match of getVariableMatches(text, options)) {
+    for (const found of getVariableMatches(view.state.doc.sliceString(start, end), options)) {
+      const match = { name: found.name, from: start + found.from, to: start + found.to };
       if (pos >= match.from && pos < match.to) {
         const resolved = resolver?.(match.name);
 

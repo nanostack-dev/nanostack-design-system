@@ -2,6 +2,7 @@ import { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
 import { CompletionContext } from '@codemirror/autocomplete';
 import {
   CodeEditor,
@@ -123,6 +124,45 @@ describe('variable matching and completion', () => {
     expect(getVariableMatches('${host}', { pattern })).toEqual([{ from: 0, to: 7, name: 'host' }]);
     expect(pattern.lastIndex).toBe(7);
     expect(getVariableMatches('😀text', { pattern: /()/gu })).toEqual([]);
+  });
+
+  it.each([
+    ['spaced double braces', '{{ host }}', [{ from: 0, to: 10, name: 'host' }]],
+    ['triple braces', '{{{token}}}', [{ from: 0, to: 11, name: 'token' }]],
+    ['a JSON closing brace', '{"id":{{userId}}}', [{ from: 6, to: 16, name: 'userId' }]],
+    ['triple braces inside JSON', '{"id":{{{userId}}}}', [{ from: 6, to: 18, name: 'userId' }]],
+    ['an extra closing brace', '{{a}}}', [{ from: 0, to: 5, name: 'a' }]],
+    ['an unclosed variable', '{{host', []],
+    ['an empty variable', '{{   }}', []],
+    ['a nested opening', '{{ {{host}} }}', [{ from: 3, to: 11, name: 'host' }]],
+    [
+      'several variables',
+      '{{a}}/{{ b }}',
+      [
+        { from: 0, to: 5, name: 'a' },
+        { from: 6, to: 13, name: 'b' },
+      ],
+    ],
+  ])('matches %s', (_case, text, expected) => {
+    expect(getVariableMatches(text)).toEqual(expected);
+  });
+
+  it('matches an unclosed variable followed by long whitespace in linear time', () => {
+    const started = performance.now();
+    expect(getVariableMatches(`{{${' '.repeat(20_000)}`)).toEqual([]);
+    expect(getVariableMatches(`{{{${' '.repeat(20_000)}}}`)).toEqual([]);
+    expect(performance.now() - started).toBeLessThan(50);
+  });
+
+  it('highlights a JSON-adjacent variable without its closing JSON brace and keeps edits fast', () => {
+    const { container } = render(
+      <CodeEditor defaultValue={`{"id":{{userId}}}\n{{${' '.repeat(20_000)}`} aria-label="Body" />,
+    );
+    expect(container.querySelector('.cm-variable')).toHaveTextContent(/^\{\{userId\}\}$/);
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
+    const started = performance.now();
+    view.dispatch({ changes: { from: view.state.doc.length, insert: ' ' } });
+    expect(performance.now() - started).toBeLessThan(50);
   });
 
   it('offers typed variables and matching closing delimiters for custom completion templates', () => {

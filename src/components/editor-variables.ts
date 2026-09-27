@@ -14,7 +14,7 @@ export interface VariableMatchOptions {
   templates?: readonly VariableTemplate[] | undefined;
 }
 
-const DEFAULT_VARIABLE_PATTERN = /\{\{\{?\s*([^}]+?)\s*\}\}\}?/g;
+const DEFAULT_VARIABLE_PATTERN = /\{\{(\{?)([^{}]*)\}\}/g;
 
 const DEFAULT_VARIABLE_TEMPLATES: VariableTemplate[] = [
   { open: '{{{', close: '}}}' },
@@ -27,8 +27,7 @@ export interface VariableMatch {
   name: string;
 }
 
-function getVariablePattern(pattern?: RegExp | undefined): RegExp {
-  const source = pattern ?? DEFAULT_VARIABLE_PATTERN;
+function getVariablePattern(source: RegExp): RegExp {
   const flags = source.flags.includes('g') ? source.flags : `${source.flags}g`;
 
   return new RegExp(source.source, flags);
@@ -42,9 +41,32 @@ function getVariableTemplates(
   );
 }
 
-export function getVariableMatches(text: string, options?: VariableMatchOptions): VariableMatch[] {
+/**
+ * Matches `{{name}}` and `{{{name}}}` in linear time. The body cannot contain a brace, and a
+ * third closing brace belongs to the variable only when it also opened with three braces.
+ *
+ * `{"id":{{userId}}}`: the pattern finds `{{userId}}` at 6..16. It opened with two braces, so
+ * the JSON `}` at 16 stays outside: `{ from: 6, to: 16, name: 'userId' }`.
+ * `{{{token}}}`: the pattern finds `{{{token}}` at 0..10. It opened with three braces and
+ * `text[10]` is `}`, so the match ends at 11: `{ from: 0, to: 11, name: 'token' }`.
+ */
+function getDefaultVariableMatches(text: string): VariableMatch[] {
   const matches: VariableMatch[] = [];
-  const pattern = getVariablePattern(options?.pattern);
+  for (const match of text.matchAll(DEFAULT_VARIABLE_PATTERN)) {
+    const name = match[2]?.trim();
+    if (!name) continue;
+    const opensWithThreeBraces = match[1] === '{';
+    let to = match.index + match[0].length;
+    if (opensWithThreeBraces && text[to] === '}') to += 1;
+    matches.push({ from: match.index, to, name });
+  }
+  return matches;
+}
+
+export function getVariableMatches(text: string, options?: VariableMatchOptions): VariableMatch[] {
+  if (!options?.pattern) return getDefaultVariableMatches(text);
+  const matches: VariableMatch[] = [];
+  const pattern = getVariablePattern(options.pattern);
   let match = pattern.exec(text);
 
   while (match !== null) {
