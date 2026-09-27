@@ -48,7 +48,6 @@ test('supports form input, menu commands and disclosures with shared themes', as
   ).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   if (testInfo.project.name !== 'desktop') {
-    expect((await checkbox.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     expect(
       await page
         .getByRole('textbox', { name: 'Description' })
@@ -80,4 +79,14 @@ test('opens a visual tooltip on keyboard focus and dismisses it without moving f
   await page.keyboard.press('Escape');
   await expect(page.locator('.ns-tooltip-content')).toHaveCount(0);
   await expect(trigger).toBeFocused();
+});
+test('a touch checkbox keeps its box size and grows only its tap area', async ({ page }) => {
+  await page.goto('/tests/browser/fixtures/controls.html');
+  const checkbox = page.getByRole('checkbox', { name: 'Notifications' });
+  const box = (await checkbox.boundingBox())!;
+  expect(box.width).toBe(20);
+  expect(box.height).toBe(20);
+  const coarse = await page.evaluate(() => matchMedia('(pointer: coarse)').matches);
+  await page.mouse.click(box.x + box.width + 8, box.y + box.height / 2);
+  await expect(checkbox).toBeChecked({ checked: coarse });
 });

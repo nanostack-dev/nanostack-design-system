@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   flexRender,
+  type Column,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -86,6 +87,11 @@ function updated<T>(updater: Updater<T>, current: T): T {
 }
 
 const selectionColumnId = 'select';
+
+function columnLabel<T>(column: Column<T, unknown>): string {
+  const { header } = column.columnDef;
+  return typeof header === 'string' ? header : column.id.replaceAll('_', ' ');
+}
 
 function firstVisibleValue<T>(row: Row<T>): string {
   const value = row
@@ -261,9 +267,7 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
                         checked={column.getIsVisible()}
                         onCheckedChange={(visible) => column.toggleVisibility(visible)}
                       >
-                        {typeof column.columnDef.header === 'string'
-                          ? column.columnDef.header
-                          : column.id.replaceAll('_', ' ')}
+                        {columnLabel(column)}
                       </MenuCheckboxItem>
                     ))}
                 </MenuGroup>
@@ -336,7 +340,12 @@ export function DataTable<T, TValue = unknown>(input: DataTableProps<T, TValue>)
                     data-tone={rowTone?.(row.original) ?? 'neutral'}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id}>
+                      <td
+                        key={cell.id}
+                        data-ns-label={
+                          cell.column.id === selectionColumnId ? undefined : columnLabel(cell.column)
+                        }
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}

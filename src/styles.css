@@ -568,8 +568,31 @@
   background: var(--ns-surface);
 }
 .ns-shell-header-content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.ns-shell-header-content > :only-child {
   flex: 1;
   min-width: 0;
+}
+.ns-shell-header-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ns-shell-header-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
 }
 .ns-shell-main {
   grid-column: 2;
@@ -821,6 +844,9 @@ a.ns-activity-link:hover {
   }
   .ns-shell-main {
     padding: 24px 16px 40px;
+  }
+  .ns-shell-header-actions .ns-keyboard-key {
+    display: none;
   }
   .ns-shell-mobile-trigger {
     display: inline-flex;

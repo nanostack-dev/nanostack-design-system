@@ -161,3 +161,17 @@ test('static and linked activity rows share the narrow layout', async ({ page })
   }
   expect(titleWidths[0]).toBeCloseTo(titleWidths[1] ?? 0, 0);
 });
+test('the top bar keeps its title and actions on one line', async ({ page }) => {
+  await page.goto(fixture);
+  const title = page.getByText('Shell overlays with a long workspace screen name');
+  const theme = page.getByRole('button', { name: 'Theme', exact: true });
+  const titleBox = (await title.boundingBox())!;
+  const themeBox = (await theme.boundingBox())!;
+  expect(Math.abs(titleBox.y + titleBox.height / 2 - (themeBox.y + themeBox.height / 2))).toBeLessThan(4);
+  expect(themeBox.x + themeBox.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  const phone = page.viewportSize()!.width < 768;
+  await expect(page.getByText('⌘ K')).toBeVisible({ visible: !phone });
+  if (phone) {
+    expect(await title.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
+  }
+});

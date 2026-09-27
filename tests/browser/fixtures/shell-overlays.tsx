@@ -5,6 +5,8 @@ import {
   ActivityList,
   AppShell,
   AppShellHeader,
+  AppShellHeaderActions,
+  AppShellHeaderTitle,
   AppShellMain,
   AppShellNav,
   AppShellNavLink,
@@ -19,6 +21,7 @@ import {
   DialogTrigger,
   EmptyState,
   Input,
+  KeyboardKey,
   PageHeader,
   PageHeaderDescription,
   PageHeaderTitle,
@@ -63,7 +66,15 @@ function Shell() {
           </AppShellNav>
         </AppShellSidebar>
         <AppShellHeader>
-          <Text weight="medium">Shell overlays</Text>
+          <AppShellHeaderTitle>Shell overlays with a long workspace screen name</AppShellHeaderTitle>
+          <AppShellHeaderActions>
+            <Button variant="secondary" size="sm">
+              Search<KeyboardKey>⌘ K</KeyboardKey>
+            </Button>
+            <Button variant="secondary" size="sm">
+              Theme
+            </Button>
+          </AppShellHeaderActions>
         </AppShellHeader>
         <AppShellMain>
           <Stack gap="lg">
