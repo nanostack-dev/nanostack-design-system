@@ -39,6 +39,22 @@ describe('GitHub workflows', () => {
     expect(release).toMatch(/^concurrency:\n {2}group: .+\n {2}cancel-in-progress: false$/m);
   });
 
+  it('deploys the documentation site from main and never cancels a deploy in progress', () => {
+    const pages = workflows.find((workflow) => workflow.name === 'pages.yml')!.text;
+    expect(pages).toMatch(/^on:\n {2}push:\n {4}branches: \[main\]\n {2}workflow_dispatch:$/m);
+    expect(pages).toMatch(
+      /^permissions:\n {2}contents: read\n {2}pages: write\n {2}id-token: write$/m,
+    );
+    expect(pages).toMatch(/^concurrency:\n {2}group: pages\n {2}cancel-in-progress: false$/m);
+    expect(pages).toMatch(
+      /^ {6}- run: pnpm build:docs\n {8}env:\n {10}DOCS_BASE: \/nanostack-design-system\/$/m,
+    );
+    expect(pages).toMatch(/^ {8}with:\n {10}path: site$/m);
+    expect(pages).toMatch(
+      /^ {4}environment:\n {6}name: github-pages\n {6}url: \$\{\{ steps\.deployment\.outputs\.page_url \}\}$/m,
+    );
+  });
+
   it('publishes with the npm tag and release kind that the release identity chose', () => {
     const release = workflows.find((workflow) => workflow.name === 'release.yml')!.text;
     expect(release).toMatch(/^ {10}node scripts\/release-identity\.mjs$/m);
