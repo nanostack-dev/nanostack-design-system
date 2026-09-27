@@ -46,6 +46,19 @@ describe('optional identity adapter contract', () => {
     expect(forwarded).not.toHaveProperty('style');
     expect(forwarded).not.toHaveProperty('className');
   });
+  it('colors text on the accent, control borders and monochrome provider icons from theme tokens', () => {
+    render(<SignInPanel />);
+    expect(captured.signIn.mock.lastCall?.[0]).toMatchObject({
+      appearance: {
+        variables: {
+          colorPrimaryForeground: 'var(--ns-on-accent)',
+          colorNeutral: 'var(--ns-text)',
+          colorBorder: 'var(--ns-control-border)',
+        },
+        elements: { providerIcon__github: 'ns-auth-monochrome-icon' },
+      },
+    });
+  });
   it('defaults to hash routing and prevents nested account presentation overrides', () => {
     render(<SignInPanel />);
     expect(captured.signIn.mock.lastCall?.[0]).toMatchObject({ routing: 'hash' });

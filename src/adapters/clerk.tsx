@@ -4,19 +4,36 @@ import { SignIn, UserButton } from '@clerk/clerk-react';
 import type { ComponentProps } from 'react';
 import type { NoCustomStyle } from '../internal/props.js';
 
+const monochromeProviderIcon = 'ns-auth-monochrome-icon';
+
 const appearance = {
   variables: {
     colorPrimary: 'var(--ns-accent)',
-    colorText: 'var(--ns-text)',
-    colorTextSecondary: 'var(--ns-muted)',
+    colorPrimaryForeground: 'var(--ns-on-accent)',
+    colorForeground: 'var(--ns-text)',
+    colorMutedForeground: 'var(--ns-muted)',
+    colorMuted: 'var(--ns-subtle)',
     colorBackground: 'var(--ns-surface)',
-    colorInputBackground: 'var(--ns-surface)',
-    colorInputText: 'var(--ns-text)',
+    colorInput: 'var(--ns-surface)',
+    colorInputForeground: 'var(--ns-text)',
+    colorNeutral: 'var(--ns-text)',
+    colorBorder: 'var(--ns-control-border)',
+    colorRing: 'var(--ns-accent)',
     colorDanger: 'var(--ns-danger)',
+    colorSuccess: 'var(--ns-success)',
+    colorWarning: 'var(--ns-warning)',
     borderRadius: '0.5rem',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   },
-  elements: { rootBox: 'ns-auth-widget', cardBox: 'ns-auth-card', card: 'ns-auth-card' },
+  elements: {
+    rootBox: 'ns-auth-widget',
+    cardBox: 'ns-auth-card',
+    card: 'ns-auth-card',
+    providerIcon__apple: monochromeProviderIcon,
+    providerIcon__github: monochromeProviderIcon,
+    providerIcon__vercel: monochromeProviderIcon,
+    providerIcon__x: monochromeProviderIcon,
+  },
 } satisfies NonNullable<ComponentProps<typeof SignIn>['appearance']>;
 
 type RedirectOptions = Pick<
@@ -25,7 +42,11 @@ type RedirectOptions = Pick<
 >;
 export type SignInPanelProps = NoCustomStyle & { appearance?: never } & RedirectOptions &
   ({ routing: 'path'; path: string } | { routing?: 'hash' | 'virtual'; path?: never });
-/** Keeps all identity-provider flows, including MFA, inside the supported widget. */
+/**
+ * Keeps all identity-provider flows, including MFA, inside the supported widget.
+ * With `routing="path"`, route every address under `path` to this panel too:
+ * Clerk moves to `/sign-in/factor-one` for the password step.
+ */
 export function SignInPanel({
   routing = 'hash',
   path,

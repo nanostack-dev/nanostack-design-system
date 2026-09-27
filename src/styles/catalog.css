@@ -385,6 +385,9 @@
   box-shadow: none;
   background: var(--ns-surface);
 }
+.ns-theme[data-ns-theme='dark'] .ns-auth-monochrome-icon {
+  filter: invert(1);
+}
 .ns-shell[data-layout='workspace'] {
   height: 100dvh;
   grid-template-rows: auto minmax(0, 1fr);
