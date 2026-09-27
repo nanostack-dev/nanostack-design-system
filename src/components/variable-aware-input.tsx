@@ -1,7 +1,11 @@
 'use client';
 
 import { useMemo } from 'react';
-import { CodeEditor, type CodeEditorProps } from './code-editor.js';
+import {
+  CodeEditor,
+  type CodeEditorAccessibleName,
+  type CodeEditorOptions,
+} from './code-editor.js';
 import type { Variable } from './editor-variables.js';
 
 export interface VariableAwareInputVariable {
@@ -11,10 +15,11 @@ export interface VariableAwareInputVariable {
   description?: string | undefined;
 }
 
-export type VariableAwareInputProps = Omit<CodeEditorProps, 'variant' | 'variables'> & {
-  variables?: readonly VariableAwareInputVariable[] | undefined;
-  multiline?: boolean | undefined;
-};
+export type VariableAwareInputProps = Omit<CodeEditorOptions, 'variant' | 'variables'> &
+  CodeEditorAccessibleName & {
+    variables?: readonly VariableAwareInputVariable[] | undefined;
+    multiline?: boolean | undefined;
+  };
 
 /** Supports key/value stores while keeping the editor's canonical variable shape small. */
 export function VariableAwareInput({

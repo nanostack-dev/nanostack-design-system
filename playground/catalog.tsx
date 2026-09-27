@@ -570,7 +570,7 @@ function Workspace() {
                     <UI.PaneBody scroll="none" padding="none">
                       {showDocument ? (
                         <UI.CodeEditor
-                          aria-label="Example request body"
+                          label="Example request body"
                           value={document}
                           onChange={(value) => {
                             setDocument(value);
@@ -617,7 +617,7 @@ function Workspace() {
                     </UI.PaneToolbar>
                     <UI.PaneBody scroll="none" padding="none">
                       <UI.CodeViewer
-                        aria-label="Example response body"
+                        label="Example response body"
                         value={response}
                         language="json"
                         lineNumbers

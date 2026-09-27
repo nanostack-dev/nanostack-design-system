@@ -72,8 +72,13 @@ export interface CodeEditorHandle {
   getValue(): string;
 }
 
-export type CodeEditorProps = NoCustomStyle &
-  AriaAttributes & {
+/** Every editor needs a name: its own `label`, or the id of visible text naming it. */
+export type CodeEditorAccessibleName =
+  | { label: string; 'aria-labelledby'?: never }
+  | { 'aria-labelledby': string; label?: never };
+
+export type CodeEditorOptions = NoCustomStyle &
+  Omit<AriaAttributes, 'aria-label' | 'aria-labelledby'> & {
     ref?: Ref<CodeEditorHandle> | undefined;
     id?: string | undefined;
     title?: string | undefined;
@@ -101,6 +106,8 @@ export type CodeEditorProps = NoCustomStyle &
     /** Identity of the edited document; a new key starts a fresh selection and undo history. */
     documentKey?: string | number | undefined;
   };
+
+export type CodeEditorProps = CodeEditorOptions & CodeEditorAccessibleName;
 
 function detectLanguage(doc: Text): CodeLanguage {
   const trimmed = doc.sliceString(0, 4096).trimStart();
@@ -224,6 +231,8 @@ export function CodeEditor({
   autoDetectLanguage = false,
   variant = 'editor',
   documentKey,
+  label,
+  'aria-labelledby': labelledBy,
   ...attributes
 }: CodeEditorProps) {
   const theme = useThemeSettings();
@@ -282,7 +291,6 @@ export function CodeEditor({
   // Attribute values land on the actual textbox, not an inaccessible outer wrapper.
   const contentAttributes: Record<string, string> = {
     role: 'textbox',
-    'aria-label': variant === 'viewer' ? 'Code preview' : 'Code editor',
     'aria-multiline': String(variant !== 'input'),
     'aria-readonly': String(readOnly),
     'aria-disabled': String(disabled),
@@ -301,7 +309,13 @@ export function CodeEditor({
   contentAttributes['aria-disabled'] = String(disabled);
   contentAttributes['aria-multiline'] = String(variant !== 'input');
   if (id) contentAttributes.id = id;
-  if (contentAttributes['aria-labelledby']) delete contentAttributes['aria-label'];
+  if (labelledBy) {
+    contentAttributes['aria-labelledby'] = labelledBy;
+    delete contentAttributes['aria-label'];
+  } else if (label) {
+    contentAttributes['aria-label'] = label;
+    delete contentAttributes['aria-labelledby'];
+  }
   const attributesKey = JSON.stringify(contentAttributes);
   const initial = useLatestRef({ value, defaultValue, autoDetectLanguage });
 
@@ -322,6 +336,17 @@ export function CodeEditor({
     }),
     [disabled],
   );
+
+  useEffect(() => {
+    const owner = containerRef.current?.ownerDocument;
+    if (!id || disabled || !owner) return;
+    const focusFromLabel = (event: MouseEvent) => {
+      const label = event.target instanceof Element ? event.target.closest('label') : null;
+      if (label?.htmlFor === id) viewRef.current?.focus();
+    };
+    owner.addEventListener('click', focusFromLabel);
+    return () => owner.removeEventListener('click', focusFromLabel);
+  }, [id, disabled]);
 
   useEffect(() => {
     if (!containerRef.current || !tooltipHost) return;
@@ -527,7 +552,7 @@ export function CodeEditor({
 }
 
 export type CodeViewerProps = Omit<
-  CodeEditorProps,
+  CodeEditorOptions,
   | 'variant'
   | 'readOnly'
   | 'onChange'
@@ -538,7 +563,8 @@ export type CodeViewerProps = Omit<
   | 'variableTemplates'
   | 'variableResolver'
   | 'variablePattern'
->;
+> &
+  CodeEditorAccessibleName;
 
 export function CodeViewer(props: CodeViewerProps) {
   return <CodeEditor {...props} variant="viewer" />;

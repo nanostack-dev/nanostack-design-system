@@ -1,5 +1,6 @@
 import { createRef, useState } from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { EditorState } from '@codemirror/state';
 import { EditorView, runScopeHandlers } from '@codemirror/view';
@@ -10,24 +11,25 @@ import {
   CodeEditor,
   CodeViewer,
   type CodeEditorHandle,
-  type CodeEditorProps,
+  type CodeEditorOptions,
 } from '../src/components/code-editor.js';
 import { VariableAwareInput } from '../src/components/variable-aware-input.js';
 import { getVariableMatches } from '../src/components/editor-variables.js';
 import { variableCompletions } from '../src/internal/editor/variables.js';
 import { Theme } from '../src/theme.js';
+import { Label } from '../src/components/layout.js';
 
 describe('editor', () => {
   it('synchronizes external values without reporting them as user edits and keeps a behavior-only ref', () => {
     const ref = createRef<CodeEditorHandle>();
     const onChange = vi.fn();
     const { rerender } = render(
-      <CodeEditor ref={ref} value="first" onChange={onChange} aria-label="Body" />,
+      <CodeEditor ref={ref} value="first" onChange={onChange} label="Body" />,
     );
     expect(screen.getByRole('textbox', { name: 'Body' })).toHaveTextContent('first');
     expect(ref.current?.getValue()).toBe('first');
     expect(Object.keys(ref.current!)).toEqual(['focus', 'selectAll', 'getValue']);
-    rerender(<CodeEditor ref={ref} value="second" onChange={onChange} aria-label="Body" />);
+    rerender(<CodeEditor ref={ref} value="second" onChange={onChange} label="Body" />);
     expect(screen.getByRole('textbox', { name: 'Body' })).toHaveTextContent('second');
     expect(onChange).not.toHaveBeenCalled();
   });
@@ -35,11 +37,11 @@ describe('editor', () => {
   it('keeps external values out of undo history and maps the cursor around them', () => {
     const onChange = vi.fn();
     const { container, rerender } = render(
-      <CodeEditor value="world" onChange={onChange} aria-label="Body" />,
+      <CodeEditor value="world" onChange={onChange} label="Body" />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
     act(() => view.dispatch({ selection: { anchor: 5 } }));
-    rerender(<CodeEditor value="hello world" onChange={onChange} aria-label="Body" />);
+    rerender(<CodeEditor value="hello world" onChange={onChange} label="Body" />);
     expect(view.state.doc.toString()).toBe('hello world');
     expect(view.state.selection.main.head).toBe(11);
     expect(undo(view)).toBe(false);
@@ -50,11 +52,11 @@ describe('editor', () => {
   it('undoes only user edits after an external value arrives', () => {
     const onChange = vi.fn();
     const { container, rerender } = render(
-      <CodeEditor value="GET /users" onChange={onChange} aria-label="Request" />,
+      <CodeEditor value="GET /users" onChange={onChange} label="Request" />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
     act(() => view.dispatch({ changes: { from: 0, insert: '# ' }, userEvent: 'input.type' }));
-    rerender(<CodeEditor value="# GET /users/1" onChange={onChange} aria-label="Request" />);
+    rerender(<CodeEditor value="# GET /users/1" onChange={onChange} label="Request" />);
     expect(undo(view)).toBe(true);
     expect(view.state.doc.toString()).toBe('GET /users/1');
     expect(onChange).toHaveBeenLastCalledWith('GET /users/1');
@@ -69,7 +71,7 @@ describe('editor', () => {
         onChange={onChange}
         language="json"
         variables={[{ name: 'host', value: 'localhost' }]}
-        aria-label="Body"
+        label="Body"
       />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
@@ -83,7 +85,7 @@ describe('editor', () => {
         onChange={onChange}
         language="json"
         variables={[{ name: 'host', value: 'localhost' }]}
-        aria-label="Body"
+        label="Body"
       />,
     );
     expect(view.state.doc.toString()).toBe('{{host}}');
@@ -95,16 +97,47 @@ describe('editor', () => {
     expect(screen.getByRole('textbox', { name: 'Body' })).toBe(view.contentDOM);
   });
 
+  it('names each textbox from its own label or labelling element, never a generic default', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <Label id="url-label" htmlFor="url">
+          Request URL
+        </Label>
+        <VariableAwareInput id="url" aria-labelledby="url-label" />
+        <CodeViewer label="Response" value="{}" />
+      </>,
+    );
+    const url = screen.getByRole('textbox', { name: 'Request URL' });
+    expect(url).not.toHaveAttribute('aria-label');
+    expect(screen.getByRole('textbox', { name: 'Response' })).toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: /^Code (editor|preview)$/ })).toBeNull();
+    await user.click(screen.getByText('Request URL'));
+    expect(url).toHaveFocus();
+  });
+
+  it('keeps a disabled editor out of focus when its label is clicked', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <Label id="body-label" htmlFor="body">
+          Body
+        </Label>
+        <CodeEditor id="body" aria-labelledby="body-label" disabled />
+      </>,
+    );
+    await user.click(screen.getByText('Body'));
+    expect(screen.getByRole('textbox', { name: 'Body' })).not.toHaveFocus();
+  });
+
   it('updates readonly, placeholder and variant behavior without recreating the textbox', () => {
     const { rerender } = render(
-      <CodeEditor defaultValue="" placeholder="Initial…" aria-label="Query" />,
+      <CodeEditor defaultValue="" placeholder="Initial…" label="Query" />,
     );
     const editor = screen.getByRole('textbox', { name: 'Query' });
     expect(editor).toHaveAttribute('contenteditable', 'true');
     expect(screen.getByText('Initial…')).toBeInTheDocument();
-    rerender(
-      <CodeEditor readOnly variant="input" placeholder="New placeholder…" aria-label="Query" />,
-    );
+    rerender(<CodeEditor readOnly variant="input" placeholder="New placeholder…" label="Query" />);
     expect(screen.getByRole('textbox', { name: 'Query' })).toBe(editor);
     expect(editor).toHaveAttribute('contenteditable', 'false');
     expect(editor).toHaveAttribute('aria-readonly', 'true');
@@ -116,7 +149,7 @@ describe('editor', () => {
     function renderInput() {
       const onChange = vi.fn();
       const { container } = render(
-        <CodeEditor variant="input" defaultValue="api" onChange={onChange} aria-label="URL" />,
+        <CodeEditor variant="input" defaultValue="api" onChange={onChange} label="URL" />,
       );
       const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
       view.dispatch({ selection: { anchor: 3 } });
@@ -173,14 +206,14 @@ describe('editor', () => {
       <VariableAwareInput
         value="{{host}}"
         variables={[{ key: ' host ', value: 'localhost' }]}
-        aria-label="URL"
+        label="URL"
       />,
     );
     expect(container.querySelector('.cm-variable-resolved')).toHaveTextContent('{{host}}');
-    rerender(<VariableAwareInput value="{{host}}" variables={[]} aria-label="URL" />);
+    rerender(<VariableAwareInput value="{{host}}" variables={[]} label="URL" />);
     expect(container.querySelector('.cm-variable')).toHaveTextContent('{{host}}');
     expect(container.querySelector('.cm-variable-resolved')).toBeNull();
-    rerender(<CodeViewer value="{{host}}" aria-label="Response" />);
+    rerender(<CodeViewer value="{{host}}" label="Response" />);
     expect(screen.getByRole('textbox', { name: 'Response' })).toHaveAttribute(
       'aria-readonly',
       'true',
@@ -197,7 +230,7 @@ describe('editor', () => {
           value={value}
           onChange={setValue}
           variables={[{ name: 'host', value: 'localhost' }, { name: 'token' }]}
-          aria-label="URL"
+          label="URL"
         />
       );
     }
@@ -224,29 +257,29 @@ describe('editor', () => {
 
   it('refreshes variable resolution only when the resolved values change', () => {
     const { container, rerender } = render(
-      <CodeEditor value="{{host}}" variables={[{ name: 'host' }]} aria-label="URL" />,
+      <CodeEditor value="{{host}}" variables={[{ name: 'host' }]} label="URL" />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
     const dispatch = vi.spyOn(view, 'dispatch');
-    rerender(<CodeEditor value="{{host}}" variables={[{ name: 'host' }]} aria-label="URL" />);
+    rerender(<CodeEditor value="{{host}}" variables={[{ name: 'host' }]} label="URL" />);
     expect(dispatch).not.toHaveBeenCalled();
     expect(container.querySelector('.cm-variable-resolved')).toBeNull();
     rerender(
-      <CodeEditor value="{{host}}" variables={[{ name: 'host', value: 'a' }]} aria-label="URL" />,
+      <CodeEditor value="{{host}}" variables={[{ name: 'host', value: 'a' }]} label="URL" />,
     );
     expect(container.querySelector('.cm-variable-resolved')).toHaveTextContent('{{host}}');
   });
 
   it('re-detects an uncontrolled document language only when auto-detection is on', () => {
     const { container, rerender } = render(
-      <CodeEditor autoDetectLanguage defaultValue="" aria-label="Body" />,
+      <CodeEditor autoDetectLanguage defaultValue="" label="Body" />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
     act(() => view.dispatch({ changes: { from: 0, insert: '<note></note>' } }));
     expect(view.state.facet(language)?.name).toBe('xml');
     act(() => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: '{}' } }));
     expect(view.state.facet(language)?.name).toBe('json');
-    rerender(<CodeEditor defaultValue="" aria-label="Body" />);
+    rerender(<CodeEditor defaultValue="" label="Body" />);
     expect(view.state.facet(language)).toBeNull();
     act(() => view.dispatch({ changes: { from: 0, insert: '[' } }));
     expect(view.state.facet(language)).toBeNull();
@@ -255,7 +288,7 @@ describe('editor', () => {
   it('inherits the nearest theme in its popover portal and removes the portal on unmount', () => {
     const { rerender, unmount } = render(
       <Theme colorScheme="dark" brand="echopoint">
-        <CodeEditor aria-label="Body" />
+        <CodeEditor label="Body" />
       </Theme>,
     );
     const host = document.querySelector('.ns-editor-popovers')!;
@@ -263,7 +296,7 @@ describe('editor', () => {
     expect(host.parentElement).toHaveAttribute('data-ns-brand', 'echopoint');
     rerender(
       <Theme colorScheme="light" brand="anchor">
-        <CodeEditor aria-label="Body" />
+        <CodeEditor label="Body" />
       </Theme>,
     );
     expect(host.parentElement).toHaveAttribute('data-ns-theme', 'light');
@@ -283,9 +316,9 @@ describe('editor', () => {
       'data-ns-editor-height': '900px',
       'data-ns-editor-variant': 'viewer',
       render: <span>Replacement</span>,
-    } as unknown as CodeEditorProps;
+    } as unknown as CodeEditorOptions;
     const { container } = render(
-      <CodeEditor {...unsafe} height="compact" variant="input" aria-label="Code" />,
+      <CodeEditor {...unsafe} height="compact" variant="input" label="Code" />,
     );
     const root = container.querySelector('.ns-code-editor')!;
     expect(root).not.toHaveAttribute('style');
@@ -340,7 +373,7 @@ describe('variable matching and completion', () => {
 
   it('highlights a JSON-adjacent variable without its closing JSON brace and keeps edits fast', () => {
     const { container } = render(
-      <CodeEditor defaultValue={`{"id":{{userId}}}\n{{${' '.repeat(20_000)}`} aria-label="Body" />,
+      <CodeEditor defaultValue={`{"id":{{userId}}}\n{{${' '.repeat(20_000)}`} label="Body" />,
     );
     expect(container.querySelector('.cm-variable')).toHaveTextContent(/^\{\{userId\}\}$/);
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
@@ -351,11 +384,7 @@ describe('variable matching and completion', () => {
 
   it('keeps an open variable completion accepting Tab immediately after each typed character', async () => {
     const { container } = render(
-      <CodeEditor
-        defaultValue=""
-        variables={[{ name: 'host' }, { name: 'token' }]}
-        aria-label="URL"
-      />,
+      <CodeEditor defaultValue="" variables={[{ name: 'host' }, { name: 'token' }]} label="URL" />,
     );
     const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)!;
     const type = (text: string) =>

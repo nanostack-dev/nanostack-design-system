@@ -95,3 +95,13 @@ test('lets a wheel over a single-line input scroll its pane', async ({ page }) =
   await page.mouse.wheel(0, 160);
   await expect.poll(() => region.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
 });
+
+test('names an editor from a visible label and focuses it when the label is clicked', async ({
+  page,
+}) => {
+  const path = page.getByRole('textbox', { name: 'Request path', exact: true });
+  await page.getByText('Request path', { exact: true }).click();
+  await expect(path).toBeFocused();
+  await page.keyboard.type('/users');
+  await expect(path).toHaveText('/users');
+});
