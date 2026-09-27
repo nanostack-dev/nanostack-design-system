@@ -33,6 +33,20 @@ Upgrade: replace the beta package and keep existing imports. Use `WorkerAvatar v
 - Migrate Echopoint's full frontend and stories to library assemblies, with an enforced zero-override boundary. Remove local primitives, stylesheets and visual-engine dependencies.
 - Expand keyboard, focus, async clipboard, controlled state, scroll anchoring, graph pointer, responsive, accessibility, type and packaged-consumer coverage.
 
+Upgrade: replace `Text as="span"` with `display="inline"` and remove `as="p"`, which is the default. Replace `data-size`, `data-tone`, `data-disabled` and other state attributes, and `color` passed from JavaScript or spread objects, with the typed prop they imitated. Replace `sx`, `slots` and `component` with layout parts such as Cluster, or with named parts. Components now remove these keys at runtime, so an unconverted use has no visual effect.
+
+```tsx
+// 0.1.0-beta.1
+<Text as="span" data-tone="muted">Draft</Text>
+<Button data-size="sm" data-disabled="" {...{ sx: { ml: 2 } }}>Save</Button>
+
+// 0.2.0-beta.1
+<Cluster gap="sm">
+  <Text display="inline" tone="muted">Draft</Text>
+  <Button size="sm" disabled>Save</Button>
+</Cluster>
+```
+
 ## 0.1.0-beta.1
 
 - Introduce a closed styling contract, scoped light/dark and brand presets, and comfortable/compact density.
