@@ -355,7 +355,6 @@ const records: RecordRow[] = [
 function Collections() {
   const [selected, setSelected] = useState('record_01');
   const [search, setSearch] = useState('');
-  const [selectedWorker, setSelectedWorker] = useState('worker_a');
   const [notice, setNotice] = useState('Choose a record or inspect a row action.');
   const selectedRecord = records.find((record) => record.id === selected)!;
   return (
@@ -415,69 +414,6 @@ function Collections() {
         <UI.Text size="sm" role="status">
           {notice}
         </UI.Text>
-      </Example>
-      <Example
-        title="Capacity tiles"
-        description="Select a resource using named tile parts. Capacity and observed health are data; drawing, responsive geometry and motion belong to the library."
-      >
-        <UI.ResourceTileGrid>
-          {[
-            { id: 'worker_a', name: 'Build worker', load: 0.5, staling: false, alarmed: false },
-            {
-              id: 'worker_b',
-              name: 'Verification worker',
-              load: 1,
-              staling: true,
-              alarmed: false,
-            },
-            {
-              id: 'worker_c',
-              name: 'Delivery worker',
-              load: 0.25,
-              staling: false,
-              alarmed: true,
-            },
-          ].map((worker) => (
-            <UI.ResourceTile
-              key={worker.id}
-              selected={selectedWorker === worker.id}
-              aria-pressed={selectedWorker === worker.id}
-              aria-label={`${worker.name}, ${worker.load * 100}% capacity in use`}
-              tone={worker.alarmed ? 'danger' : worker.staling ? 'warning' : 'default'}
-              onClick={() => setSelectedWorker(worker.id)}
-            >
-              <UI.WorkerAvatar
-                variant="pebble"
-                size="md"
-                seed={worker.id}
-                load={worker.load}
-                staling={worker.staling}
-                alarmed={worker.alarmed}
-              />
-              <UI.ResourceTileBody>
-                <UI.ResourceTileHeader>
-                  <UI.ResourceTileLabel>{worker.name}</UI.ResourceTileLabel>
-                  <UI.ResourceTileStatus
-                    tone={worker.alarmed ? 'danger' : worker.staling ? 'warning' : 'default'}
-                  >
-                    {worker.alarmed
-                      ? 'Needs attention'
-                      : worker.staling
-                        ? 'Heartbeat delayed'
-                        : 'Working'}
-                  </UI.ResourceTileStatus>
-                </UI.ResourceTileHeader>
-                <UI.ResourceTileMeta>{worker.load * 100}% in use</UI.ResourceTileMeta>
-                <UI.CapacityMeter
-                  segments={Array.from({ length: 4 }, (_, index) => ({
-                    id: String(index),
-                    state: index < worker.load * 4 ? 'busy' : 'free',
-                  }))}
-                />
-              </UI.ResourceTileBody>
-            </UI.ResourceTile>
-          ))}
-        </UI.ResourceTileGrid>
       </Example>
       <Example
         title="Typed table"

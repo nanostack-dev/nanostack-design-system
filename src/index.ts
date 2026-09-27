@@ -51,7 +51,6 @@ export * from './components/choice-card.js';
 export * from './components/source-pane.js';
 export * from './components/autocomplete.js';
 export * from './components/popover.js';
-export * from './components/worker-avatar.js';
 export * from './blocks/conversation.js';
 export * from './blocks/responsive-panel.js';
 export * from './components/control-row.js';
@@ -62,7 +61,5 @@ export * from './components/bar-strip.js';
 export * from './components/activity.js';
 
 export * from './components/breadcrumb.js';
-export * from './components/capacity-meter.js';
-export * from './blocks/resource-tile.js';
 export * from './components/timeline-range.js';
 export * from './components/motion-preference.js';

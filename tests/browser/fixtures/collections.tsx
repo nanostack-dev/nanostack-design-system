@@ -21,7 +21,6 @@ import {
   Text,
   Theme,
   VirtualList,
-  WorkerAvatar,
 } from '../../../src/index.js';
 import '../../../src/styles.css';
 
@@ -143,7 +142,6 @@ function Collections() {
           </Button>
           <Cluster>
             <Sparkline values={[3, 0, 4, 8, 2, 6]} label="Traffic over six days" tone="info" />
-            <WorkerAvatar load={1} alarmed size="lg" label="Worker with an expired lease" />
             <Text>Capacity full</Text>
           </Cluster>
           <Progress label="Sending requests" value={3} max={10} />
