@@ -106,25 +106,25 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createElement as h, version } from 'react';
 import { renderToString } from 'react-dom/server';
-import * as library from '@nanostack/design-system';
+import * as library from '@nanostackorg/design-system';
 
 assert.equal(version, '19.2.0', 'The consumer must exercise the minimum React peer version');
-const packageRoot = fileURLToPath(new URL('../', import.meta.resolve('@nanostack/design-system')));
+const packageRoot = fileURLToPath(new URL('../', import.meta.resolve('@nanostackorg/design-system')));
 assert(!existsSync(join(packageRoot, 'src')), 'Source must not be available to the consumer');
 const packedManifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 assert.deepEqual(packedManifest.sideEffects, ['**/*.css'], 'Bundlers must preserve imported CSS');
-const cssPath = fileURLToPath(import.meta.resolve('@nanostack/design-system/styles.css'));
+const cssPath = fileURLToPath(import.meta.resolve('@nanostackorg/design-system/styles.css'));
 assert(readFileSync(cssPath, 'utf8').includes('.ns-theme'), 'The stylesheet export must contain compiled visual rules');
 
 for (const folder of ['components', 'blocks']) {
   for (const file of readdirSync(join(packageRoot, 'dist', folder)).filter((file) => file.endsWith('.js'))) {
     const name = file.slice(0, -3);
     assert(existsSync(join(packageRoot, 'dist', folder, name + '.d.ts')), 'Missing declarations for ' + folder + '/' + name);
-    const part = await import('@nanostack/design-system/' + folder + '/' + name);
+    const part = await import('@nanostackorg/design-system/' + folder + '/' + name);
     for (const [key, value] of Object.entries(part)) assert.equal(library[key], value, key + ' differs between barrel and subpath exports');
   }
 }
-const theme = await import('@nanostack/design-system/theme');
+const theme = await import('@nanostackorg/design-system/theme');
 assert.equal(theme.Theme, library.Theme);
 for (const path of ['theme.js', 'components/button.js', 'components/input.js', 'components/field.js', 'components/tabs.js', 'components/dialog.js', 'blocks/app-shell.js', 'blocks/graph-node.js', 'blocks/node-presentation.js', 'components/motion-preference.js']) {
   assert(/^['"]use client['"];/.test(readFileSync(join(packageRoot, 'dist', path), 'utf8')), path + ' lost its React client boundary');
@@ -159,10 +159,10 @@ console.log('Packed ESM exports, stylesheet, declarations, client boundaries and
     join(scratch, 'consumer.tsx'),
     `
 import { createRef } from 'react';
-import { Theme, Button, Input, AppShell, AppShellMain, Grid } from '@nanostack/design-system';
-import { Button as SubpathButton } from '@nanostack/design-system/components/button';
-import { Metric } from '@nanostack/design-system/blocks/metric';
-import { Theme as SubpathTheme } from '@nanostack/design-system/theme';
+import { Theme, Button, Input, AppShell, AppShellMain, Grid } from '@nanostackorg/design-system';
+import { Button as SubpathButton } from '@nanostackorg/design-system/components/button';
+import { Metric } from '@nanostackorg/design-system/blocks/metric';
+import { Theme as SubpathTheme } from '@nanostackorg/design-system/theme';
 const ref = createRef<HTMLButtonElement>();
 export const valid = <Theme><AppShell><AppShellMain><Grid layout="sidebar"><Button ref={ref} variant="ghost" type="submit">Save</Button><Input required autoComplete="email" /></Grid><Metric label="Requests" value={42} /><SubpathButton>Subpath</SubpathButton><SubpathTheme /></AppShellMain></AppShell></Theme>;
 // @ts-expect-error Built declarations preserve the closed CSS contract.
@@ -202,8 +202,8 @@ export const invalidSpread = <Button {...escaped} />;
     `
 import { createElement as h } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Theme, Button, Stack, Heading } from '@nanostack/design-system';
-import '@nanostack/design-system/styles.css';
+import { Theme, Button, Stack, Heading } from '@nanostackorg/design-system';
+import '@nanostackorg/design-system/styles.css';
 createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null, h(Heading, { level: 1 }, 'Package consumer'), h(Button, null, 'Ready'))));
 `,
   );

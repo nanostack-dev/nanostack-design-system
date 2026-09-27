@@ -1,5 +1,5 @@
 {
-  "name": "@nanostack/design-system",
+  "name": "@nanostackorg/design-system",
   "version": "0.2.0-beta.3",
   "description": "Typed, accessible UI building blocks for Nanostack products",
   "type": "module",

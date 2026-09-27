@@ -28,7 +28,7 @@ jobs:
           import assert from 'node:assert/strict';
           import { appendFileSync, readFileSync } from 'node:fs';
           const manifest = JSON.parse(readFileSync('package.json', 'utf8'));
-          assert.equal(manifest.name, '@nanostack/design-system');
+          assert.equal(manifest.name, '@nanostackorg/design-system');
           assert.match(manifest.version, /^\d+\.\d+\.\d+-beta\.\d+$/);
           assert.equal(process.env.GITHUB_REF_NAME, `v${manifest.version}`);
           assert.notEqual(manifest.license, 'UNLICENSED');

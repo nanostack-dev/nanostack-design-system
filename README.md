@@ -15,25 +15,27 @@ The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive bl
 
 ## Install the beta
 
-Install the versioned package from the public [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.3):
+Install an exact version from the public npm registry:
 
 ```sh
-pnpm add --save-exact https://github.com/nanostack-dev/nanostack-design-system/releases/download/v0.2.0-beta.3/nanostack-design-system-0.2.0-beta.3.tgz
+pnpm add --save-exact @nanostackorg/design-system@0.2.0-beta.3
 ```
 
 Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
 
-The package is also prepared for npm publication under `@nanostack/design-system` with the `beta` tag. Until an npm scope owner completes the first upload, use the GitHub release above. Once the version appears on npm, `pnpm add --save-exact @nanostack/design-system@0.2.0-beta.3` provides the equivalent package. Product applications pin reviewed versions; beta updates may require a coordinated migration.
+Beta releases use npm's `beta` tag. Product applications pin reviewed versions; beta updates may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.3).
+
+Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.2.0-beta.3`. New consumers can import the public package directly as shown below.
 
 ```tsx
-import '@nanostack/design-system/styles.css';
-import { Theme } from '@nanostack/design-system/theme';
-import { Stack, Grid } from '@nanostack/design-system/components/layout';
-import { Button } from '@nanostack/design-system/components/button';
+import '@nanostackorg/design-system/styles.css';
+import { Theme } from '@nanostackorg/design-system/theme';
+import { Stack, Grid } from '@nanostackorg/design-system/components/layout';
+import { Button } from '@nanostackorg/design-system/components/button';
 import {
   PageHeader, PageHeaderTitle, PageHeaderDescription, PageHeaderActions,
-} from '@nanostack/design-system/blocks/page-header';
-import { Metric } from '@nanostack/design-system/blocks/metric';
+} from '@nanostackorg/design-system/blocks/page-header';
+import { Metric } from '@nanostackorg/design-system/blocks/metric';
 
 export function Overview({ createFlow, flowCount, runnerCount }: {
   createFlow: () => void;

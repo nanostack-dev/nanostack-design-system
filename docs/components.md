@@ -1,6 +1,6 @@
 # Component catalog and composition
 
-Use this catalog when assembling a product surface, choosing a variant, or deciding where a missing capability belongs. The exported TypeScript props are authoritative for exact options and required fields. Import from `@nanostack/design-system` or a documented module subpath; import `@nanostack/design-system/styles.css` once at the application boundary.
+Use this catalog when assembling a product surface, choosing a variant, or deciding where a missing capability belongs. The exported TypeScript props are authoritative for exact options and required fields. Import from `@nanostackorg/design-system` or a documented module subpath; import `@nanostackorg/design-system/styles.css` once at the application boundary.
 
 Run `pnpm dev` and open [the interactive catalog](http://127.0.0.1:4317/?catalog) to inspect representative compositions. The six sections exercise controls, overlays, tables, editors, graphs, virtual history and conversations with local example data. Brand, color scheme and density controls expose only the supported finite options. The default `/` workspace preview remains available separately.
 
@@ -96,7 +96,7 @@ import {
   ResourceRowLabel,
   ResourceRowLink,
   ResourceRowMeta,
-} from '@nanostack/design-system';
+} from '@nanostackorg/design-system';
 
 type RecordSummary = { id: string; name: string; href: string; active: boolean };
 
