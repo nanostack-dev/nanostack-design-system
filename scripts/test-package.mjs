@@ -122,6 +122,18 @@ assert.equal(
   createRequire(import.meta.url).resolve('@phosphor-icons/react'),
   'The library and the consumer must share one Phosphor copy',
 );
+for (const [subpath, target] of Object.entries(packedManifest.exports)) {
+  if (typeof target === 'string') continue;
+  const conditions = Object.keys(target);
+  assert.equal(conditions[0], 'types', subpath + ' must resolve declarations first');
+  assert.equal(conditions.at(-1), 'default', subpath + ' needs a default condition for require() and CommonJS resolvers');
+}
+const requireFromConsumer = createRequire(import.meta.url);
+for (const subpath of ['', '/package.json', '/theme', '/styles.css', '/components/button', '/blocks/metric', '/adapters/clerk']) {
+  assert(requireFromConsumer.resolve('@nanostackorg/design-system' + subpath), 'require.resolve failed for ' + subpath);
+}
+assert.equal(requireFromConsumer('@nanostackorg/design-system/package.json').name, '@nanostackorg/design-system');
+assert.equal(requireFromConsumer('@nanostackorg/design-system').Button, library.Button, 'require() must load the same ES module');
 const cssPath = fileURLToPath(import.meta.resolve('@nanostackorg/design-system/styles.css'));
 assert(readFileSync(cssPath, 'utf8').includes('.ns-theme'), 'The stylesheet export must contain compiled visual rules');
 
