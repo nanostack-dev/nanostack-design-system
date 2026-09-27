@@ -14,6 +14,8 @@ export type VariableTextProps = Omit<ElementProps<'span'>, 'children'> & {
   tone?: 'default' | 'muted' | undefined;
   wrap?: 'wrap' | 'nowrap' | undefined;
   variablesEnabled?: boolean | undefined;
+  /** Set false inside another control: chips then add no tab stop or tooltip of their own. */
+  interactive?: boolean | undefined;
   variablePattern?: VariableMatchOptions['pattern'];
   variableTemplates?: VariableMatchOptions['templates'];
 };
@@ -24,6 +26,7 @@ export function VariableText({
   tone = 'default',
   wrap = 'wrap',
   variablesEnabled = true,
+  interactive = true,
   variablePattern,
   variableTemplates,
   ...props
@@ -52,9 +55,23 @@ export function VariableText({
                 ? '(Empty string)'
                 : (details.value ?? 'No value provided')
               : 'Variable not found';
+            const before = value.slice(matches[index - 1]?.to ?? 0, match.from);
+            if (!interactive)
+              return (
+                <Fragment key={match.from}>
+                  {before}
+                  <span
+                    className="ns-variable-chip"
+                    data-variable={match.name}
+                    data-ns-resolved={Boolean(details)}
+                  >
+                    {value.slice(match.from, match.to)}
+                  </span>
+                </Fragment>
+              );
             return (
               <Fragment key={match.from}>
-                {value.slice(matches[index - 1]?.to ?? 0, match.from)}
+                {before}
                 <Tooltip.Root>
                   <Tooltip.Trigger
                     render={<span />}

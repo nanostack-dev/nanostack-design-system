@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, type FocusEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FocusEvent } from 'react';
 import type { NoCustomStyle } from '../internal/props.js';
+import { VisuallyHidden } from './layout.js';
 import { VariableText } from './variable-text.js';
 import type { VariableAwareInputVariable } from './variable-aware-input.js';
 
@@ -21,7 +22,11 @@ export type KeyValueRowProps = NoCustomStyle & {
   onFocusChange?: (focused: boolean) => void;
 };
 
-/** Buffer a rename until blur so derived row IDs never unmount the active input. */
+/**
+ * Buffer a rename until it is committed so derived row IDs never unmount the active input.
+ * Enter commits and Escape cancels, returning focus to the field's button; a reserved name stays
+ * in its input, marked invalid, until the person changes or cancels it.
+ */
 export function KeyValueRow({
   keyValue,
   value,
@@ -37,33 +42,59 @@ export function KeyValueRow({
   onRemove,
   onFocusChange,
 }: KeyValueRowProps) {
-  const [editing, setEditing] = useState<'key' | 'value' | null>(null);
-  const [draft, setDraft] = useState('');
-  const [rejected, setRejected] = useState(false);
-  const open = (field: 'key' | 'value') => {
-    setDraft(field === 'key' ? keyValue : value);
-    setRejected(false);
-    setEditing(field);
-    onFocusChange?.(true);
+  const [keyDraft, setKeyDraft] = useState<string | null>(null);
+  const [keyRejected, setKeyRejected] = useState(false);
+  const [valueDraft, setValueDraft] = useState<string | null>(null);
+  const openFields = useRef({ key: false, value: false });
+  const focusAfterClose = useRef<'key' | 'value' | null>(null);
+  const reportedEditing = useRef(false);
+  const errorId = useId();
+  const editing = keyDraft !== null || valueDraft !== null;
+  useEffect(() => {
+    if (reportedEditing.current === editing) return;
+    reportedEditing.current = editing;
+    onFocusChange?.(editing);
+  }, [editing, onFocusChange]);
+  const triggerRef = (field: 'key' | 'value') => (button: HTMLButtonElement | null) => {
+    if (!button || focusAfterClose.current !== field) return;
+    focusAfterClose.current = null;
+    button.focus();
   };
-  const close = () => {
-    setEditing(null);
-    setRejected(false);
-    onFocusChange?.(false);
+  const openKey = () => {
+    openFields.current.key = true;
+    setKeyDraft(keyValue);
+    setKeyRejected(false);
   };
-  const commitKey = () => {
-    const next = draft.trim();
-    if (!next || next === keyValue) return close();
+  const openValue = () => {
+    openFields.current.value = true;
+    setValueDraft(value);
+  };
+  const closeKey = (returnFocus: boolean) => {
+    openFields.current.key = false;
+    if (returnFocus) focusAfterClose.current = 'key';
+    setKeyDraft(null);
+    setKeyRejected(false);
+  };
+  const closeValue = (returnFocus: boolean) => {
+    openFields.current.value = false;
+    if (returnFocus) focusAfterClose.current = 'value';
+    setValueDraft(null);
+  };
+  const commitKey = (returnFocus: boolean) => {
+    if (!openFields.current.key) return;
+    const next = (keyDraft ?? '').trim();
+    if (!next || next === keyValue) return closeKey(returnFocus);
     if (reservedKeys?.includes(next)) {
-      setRejected(true);
+      setKeyRejected(true);
       return;
     }
     onKeyChange?.(next);
-    close();
+    closeKey(returnFocus);
   };
-  const commitValue = () => {
-    if (draft !== value) onValueChange?.(draft);
-    close();
+  const commitValue = (returnFocus: boolean) => {
+    if (!openFields.current.value) return;
+    if (valueDraft !== null && valueDraft !== value) onValueChange?.(valueDraft);
+    closeValue(returnFocus);
   };
   if (lockedNote || readOnly)
     return (
@@ -80,61 +111,88 @@ export function KeyValueRow({
     );
   return (
     <div className="ns-key-value-row" data-ns-highlighted={highlighted}>
-      {editing === 'key' ? (
-        <input
-          ref={focusInput}
-          className="ns-key-value-field"
-          value={draft}
-          spellCheck={false}
-          placeholder={keyPlaceholder}
-          aria-label={`${keyPlaceholder} name`}
-          aria-invalid={rejected || undefined}
-          title={
-            rejected ? `There is already a ${keyPlaceholder} called ${draft.trim()}.` : undefined
-          }
-          onChange={(event) => {
-            setDraft(event.target.value);
-            setRejected(false);
-          }}
-          onBlur={commitKey}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') event.currentTarget.blur();
-            if (event.key === 'Escape') close();
-          }}
-        />
+      {keyDraft !== null ? (
+        <>
+          <input
+            ref={focusInput}
+            className="ns-key-value-field"
+            value={keyDraft}
+            spellCheck={false}
+            placeholder={keyPlaceholder}
+            aria-label={`${keyPlaceholder} name`}
+            aria-invalid={keyRejected || undefined}
+            aria-describedby={keyRejected ? errorId : undefined}
+            title={
+              keyRejected
+                ? `There is already a ${keyPlaceholder} called ${keyDraft.trim()}.`
+                : undefined
+            }
+            onChange={(event) => {
+              setKeyDraft(event.target.value);
+              setKeyRejected(false);
+            }}
+            onBlur={() => commitKey(false)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                commitKey(true);
+              }
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                closeKey(true);
+              }
+            }}
+          />
+          {keyRejected ? (
+            <VisuallyHidden id={errorId} role="alert">
+              There is already a {keyPlaceholder} called {keyDraft.trim()}.
+            </VisuallyHidden>
+          ) : null}
+        </>
       ) : (
         <button
+          ref={triggerRef('key')}
           type="button"
           className="ns-key-value-field"
-          onClick={() => open('key')}
-          onFocus={() => open('key')}
+          onClick={openKey}
         >
           {keyValue || keyPlaceholder}
         </button>
       )}
-      {editing === 'value' ? (
+      {valueDraft !== null ? (
         <input
           ref={focusInput}
           className="ns-key-value-field"
-          value={draft}
+          value={valueDraft}
           spellCheck={false}
           placeholder={valuePlaceholder}
           aria-label={`${keyValue || keyPlaceholder} value`}
-          onChange={(event) => setDraft(event.target.value)}
-          onBlur={commitValue}
+          onChange={(event) => setValueDraft(event.target.value)}
+          onBlur={() => commitValue(false)}
           onKeyDown={(event) => {
-            if (event.key === 'Enter') event.currentTarget.blur();
-            if (event.key === 'Escape') close();
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              commitValue(true);
+            }
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              closeValue(true);
+            }
           }}
         />
       ) : (
         <button
+          ref={triggerRef('value')}
           type="button"
           className="ns-key-value-field"
-          onClick={() => open('value')}
-          onFocus={() => open('value')}
+          onClick={openValue}
         >
-          <VariableText value={value} variables={variables} placeholder={valuePlaceholder} />
+          <VariableText
+            value={value}
+            variables={variables}
+            placeholder={valuePlaceholder}
+            interactive={false}
+          />
         </button>
       )}
       {onRemove ? (

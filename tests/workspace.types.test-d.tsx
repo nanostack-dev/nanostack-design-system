@@ -54,3 +54,6 @@ export function PersistedSplit() {
 <TreeItem expanded={false} onExpandedChange={(expanded: boolean) => expanded} />;
 // @ts-expect-error Expansion is a boolean state, not a label.
 <TreeItem expanded="open" />;
+<VariableText value="{{name}}" interactive={false} />;
+// @ts-expect-error Chip interactivity is on or off.
+<VariableText value="{{name}}" interactive="tooltip" />;
