@@ -25,7 +25,11 @@ type ShellState = {
   mobile: boolean;
   mainId: string;
   navigationLabel: string;
-  closeNavigation: () => void;
+  openNavigationLabel: string;
+  closeNavigationLabel: string;
+  navigation: Dialog.Handle<unknown>;
+  navigationOpen: boolean;
+  setNavigationOpen: (open: boolean) => void;
 };
 
 const ShellContext = createContext<ShellState | null>(null);
@@ -40,6 +44,8 @@ export type AppShellProps = ElementProps<'div'> & {
   layout?: 'page' | 'workspace';
   mainId?: string;
   navigationLabel?: string;
+  openNavigationLabel?: string;
+  closeNavigationLabel?: string;
   skipLabel?: string;
 };
 
@@ -48,11 +54,14 @@ export function AppShell({
   layout = 'page',
   mainId: providedMainId,
   navigationLabel = 'Workspace navigation',
+  openNavigationLabel = 'Open navigation',
+  closeNavigationLabel = 'Close navigation',
   skipLabel = 'Skip to main content',
   ...props
 }: AppShellProps) {
   const id = useId();
   const mainId = providedMainId ?? `ns-main-${id}`;
+  const [navigation] = useState(() => Dialog.createHandle());
   const [open, setOpen] = useState(false);
   const subscribeMobile = useCallback(
     (onChange: () => void) => {
@@ -70,16 +79,23 @@ export function AppShell({
 
   return (
     <ShellContext
-      value={{ mobile, mainId, navigationLabel, closeNavigation: () => setOpen(false) }}
+      value={{
+        mobile,
+        mainId,
+        navigationLabel,
+        openNavigationLabel,
+        closeNavigationLabel,
+        navigation,
+        navigationOpen: mobile && open,
+        setNavigationOpen: setOpen,
+      }}
     >
-      <Dialog.Root open={mobile && open} onOpenChange={setOpen}>
-        <div {...safeProps(props)} className="ns-shell" data-layout={layout}>
-          <a className="ns-shell-skip" href={`#${mainId}`}>
-            {skipLabel}
-          </a>
-          {children}
-        </div>
-      </Dialog.Root>
+      <div {...safeProps(props)} className="ns-shell" data-layout={layout}>
+        <a className="ns-shell-skip" href={`#${mainId}`}>
+          {skipLabel}
+        </a>
+        {children}
+      </div>
     </ShellContext>
   );
 }
@@ -87,7 +103,14 @@ export function AppShell({
 export type AppShellSidebarProps = ElementProps<'aside'>;
 
 export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
-  const { mobile, navigationLabel } = useShell();
+  const {
+    mobile,
+    navigationLabel,
+    closeNavigationLabel,
+    navigation,
+    navigationOpen,
+    setNavigationOpen,
+  } = useShell();
   const theme = useThemeSettings();
 
   // Keep the portal in the tree so Base UI can finish closing across breakpoints.
@@ -98,40 +121,46 @@ export function AppShellSidebar({ children, ...props }: AppShellSidebarProps) {
           {children}
         </aside>
       ) : null}
-      <Dialog.Portal>
-        <Theme {...theme}>
-          <Dialog.Backdrop className="ns-shell-overlay" />
-          <Dialog.Popup className="ns-shell-drawer">
-            <div className="ns-shell-drawer-header">
-              <Dialog.Title className="ns-shell-drawer-title">{navigationLabel}</Dialog.Title>
-              <Dialog.Close className="ns-shell-close" aria-label="Close navigation">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  aria-hidden="true"
-                >
-                  <path d="m6 6 12 12M6 18 18 6" />
-                </svg>
-              </Dialog.Close>
-            </div>
-            <aside {...safeProps(props)} className="ns-shell-sidebar">
-              {children}
-            </aside>
-          </Dialog.Popup>
-        </Theme>
-      </Dialog.Portal>
+      <Dialog.Root handle={navigation} open={navigationOpen} onOpenChange={setNavigationOpen}>
+        <Dialog.Portal>
+          <Theme {...theme}>
+            <Dialog.Backdrop className="ns-shell-overlay" />
+            <Dialog.Popup className="ns-shell-drawer">
+              <div className="ns-shell-drawer-header">
+                <Dialog.Title className="ns-shell-drawer-title">{navigationLabel}</Dialog.Title>
+                <Dialog.Close className="ns-shell-close" aria-label={closeNavigationLabel}>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 6 12 12M6 18 18 6" />
+                  </svg>
+                </Dialog.Close>
+              </div>
+              <aside {...safeProps(props)} className="ns-shell-sidebar">
+                {children}
+              </aside>
+            </Dialog.Popup>
+          </Theme>
+        </Dialog.Portal>
+      </Dialog.Root>
     </>
   );
 }
 
 export function AppShellHeader({ children, ...props }: ElementProps<'header'>) {
-  const { mobile } = useShell();
+  const { mobile, navigation, openNavigationLabel } = useShell();
   return (
     <header {...safeProps(props)} className="ns-shell-header">
       {mobile ? (
-        <Dialog.Trigger className="ns-shell-mobile-trigger" aria-label="Open navigation">
+        <Dialog.Trigger
+          handle={navigation}
+          className="ns-shell-mobile-trigger"
+          aria-label={openNavigationLabel}
+        >
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -188,7 +217,7 @@ export function AppShellNavLink({
   onClick,
   ...props
 }: AppShellNavLinkProps) {
-  const { closeNavigation } = useShell();
+  const { setNavigationOpen } = useShell();
   return (
     <a
       {...safeProps(props)}
@@ -205,7 +234,7 @@ export function AppShellNavLink({
           !event.altKey &&
           event.button === 0
         )
-          closeNavigation();
+          setNavigationOpen(false);
       }}
     >
       {icon ? (

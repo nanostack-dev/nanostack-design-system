@@ -10,11 +10,8 @@ import {
   Button,
   VirtualList,
   ResourceRowButton,
-  BarStrip,
   ResponsivePanel,
   InspectorHeader,
-  ConversationLog,
-  MessageBubble,
 } from '../../../src/index';
 import '../../../src/styles.css';
 function Fixture() {
@@ -54,16 +51,6 @@ function Fixture() {
               </ResourceRowButton>
             )}
           />
-          <BarStrip
-            label="Durations"
-            points={[
-              { id: 'fast', value: 4, label: 'Fast, 4 milliseconds', tone: 'success' },
-              { id: 'slow', value: 100, label: 'Slow, 100 milliseconds', tone: 'danger' },
-            ]}
-            reference={52}
-            selectedId={selected}
-            onSelect={setSelected}
-          />
           <Button onClick={() => setOpen(true)}>Open detail</Button>
           <ResponsivePanel label="Details" open={open} onOpenChange={setOpen}>
             <InspectorHeader>
@@ -72,9 +59,6 @@ function Fixture() {
             </InspectorHeader>
             <Text>Selected record {selected}</Text>
           </ResponsivePanel>
-          <ConversationLog label="Messages" entryCount={1}>
-            <MessageBubble>First message</MessageBubble>
-          </ConversationLog>
         </Stack>
       </Page>
     </Theme>

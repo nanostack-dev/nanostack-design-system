@@ -13,8 +13,22 @@ export type CommandInputProps = Closed<ComponentProps<typeof BaseCommand.Input>>
   /** Match the visibility of a persistently mounted CommandList. */
   expanded?: boolean;
 };
-export function CommandInput({ expanded = true, onKeyDown, ...props }: CommandInputProps) {
+/**
+ * A consumer `id` or name overrides cmdk's generated id and hidden label, so an external
+ * `<label htmlFor>` names and focuses the input. With a consumer id the input also drops
+ * `cmdk-input`: cmdk refocuses the element with its own id on every highlight change and
+ * would otherwise move focus to the list while the person types.
+ */
+export function CommandInput({
+  expanded = true,
+  onKeyDown,
+  id,
+  'aria-labelledby': labelledBy,
+  ...props
+}: CommandInputProps) {
   const isExpanded = expanded && !props.disabled;
+  const namedByConsumer =
+    id !== undefined || labelledBy !== undefined || props['aria-label'] !== undefined;
   return (
     <BaseCommand.Input {...safeProps(props)} className="ns-command-input" asChild>
       {/* cmdk supplies role=combobox and its control IDs through this private slot. */}
@@ -22,6 +36,8 @@ export function CommandInput({ expanded = true, onKeyDown, ...props }: CommandIn
       <input
         aria-expanded={isExpanded}
         {...(!isExpanded ? { 'aria-activedescendant': undefined } : {})}
+        {...(namedByConsumer ? { 'aria-labelledby': labelledBy } : {})}
+        {...(id === undefined ? {} : { id, 'cmdk-input': undefined })}
         onKeyDown={(event) => {
           onKeyDown?.(event);
           // cmdk handles keys at the root. Hidden options must never be activated.
@@ -70,9 +86,15 @@ export function CommandEmpty(props: CommandEmptyProps) {
   const empty = useCommandState((state) => state.filtered.count === 0);
   return empty ? <CommandStatus {...props} /> : null;
 }
-export type CommandSeparatorProps = Closed<ComponentProps<typeof BaseCommand.Separator>>;
-export function CommandSeparator(props: CommandSeparatorProps) {
-  return <BaseCommand.Separator {...safeProps(props)} className="ns-command-separator" />;
+export type CommandSeparatorProps = Omit<ElementProps<'div'>, 'role' | 'children'> & {
+  /** Keep the divider while a search filters the list. */
+  alwaysRender?: boolean;
+};
+/** A presentational divider: a listbox may own only options and groups, never a separator. */
+export function CommandSeparator({ alwaysRender = false, ...props }: CommandSeparatorProps) {
+  const searching = useCommandState((state) => state.search !== '');
+  if (searching && !alwaysRender) return null;
+  return <div {...safeProps(props)} className="ns-command-separator" role="presentation" />;
 }
 export type CommandFooterProps = ElementProps<'footer'>;
 export function CommandFooter(props: CommandFooterProps) {

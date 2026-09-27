@@ -1,8 +1,10 @@
 # Nanostack design system
 
-Composable React building blocks for Echopoint and Anchor. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
+Composable React building blocks that any Nanostack product can use unchanged, starting with Echopoint and Anchor. Product-specific visuals stay in the product that owns their meaning. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
 
-Status: **0.2.0-beta.4**. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
+**[Documentation site](https://nanostack-dev.github.io/nanostack-design-system/)**: every component with a working example, the guidelines and the changelog.
+
+Status: **0.0.1**, the first release of the common-only library. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
 
 ## Try it
 
@@ -11,21 +13,26 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-The workspace preview opens at `http://127.0.0.1:4317`. Open the [interactive block catalog](http://127.0.0.1:4317/?catalog) for foundations, controls, resource lists, typed tables, a resizable editor, a graph, measured history and conversation parts. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
+The documentation site opens at `http://127.0.0.1:4317`: an overview, the [component catalog](http://127.0.0.1:4317/?page=components), the guidelines rendered from this repository's documents, and the changelog. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
 
-## Install the beta
+`pnpm build:docs` writes the static site to `site/`. The Pages workflow builds it with `DOCS_BASE=/nanostack-design-system/ pnpm build:docs` and deploys every push to `main`.
+
+## Install
 
 Install an exact version from the public npm registry:
 
 ```sh
-pnpm add --save-exact @nanostackorg/design-system@0.2.0-beta.4
+pnpm add --save-exact @nanostackorg/design-system@0.0.1
+pnpm add @phosphor-icons/react@^2.1.10
 ```
+
+The application provides the peer dependencies: React 19.2+ and `@phosphor-icons/react` 2.1.10+, whose glyph components `Icon` receives. The library and the application then share one icon package. Install `@clerk/clerk-react` 5.61.3+ only when importing `@nanostackorg/design-system/adapters/clerk`. Clerk's own peer range requires React 19.2.3 or later.
 
 Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
 
-Beta releases use npm's `beta` tag. Product applications pin reviewed versions; beta updates may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.2.0-beta.4).
+Stable versions use npm's `latest` tag and prereleases use `beta`. Numbering restarted at 0.0.1, which sorts below the earlier 0.2.0 betas, so pin the exact version instead of a range. Product applications pin reviewed versions; any update before 1.0 may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.0.1).
 
-Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.2.0-beta.4`. New consumers can import the public package directly as shown below.
+Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.0.1`. New consumers can import the public package directly as shown below.
 
 ```tsx
 import '@nanostackorg/design-system/styles.css';
@@ -71,15 +78,14 @@ The [component catalog](docs/components.md) covers the full set of named parts, 
 | Application structure | AppShell, Page, Section, Card, screen and responsive-panel parts |
 | Forms and actions | Field, Input, Select, Checkbox, Autocomplete, tags, Menu, Dialog, Popover |
 | Collections and detail | ResourceList, DataTable, Table, VirtualList, Inspector, DefinitionList |
-| Dense tools | Workspace, Pane, WorkspaceSplit, DocumentTabs, Tree, Dock |
-| Editors and graphs | CodeEditor, VariableAwareInput, SourcePane, KeyValueRow, GraphCanvas and GraphNode parts |
-| Activity and feedback | TimelineItem, Report, ConversationLog, StatusMarker, Sparkline, Progress, WorkerAvatar |
+| Editing | CodeEditor, CodeViewer, EditableText, ChoiceCard |
+| Activity and feedback | TimelineItem, Report, StatusMarker, Sparkline, Progress |
 
-Applications own data, routes, permissions, copy, and assemblies of library parts. This rule also covers cell callbacks, graph content, child slots, and stories. A missing visual element becomes a common primitive or block here. Native markup, SVG, visual-engine adapters, and styles belong in this package.
+Applications own data, routes, permissions, copy, assemblies of library parts, and the visuals that only their product explains, such as Echopoint's flow nodes or runner avatars. The [scope rule](AGENTS.md#scope) decides where a part lives: the library holds UI that a second Nanostack product would use unchanged, with no product vocabulary. A missing common element becomes a primitive or block here. A product visual stays in its app, built from `--ns-*` tokens and library primitives.
 
 A router adapter can wrap a library link while preserving its native anchor and ref. Keep independent controls in ResourceRowActions rather than inside ResourceRowLink. DialogPopup contains DialogTitle; Field composes its label, control, description and error. Native semantics and keyboard behavior are part of the public contract.
 
-Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `render`, and `asChild`. Compile-time checks and runtime sanitization enforce this component contract. Consumer CI enforces the assembly boundary, including nested content and visual-engine imports. This is not browser CSS isolation: host styles and imperative DOM access remain technically possible, so product teams evolve variants here instead of overriding selectors or CSS variables.
+Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `render`, and `asChild`. Compile-time checks and runtime sanitization enforce this component contract. Consumer CI enforces the assembly boundary around library parts, including nested content. This is not browser CSS isolation: host styles and imperative DOM access remain technically possible, so product teams evolve variants here instead of overriding selectors or CSS variables.
 
 ## shadcn source distribution
 
@@ -87,10 +93,10 @@ Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `r
 
 ```sh
 # From a configured React 19.2+ shadcn consumer; point to your cloned payload:
-pnpm dlx shadcn@latest add /path/to/nanostack-design-system/public/r/system.json
+pnpm dlx shadcn@4.21.0 add /path/to/nanostack-design-system/public/r/system.json
 ```
 
-The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. A hosted shadcn registry has not been deployed; package consumers do not need one.
+The command pins the shadcn CLI whose schema validates this registry. The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. A hosted shadcn registry has not been deployed; package consumers do not need one.
 
 ## Verify and evolve
 

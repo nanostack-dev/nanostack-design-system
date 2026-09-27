@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { DataTable } from '../src/blocks/data-table.js';
@@ -34,6 +34,7 @@ describe('application catalog behavior', () => {
         initialPageSize={2}
         pageSizeOptions={[2, 3]}
         enableRowSelection
+        getRowId={(person) => person.name}
       />,
     );
     await user.click(screen.getByRole('button', { name: 'Name' }));
@@ -44,12 +45,97 @@ describe('application catalog behavior', () => {
       '',
       'Kai',
     ]);
-    await user.click(table.getAllByRole('checkbox', { name: 'Select row' })[0]!);
+    await user.click(table.getByRole('checkbox', { name: 'Select Amy' }));
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(table.getByText('Zoe')).toBeVisible();
     expect(screen.getByText('1 of 3 selected')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Previous' }));
-    expect(table.getAllByRole('checkbox', { name: 'Select row' })[0]).toBeChecked();
+    expect(table.getByRole('checkbox', { name: 'Select Amy' })).toBeChecked();
+  });
+
+  it('keys manual-mode selection by row ID across server pages and reports it', async () => {
+    const user = userEvent.setup();
+    const changes: string[][] = [];
+    const runs = Array.from({ length: 42 }, (_, index) => ({
+      id: `run-${index + 1}`,
+      name: `Run ${index + 1}`,
+    }));
+    function ServerRuns() {
+      const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+      const start = pagination.pageIndex * pagination.pageSize;
+      return (
+        <DataTable
+          label="Runs"
+          mode="manual"
+          columns={[{ accessorKey: 'name', header: 'Name' }]}
+          data={runs.slice(start, start + pagination.pageSize)}
+          rowCount={runs.length}
+          pagination={pagination}
+          onPaginationChange={(update) =>
+            setPagination((current) => (typeof update === 'function' ? update(current) : update))
+          }
+          enableRowSelection
+          getRowId={(run) => run.id}
+          onSelectedRowIdsChange={(ids) => changes.push(ids)}
+        />
+      );
+    }
+    render(<ServerRuns />);
+    const table = within(screen.getByRole('table', { name: 'Runs' }));
+    await user.click(table.getByRole('checkbox', { name: 'Select Run 1' }));
+    expect(changes.at(-1)).toEqual(['run-1']);
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    expect(table.getByRole('checkbox', { name: 'Select Run 11' })).not.toBeChecked();
+    expect(table.getByRole('row', { name: /Run 11/ })).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByText('1 of 42 selected')).toBeVisible();
+    await user.click(table.getByRole('checkbox', { name: 'Select all visible rows' }));
+    expect(changes.at(-1)).toHaveLength(11);
+    expect(changes.at(-1)).toContain('run-1');
+    await user.click(screen.getByRole('button', { name: 'Previous' }));
+    expect(table.getByRole('checkbox', { name: 'Select Run 1' })).toBeChecked();
+    expect(table.getByRole('checkbox', { name: 'Select Run 2' })).not.toBeChecked();
+    expect(screen.getByText('11 of 42 selected')).toBeVisible();
+  });
+
+  it('reads controlled selection for checkboxes and row highlight alike', async () => {
+    const user = userEvent.setup();
+    const change = vi.fn();
+    render(
+      <DataTable
+        label="Flows"
+        columns={[{ accessorKey: 'name', header: 'Name' }]}
+        data={[
+          { id: 'flow-a', name: 'Checkout' },
+          { id: 'flow-b', name: 'Signup' },
+        ]}
+        enableRowSelection
+        getRowId={(flow) => flow.id}
+        getRowLabel={(flow) => `${flow.name} flow`}
+        selectedRowIds={['flow-b']}
+        onSelectedRowIdsChange={change}
+      />,
+    );
+    const table = within(screen.getByRole('table', { name: 'Flows' }));
+    expect(table.getByRole('checkbox', { name: 'Select Signup flow' })).toBeChecked();
+    expect(table.getByRole('row', { name: /Signup/ })).toHaveAttribute('aria-selected', 'true');
+    expect(table.getByRole('row', { name: /Checkout/ })).toHaveAttribute('aria-selected', 'false');
+    await user.click(table.getByRole('checkbox', { name: 'Select Checkout flow' }));
+    expect(change).toHaveBeenCalledWith(['flow-b', 'flow-a']);
+    expect(table.getByRole('checkbox', { name: 'Select Checkout flow' })).not.toBeChecked();
+  });
+
+  it('highlights the application-selected row when the table has no checkboxes', () => {
+    render(
+      <DataTable
+        label="Environments"
+        columns={[{ accessorKey: 'name', header: 'Name' }]}
+        data={[{ name: 'Production' }, { name: 'Staging' }]}
+        isRowSelected={(environment) => environment.name === 'Staging'}
+      />,
+    );
+    const table = within(screen.getByRole('table', { name: 'Environments' }));
+    expect(table.queryByRole('checkbox')).toBeNull();
+    expect(table.getByRole('row', { name: /Staging/ })).toHaveAttribute('aria-selected', 'true');
   });
 
   it('delegates manual pagination without silently slicing the server page', async () => {
@@ -110,6 +196,61 @@ describe('application catalog behavior', () => {
     expect(screen.getByRole('alertdialog')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(close).toHaveBeenCalledWith(false);
+  });
+
+  it('ignores a held key and repeat activation while the confirmation is pending', async () => {
+    const user = userEvent.setup();
+    const action = vi.fn();
+    function PendingConfirmation() {
+      const [pending, setPending] = useState(false);
+      return (
+        <ConfirmationDialog
+          open
+          onOpenChange={() => undefined}
+          severity="destructive"
+          title="Delete record?"
+          description="This removes the record."
+          actionLabel="Delete"
+          pending={pending}
+          onAction={() => {
+            action();
+            setPending(true);
+          }}
+        />
+      );
+    }
+    render(<PendingConfirmation />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus());
+    await user.tab();
+    const button = screen.getByRole('button', { name: /^Delete$/ });
+    expect(button).toHaveFocus();
+    await user.keyboard('{Enter>4/}');
+    expect(action).toHaveBeenCalledOnce();
+    expect(button).toHaveFocus();
+    expect(button).toHaveAttribute('aria-busy', 'true');
+    expect(button).toHaveAttribute('aria-disabled', 'true');
+    await user.click(button);
+    expect(action).toHaveBeenCalledOnce();
+  });
+
+  it('treats a held Enter key as one confirmation even without a pending state', async () => {
+    const user = userEvent.setup();
+    const action = vi.fn();
+    render(
+      <ConfirmationDialog
+        open
+        onOpenChange={() => undefined}
+        title="Archive record?"
+        description="The record moves to the archive."
+        actionLabel="Archive"
+        onAction={action}
+      />,
+    );
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus());
+    await user.tab();
+    expect(screen.getByRole('button', { name: /^Archive$/ })).toHaveFocus();
+    await user.keyboard('{Enter>4/}');
+    expect(action).toHaveBeenCalledOnce();
   });
 
   it('commits and removes controlled tags while preserving validation errors', async () => {

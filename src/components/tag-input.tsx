@@ -38,6 +38,7 @@ export function TagInput({
 }: TagInputProps) {
   const [draft, setDraft] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const generatedId = React.useId();
   const errorId = `${inputId ?? generatedId}-error`;
 
@@ -64,7 +65,13 @@ export function TagInput({
     setError(null);
   };
 
+  const removeWithButton = (index: number) => {
+    removeAt(index);
+    inputRef.current?.focus();
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
     if (event.key === 'Enter' || event.key === ',') {
       event.preventDefault();
       commit(draft);
@@ -90,7 +97,7 @@ export function TagInput({
                   // commit a pending draft and race with this removal.
                   onMouseDown={(event) => event.preventDefault()}
                   disabled={disabled}
-                  onClick={() => removeAt(index)}
+                  onClick={() => removeWithButton(index)}
                   className="ns-tag-remove"
                 >
                   <XIcon width={12} height={12} aria-hidden="true" />
@@ -101,6 +108,7 @@ export function TagInput({
         </div>
       ) : null}
       <Input
+        ref={inputRef}
         id={inputId}
         aria-label={ariaLabel}
         aria-invalid={error ? true : undefined}

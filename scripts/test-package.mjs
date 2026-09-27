@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -25,6 +26,22 @@ function run(command, args, cwd, capture = false) {
   return result.stdout;
 }
 
+function npmInstall(...packages) {
+  run(
+    'npm',
+    [
+      'install',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      '--package-lock=false',
+      '--prefer-offline',
+      ...packages,
+    ],
+    scratch,
+  );
+}
+
 try {
   // Build before calling this script. Packing with scripts disabled proves that the
   // published package needs neither a prepare hook nor the source checkout.
@@ -38,6 +55,10 @@ try {
   );
   const packed = packResult[0];
   assert(packed?.filename, 'npm pack did not produce an archive');
+  const archiveDigest = createHash('sha256')
+    .update(await readFile(join(scratch, packed.filename)))
+    .digest('hex');
+  console.log(`SHA-256 ${archiveDigest}  ${packed.filename}`);
   const paths = packed.files.map((file) => file.path);
   for (const required of [
     'dist/index.js',
@@ -69,6 +90,7 @@ try {
           react: '19.2.0',
           'react-dom': '19.2.0',
           '@base-ui/react': manifest.dependencies['@base-ui/react'],
+          '@phosphor-icons/react': manifest.peerDependencies['@phosphor-icons/react'],
         },
         devDependencies: {
           vite: manifest.devDependencies.vite,
@@ -84,35 +106,59 @@ try {
 
   // npm reuses its download cache across runs; this consumer is intentionally new
   // each time so workspace node_modules, symlinks and source aliases cannot help it.
-  run(
-    'npm',
-    [
-      'install',
-      '--ignore-scripts',
-      '--no-audit',
-      '--no-fund',
-      '--package-lock=false',
-      '--prefer-offline',
-    ],
-    scratch,
-  );
+  npmInstall();
 
   await writeFile(
     join(scratch, 'smoke.mjs'),
     `
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createElement as h, version } from 'react';
 import { renderToString } from 'react-dom/server';
 import * as library from '@nanostackorg/design-system';
+import { GearIcon } from '@phosphor-icons/react';
 
 assert.equal(version, '19.2.0', 'The consumer must exercise the minimum React peer version');
 const packageRoot = fileURLToPath(new URL('../', import.meta.resolve('@nanostackorg/design-system')));
+assert.throws(() => createRequire(import.meta.url).resolve('@clerk/clerk-react'), { code: 'MODULE_NOT_FOUND' }, 'The root entry must be checked without the optional Clerk peer');
 assert(!existsSync(join(packageRoot, 'src')), 'Source must not be available to the consumer');
+const distRoot = join(packageRoot, 'dist');
+const distFiles = readdirSync(distRoot, { recursive: true });
+const mapMarker = '//# sourceMappingURL=';
+for (const file of distFiles.filter((file) => file.endsWith('.js') || file.endsWith('.d.ts'))) {
+  const content = readFileSync(join(distRoot, file), 'utf8');
+  if (content.includes(mapMarker)) assert(existsSync(join(distRoot, dirname(file), content.split(mapMarker).at(-1).trim())), file + ' references a missing source map');
+}
+for (const file of distFiles.filter((file) => file.endsWith('.map'))) {
+  const map = JSON.parse(readFileSync(join(distRoot, file), 'utf8'));
+  map.sources.forEach((source, index) => assert(
+    typeof map.sourcesContent?.[index] === 'string' || existsSync(join(distRoot, dirname(file), map.sourceRoot ?? '', source)),
+    file + ' references ' + source + ', which is neither shipped nor inlined',
+  ));
+}
 const packedManifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 assert.deepEqual(packedManifest.sideEffects, ['**/*.css'], 'Bundlers must preserve imported CSS');
+assert(packedManifest.peerDependencies['@phosphor-icons/react'] && !packedManifest.dependencies['@phosphor-icons/react'], 'Icon glyphs are public props, so Phosphor must be a peer');
+assert.equal(
+  createRequire(join(packageRoot, 'dist', 'index.js')).resolve('@phosphor-icons/react'),
+  createRequire(import.meta.url).resolve('@phosphor-icons/react'),
+  'The library and the consumer must share one Phosphor copy',
+);
+for (const [subpath, target] of Object.entries(packedManifest.exports)) {
+  if (typeof target === 'string') continue;
+  const conditions = Object.keys(target);
+  assert.equal(conditions[0], 'types', subpath + ' must resolve declarations first');
+  assert.equal(conditions.at(-1), 'default', subpath + ' needs a default condition for require() and CommonJS resolvers');
+}
+const requireFromConsumer = createRequire(import.meta.url);
+for (const subpath of ['', '/package.json', '/theme', '/styles.css', '/components/button', '/blocks/metric', '/adapters/clerk']) {
+  assert(requireFromConsumer.resolve('@nanostackorg/design-system' + subpath), 'require.resolve failed for ' + subpath);
+}
+assert.equal(requireFromConsumer('@nanostackorg/design-system/package.json').name, '@nanostackorg/design-system');
+assert.equal(requireFromConsumer('@nanostackorg/design-system').Button, library.Button, 'require() must load the same ES module');
 const cssPath = fileURLToPath(import.meta.resolve('@nanostackorg/design-system/styles.css'));
 assert(readFileSync(cssPath, 'utf8').includes('.ns-theme'), 'The stylesheet export must contain compiled visual rules');
 
@@ -126,7 +172,7 @@ for (const folder of ['components', 'blocks']) {
 }
 const theme = await import('@nanostackorg/design-system/theme');
 assert.equal(theme.Theme, library.Theme);
-for (const path of ['theme.js', 'components/button.js', 'components/input.js', 'components/field.js', 'components/tabs.js', 'components/dialog.js', 'blocks/app-shell.js', 'blocks/graph-node.js', 'blocks/node-presentation.js', 'components/motion-preference.js']) {
+for (const path of ['theme.js', 'components/button.js', 'components/input.js', 'components/field.js', 'components/tabs.js', 'components/dialog.js', 'blocks/app-shell.js', 'components/code-editor.js', 'components/motion-preference.js']) {
   assert(/^['"]use client['"];/.test(readFileSync(join(packageRoot, 'dist', path), 'utf8')), path + ' lost its React client boundary');
 }
 
@@ -136,19 +182,14 @@ const output = renderToString(h(library.Theme, { brand: 'anchor' },
     h(library.Button, { variant: 'secondary' }, 'Tested button'),
     h(library.Field, null, h(library.FieldLabel, null, 'Name'), h(library.Input, { name: 'name' })),
     h(library.Metric, { label: 'Requests', value: '42' }),
+    h(library.Icon, { glyph: GearIcon, label: 'Consumer glyph' }),
     h(library.AppShell, null,
       h(library.AppShellSidebar, null, h(library.AppShellNav, { label: 'Workspace' }, h(library.AppShellNavLink, { href: '/', active: true }, 'Home'))),
       h(library.AppShellHeader, null, 'Workspace'),
       h(library.AppShellMain, null, 'Consumer content')))));
 assert(output.includes('Tested button') && output.includes('Consumer content'), 'SSR did not render composed public components');
+assert(/aria-label="Consumer glyph"[^>]*><svg/.test(output), 'SSR did not render a consumer-supplied glyph');
 assert(output.includes('ns-button') && output.includes('data-ns-brand="anchor"'), 'SSR lost owned style hooks');
-const graphOutput = renderToString(h(library.Theme, null,
-  h(library.GraphNodeFrame, { family: 'logic', phase: 'running' },
-    h(library.GraphNodeBody, null, 'Server-rendered node'),
-    h(library.NodeTelemetry, { phase: 'running' }, 'Live annotation')),
-  h(library.NodeElapsedTime, { elapsedMs: 1000, format: value => String(value) })));
-assert(graphOutput.includes('Server-rendered node'), 'SSR lost graph content');
-assert(!graphOutput.includes('Live annotation'), 'A portal must wait for its browser host');
 
 console.log('Packed ESM exports, stylesheet, declarations, client boundaries and React ' + version + ' SSR passed.');
 `,
@@ -159,12 +200,15 @@ console.log('Packed ESM exports, stylesheet, declarations, client boundaries and
     join(scratch, 'consumer.tsx'),
     `
 import { createRef } from 'react';
-import { Theme, Button, Input, AppShell, AppShellMain, Grid } from '@nanostackorg/design-system';
+import { GearIcon } from '@phosphor-icons/react';
+import { Theme, Button, Icon, Input, AppShell, AppShellMain, Grid } from '@nanostackorg/design-system';
 import { Button as SubpathButton } from '@nanostackorg/design-system/components/button';
 import { Metric } from '@nanostackorg/design-system/blocks/metric';
 import { Theme as SubpathTheme } from '@nanostackorg/design-system/theme';
 const ref = createRef<HTMLButtonElement>();
-export const valid = <Theme><AppShell><AppShellMain><Grid layout="sidebar"><Button ref={ref} variant="ghost" type="submit">Save</Button><Input required autoComplete="email" /></Grid><Metric label="Requests" value={42} /><SubpathButton>Subpath</SubpathButton><SubpathTheme /></AppShellMain></AppShell></Theme>;
+export const valid = <Theme><AppShell><AppShellMain><Grid layout="sidebar"><Button ref={ref} variant="ghost" type="submit">Save</Button><Input required autoComplete="email" /></Grid><Metric label="Requests" value={42} /><SubpathButton>Subpath</SubpathButton><SubpathTheme /><Icon glyph={GearIcon} label="Settings" /></AppShellMain></AppShell></Theme>;
+// @ts-expect-error Icon glyphs are Phosphor components, not names.
+export const invalidGlyph = <Icon glyph="gear" />;
 // @ts-expect-error Built declarations preserve the closed CSS contract.
 export const invalidStyle = <Button style={{ color: 'red' }} />;
 // @ts-expect-error Built declarations preserve finite variants.
@@ -202,9 +246,10 @@ export const invalidSpread = <Button {...escaped} />;
     `
 import { createElement as h } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Theme, Button, Stack, Heading } from '@nanostackorg/design-system';
+import { GearIcon } from '@phosphor-icons/react';
+import { Theme, Button, Stack, Heading, Icon } from '@nanostackorg/design-system';
 import '@nanostackorg/design-system/styles.css';
-createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null, h(Heading, { level: 1 }, 'Package consumer'), h(Button, null, 'Ready'))));
+createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null, h(Heading, { level: 1 }, 'Package consumer'), h(Icon, { glyph: GearIcon, label: 'Settings' }), h(Button, null, 'Ready'))));
 `,
   );
   // This is a browser-only consumer, so Rollup legitimately removes client
@@ -217,7 +262,60 @@ createRoot(document.getElementById('root')).render(h(Theme, null, h(Stack, null,
   } } } };`,
   );
   run(process.execPath, ['node_modules/vite/bin/vite.js', 'build'], scratch);
-  console.log('Clean consumer typecheck and production CSS/JavaScript bundle passed.');
+  console.log(
+    'Clean consumer typecheck and production CSS/JavaScript bundle passed without Clerk.',
+  );
+
+  const clerkMinimumReact = '19.2.3';
+  npmInstall(
+    `react@${clerkMinimumReact}`,
+    `react-dom@${clerkMinimumReact}`,
+    `@clerk/clerk-react@${manifest.peerDependencies['@clerk/clerk-react']}`,
+  );
+  await writeFile(
+    join(scratch, 'adapter-smoke.mjs'),
+    `
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { AccountControl, SignInPanel } from '@nanostackorg/design-system/adapters/clerk';
+assert.equal(typeof SignInPanel, 'function');
+assert.equal(typeof AccountControl, 'function');
+const { version } = createRequire(import.meta.url)('@clerk/clerk-react/package.json');
+console.log('Clerk adapter subpath loaded with @clerk/clerk-react ' + version + '.');
+`,
+  );
+  run(process.execPath, ['adapter-smoke.mjs'], scratch);
+  await writeFile(
+    join(scratch, 'adapter-consumer.tsx'),
+    `
+import { AccountControl, SignInPanel } from '@nanostackorg/design-system/adapters/clerk';
+export const signIn = <SignInPanel routing="path" path="/sign-in" forceRedirectUrl="/" />;
+export const hashSignIn = <SignInPanel />;
+export const account = <AccountControl showName />;
+// @ts-expect-error Path routing needs its path.
+export const missingPath = <SignInPanel routing="path" />;
+// @ts-expect-error Provider appearance stays inside the library.
+export const customAppearance = <AccountControl appearance={{}} />;
+// @ts-expect-error The adapter keeps the closed CSS contract.
+export const customStyle = <SignInPanel style={{ color: 'red' }} />;
+`,
+  );
+  // Clerk's own declarations fail under exactOptionalPropertyTypes; the consumer
+  // code, and therefore the adapter's public types, are still fully checked.
+  await writeFile(
+    join(scratch, 'tsconfig.adapter.json'),
+    JSON.stringify({
+      extends: './tsconfig.json',
+      compilerOptions: { skipLibCheck: true },
+      include: ['adapter-consumer.tsx'],
+    }),
+  );
+  run(
+    process.execPath,
+    ['node_modules/typescript/bin/tsc', '-p', 'tsconfig.adapter.json'],
+    scratch,
+  );
+  console.log('Clerk adapter import and consumer typecheck passed.');
 } finally {
   await rm(scratch, { recursive: true, force: true });
 }

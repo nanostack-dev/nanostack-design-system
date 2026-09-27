@@ -4,9 +4,9 @@ Verified against primary sources on September 24, 2026. Company practices below 
 
 ## The product contract
 
-Nanostack provides compact, Linear-inspired building blocks for Anchor and Echopoint. The user's explicit requirement is stronger than ordinary shadcn customization: **consumers select typed variants and finite theme presets; they never supply custom CSS through component APIs.** Public components exclude `className`, `style`, `css`, `classNames`, `unstyled`, arbitrary token values, and `render`/`asChild` escape hatches. Appearance changes happen in this library and receive shared review and tests.
+Nanostack provides compact, Linear-inspired building blocks that any Nanostack product, starting with Anchor and Echopoint, can use unchanged. The user's explicit requirement is stronger than ordinary shadcn customization: **consumers select typed variants and finite theme presets; they never supply custom CSS through component APIs.** Public components exclude `className`, `style`, `css`, `classNames`, `unstyled`, arbitrary token values, and `render`/`asChild` escape hatches. Appearance changes happen in this library and receive shared review and tests.
 
-Composition remains flexible through named parts, children, semantic variants, and behavior properties. Routing, fetching, authorization, and product-specific text belong to applications. This is an API contract, not a browser CSS sandbox.
+Composition remains flexible through named parts, children, semantic variants, and behavior properties. Routing, fetching, authorization, product-specific text, and visuals that only one product's meaning explains belong to applications. This is an API contract, not a browser CSS sandbox.
 
 ## Company evidence → decisions
 
@@ -14,7 +14,7 @@ Composition remains flexible through named parts, children, semantic variants, a
 
 Airbnb's historical DLS account describes auditing existing experiences, establishing typography, colors, spacing, icons, and information architecture, then building reusable components with a common vocabulary. [Airbnb Design, Building a Visual Language](https://medium.com/airbnb-design/building-a-visual-language-behind-the-scenes-of-our-airbnb-design-system-224748775e4e).
 
-**Decision:** start with the actual workspace shell and overview workflows in Echopoint and Anchor. Ship useful blocks with documented composition examples, rather than a speculative catalog. Foundations establish the grammar; components and blocks express it.
+**Decision:** start with the actual workspace shell and overview workflows in Echopoint and Anchor. Ship useful blocks with documented composition examples, rather than a speculative catalog. A common vocabulary is the part both products share: a component enters the library when a second product needs it unchanged, and a product's own visuals, such as Echopoint's flow canvas, stay in that product. Foundations establish the grammar; components and blocks express it.
 
 ### Stripe: make accessible color systematic
 

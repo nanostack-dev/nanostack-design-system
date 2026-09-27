@@ -57,6 +57,7 @@ export function TagAutocomplete({
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const generatedId = React.useId();
   const errorId = `${inputId ?? generatedId}-error`;
 
@@ -84,8 +85,8 @@ export function TagAutocomplete({
   const addTag = (raw: string) => {
     if (disabled) return;
     const tag = transformTag(raw);
-    setDraft('');
     if (!tag || selected.has(tag)) {
+      setDraft('');
       return;
     }
     const validationError = validateTag?.(tag, value) ?? null;
@@ -94,6 +95,7 @@ export function TagAutocomplete({
       return;
     }
     onChange([...value, tag]);
+    setDraft('');
     setError(null);
   };
 
@@ -101,6 +103,12 @@ export function TagAutocomplete({
     if (disabled) return;
     onChange(value.filter((_, currentIndex) => currentIndex !== index));
     setError(null);
+  };
+
+  const removeWithButton = (index: number) => {
+    removeAt(index);
+    inputRef.current?.focus();
+    setOpen(false);
   };
 
   React.useEffect(() => {
@@ -128,7 +136,7 @@ export function TagAutocomplete({
               <button
                 type="button"
                 disabled={disabled}
-                onClick={() => removeAt(index)}
+                onClick={() => removeWithButton(index)}
                 aria-label={`Remove ${tag}`}
                 className="ns-tag-remove"
               >
@@ -139,8 +147,15 @@ export function TagAutocomplete({
         </div>
       ) : null}
 
-      <Command label={ariaLabel ?? 'Tags'} shouldFilter={false}>
+      <Command
+        label={ariaLabel ?? 'Tags'}
+        shouldFilter={false}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+        }}
+      >
         <CommandInput
+          ref={inputRef}
           expanded={showDropdown}
           id={inputId}
           value={draft}
@@ -153,7 +168,8 @@ export function TagAutocomplete({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') {
+            if (event.key === 'Escape' && showDropdown) {
+              event.stopPropagation();
               setOpen(false);
             }
             if (event.key === 'ArrowDown') {

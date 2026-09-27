@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { Select, type SelectProps } from '../src/components/select.js';
+import { Field, FieldDescription, FieldError, FieldLabel } from '../src/components/field.js';
 
 const options = [
   { value: '', label: 'All environments' },
@@ -95,5 +96,45 @@ describe('native select', () => {
     expect(select).not.toHaveAttribute('css');
     expect(select).not.toHaveAttribute('classNames');
     expect(screen.queryByText('Replacement')).not.toBeInTheDocument();
+  });
+
+  it('takes its label, description, error, disabled state and name from the surrounding Field', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <Field invalid>
+        <FieldLabel>Environment</FieldLabel>
+        <Select options={options} />
+        <FieldDescription>Filter the shown records.</FieldDescription>
+        <FieldError match>Choose an environment.</FieldError>
+      </Field>,
+    );
+    const select = screen.getByRole('combobox', { name: 'Environment' });
+    expect(select).toHaveAccessibleDescription('Filter the shown records. Choose an environment.');
+    expect(select).toHaveAttribute('aria-invalid', 'true');
+    expect(select).toBeEnabled();
+
+    rerender(
+      <Field disabled>
+        <FieldLabel>Environment</FieldLabel>
+        <Select options={options} />
+      </Field>,
+    );
+    expect(screen.getByRole('combobox', { name: 'Environment' })).toBeDisabled();
+
+    rerender(
+      <form aria-label="Environment filter">
+        <Field name="environment">
+          <FieldLabel>Environment</FieldLabel>
+          <Select options={options} defaultValue="production" />
+        </Field>
+      </form>,
+    );
+    const enabled = screen.getByRole('combobox', { name: 'Environment' });
+    expect(enabled).toBeEnabled();
+    expect(enabled).not.toHaveAttribute('aria-invalid');
+    await user.click(screen.getByText('Environment'));
+    expect(enabled).toHaveFocus();
+    const form = screen.getByRole('form', { name: 'Environment filter' }) as HTMLFormElement;
+    expect(new FormData(form).get('environment')).toBe('production');
   });
 });

@@ -1,6 +1,6 @@
 .ns-popover-positioner,
 .ns-autocomplete-positioner {
-  z-index: 80;
+  z-index: var(--ns-layer-popover);
   isolation: isolate;
 }
 .ns-popover-content,

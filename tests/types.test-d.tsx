@@ -297,11 +297,15 @@ const internalTokenSpread = { 'data-ns-theme': 'dark' };
 <DS.Input ref={buttonRef} />;
 // @ts-expect-error A navigation link requires a real link destination.
 <DS.AppShellNavLink>Missing destination</DS.AppShellNavLink>;
+// @ts-expect-error Choice presentation belongs to the library.
+<DS.ChoiceCard title="Choice" description="Detail" className="custom" />;
+// @ts-expect-error Preview dimensions are finite library presets.
+<DS.PreviewFrame width="900px" />;
 
 // Library-owned CSS states are not alternate public variants.
 // @ts-expect-error The orientation comes from the component, never raw CSS state.
 export const ownedOrientation = <DS.Button data-orientation="vertical" />;
-// @ts-expect-error Token styling stays inside syntax/variable adapters.
-export const ownedToken = <DS.Text data-token="comment" />;
-// @ts-expect-error Graph overlay state is private.
-export const ownedInert = <DS.Surface data-inert="false" />;
+// @ts-expect-error Text weight is a prop, never raw CSS state.
+export const ownedWeight = <DS.Text data-weight="semibold" />;
+// @ts-expect-error Checked state comes from the control, never raw CSS state.
+export const ownedChecked = <DS.Checkbox data-checked="" />;

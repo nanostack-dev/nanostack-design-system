@@ -23,9 +23,7 @@
         "@phosphor-icons/react@^2.1.10",
         "@tanstack/react-table@^8.21.3",
         "@tanstack/react-virtual@^3.14.13",
-        "@xyflow/react@^12.12.0",
         "cmdk@^1.1.1",
-        "react-resizable-panels@^4.13.3",
         "sonner@^2.0.8"
       ],
       "files": [
@@ -45,49 +43,14 @@
           "target": "~/src/components/nanostack/blocks/confirmation-dialog.tsx"
         },
         {
-          "path": "src/blocks/conversation.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/conversation.tsx"
-        },
-        {
           "path": "src/blocks/data-table.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/data-table.tsx"
         },
         {
-          "path": "src/blocks/dock.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/dock.tsx"
-        },
-        {
           "path": "src/blocks/empty-state.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/empty-state.tsx"
-        },
-        {
-          "path": "src/blocks/graph-canvas.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/graph-canvas.tsx"
-        },
-        {
-          "path": "src/blocks/graph-controls.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/graph-controls.tsx"
-        },
-        {
-          "path": "src/blocks/graph-node.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/graph-node.tsx"
-        },
-        {
-          "path": "src/blocks/graph-state.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/graph-state.ts"
-        },
-        {
-          "path": "src/blocks/graph-types.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/graph-types.ts"
         },
         {
           "path": "src/blocks/inspector.tsx",
@@ -100,11 +63,6 @@
           "target": "~/src/components/nanostack/blocks/metric.tsx"
         },
         {
-          "path": "src/blocks/node-presentation.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/node-presentation.tsx"
-        },
-        {
           "path": "src/blocks/page-header.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/page-header.tsx"
@@ -115,14 +73,14 @@
           "target": "~/src/components/nanostack/blocks/page.tsx"
         },
         {
+          "path": "src/blocks/preview-frame.tsx",
+          "type": "registry:file",
+          "target": "~/src/components/nanostack/blocks/preview-frame.tsx"
+        },
+        {
           "path": "src/blocks/resource-list.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/blocks/resource-list.tsx"
-        },
-        {
-          "path": "src/blocks/resource-tile.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/resource-tile.tsx"
         },
         {
           "path": "src/blocks/responsive-panel.tsx",
@@ -150,11 +108,6 @@
           "target": "~/src/components/nanostack/blocks/virtual-list.tsx"
         },
         {
-          "path": "src/blocks/workspace.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/blocks/workspace.tsx"
-        },
-        {
           "path": "src/components/activity.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/activity.tsx"
@@ -170,11 +123,6 @@
           "target": "~/src/components/nanostack/components/badge.tsx"
         },
         {
-          "path": "src/components/bar-strip.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/bar-strip.tsx"
-        },
-        {
           "path": "src/components/brand-mark.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/brand-mark.tsx"
@@ -188,11 +136,6 @@
           "path": "src/components/button.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/button.tsx"
-        },
-        {
-          "path": "src/components/capacity-meter.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/capacity-meter.tsx"
         },
         {
           "path": "src/components/checkbox.tsx",
@@ -255,11 +198,6 @@
           "target": "~/src/components/nanostack/components/editable-text.tsx"
         },
         {
-          "path": "src/components/editor-variables.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/editor-variables.ts"
-        },
-        {
           "path": "src/components/field.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/field.tsx"
@@ -270,11 +208,6 @@
           "target": "~/src/components/nanostack/components/highlight.tsx"
         },
         {
-          "path": "src/components/http-method-badge.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/http-method-badge.tsx"
-        },
-        {
           "path": "src/components/icon.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/icon.tsx"
@@ -283,11 +216,6 @@
           "path": "src/components/input.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/input.tsx"
-        },
-        {
-          "path": "src/components/key-value-editor.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/key-value-editor.tsx"
         },
         {
           "path": "src/components/layout.tsx",
@@ -325,16 +253,6 @@
           "target": "~/src/components/nanostack/components/skeleton.tsx"
         },
         {
-          "path": "src/components/source-pane.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/source-pane.tsx"
-        },
-        {
-          "path": "src/components/source-tokens.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/source-tokens.ts"
-        },
-        {
           "path": "src/components/tabs.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/tabs.tsx"
@@ -355,11 +273,6 @@
           "target": "~/src/components/nanostack/components/textarea.tsx"
         },
         {
-          "path": "src/components/timeline-range.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/timeline-range.tsx"
-        },
-        {
           "path": "src/components/toast.tsx",
           "type": "registry:file",
           "target": "~/src/components/nanostack/components/toast.tsx"
@@ -375,99 +288,14 @@
           "target": "~/src/components/nanostack/components/typography.tsx"
         },
         {
-          "path": "src/components/variable-aware-input.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/variable-aware-input.tsx"
-        },
-        {
-          "path": "src/components/variable-text.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/variable-text.tsx"
-        },
-        {
-          "path": "src/components/worker-avatar.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/components/worker-avatar.tsx"
-        },
-        {
           "path": "src/index.ts",
           "type": "registry:file",
           "target": "~/src/components/nanostack/index.ts"
         },
         {
-          "path": "src/internal/editor/single-line.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/editor/single-line.ts"
-        },
-        {
-          "path": "src/internal/editor/variables.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/editor/variables.ts"
-        },
-        {
-          "path": "src/internal/graph/annotation.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/annotation.tsx"
-        },
-        {
-          "path": "src/internal/graph/connection-line.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/connection-line.tsx"
-        },
-        {
-          "path": "src/internal/graph/context.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/context.tsx"
-        },
-        {
-          "path": "src/internal/graph/edge.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/edge.tsx"
-        },
-        {
-          "path": "src/internal/graph/geometry.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/geometry.ts"
-        },
-        {
-          "path": "src/internal/graph/gesture.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/gesture.ts"
-        },
-        {
-          "path": "src/internal/graph/model.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/model.ts"
-        },
-        {
-          "path": "src/internal/graph/node.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/node.tsx"
-        },
-        {
-          "path": "src/internal/graph/presentation.tsx",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/presentation.tsx"
-        },
-        {
-          "path": "src/internal/graph/reveal.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/reveal.ts"
-        },
-        {
-          "path": "src/internal/graph/use-edge-settle.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/graph/use-edge-settle.ts"
-        },
-        {
           "path": "src/internal/props.ts",
           "type": "registry:file",
           "target": "~/src/components/nanostack/internal/props.ts"
-        },
-        {
-          "path": "src/internal/worker-tuning.ts",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/internal/worker-tuning.ts"
         },
         {
           "path": "src/styles.css",
@@ -483,11 +311,6 @@
           "path": "src/styles/breadcrumb.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/breadcrumb.css"
-        },
-        {
-          "path": "src/styles/capacity-meter.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/capacity-meter.css"
         },
         {
           "path": "src/styles/catalog.css",
@@ -510,29 +333,9 @@
           "target": "~/src/components/nanostack/styles/data-visualization.css"
         },
         {
-          "path": "src/styles/dock.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/dock.css"
-        },
-        {
           "path": "src/styles/editor.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/editor.css"
-        },
-        {
-          "path": "src/styles/graph-engine.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/graph-engine.css"
-        },
-        {
-          "path": "src/styles/graph.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/graph.css"
-        },
-        {
-          "path": "src/styles/node-presentation.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/node-presentation.css"
         },
         {
           "path": "src/styles/popover.css",
@@ -540,29 +343,9 @@
           "target": "~/src/components/nanostack/styles/popover.css"
         },
         {
-          "path": "src/styles/resource-tile.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/resource-tile.css"
-        },
-        {
           "path": "src/styles/table.css",
           "type": "registry:file",
           "target": "~/src/components/nanostack/styles/table.css"
-        },
-        {
-          "path": "src/styles/timeline-range.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/timeline-range.css"
-        },
-        {
-          "path": "src/styles/worker-avatar.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/worker-avatar.css"
-        },
-        {
-          "path": "src/styles/workspace.css",
-          "type": "registry:file",
-          "target": "~/src/components/nanostack/styles/workspace.css"
         },
         {
           "path": "src/theme.tsx",

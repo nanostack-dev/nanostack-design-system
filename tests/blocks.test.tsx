@@ -12,6 +12,8 @@ import {
   AppShellSidebar,
 } from '../src/blocks/app-shell.js';
 import { ActivityItem, ActivityList } from '../src/blocks/activity-list.js';
+import { ConfirmationDialog } from '../src/blocks/confirmation-dialog.js';
+import { Dialog, DialogPopup, DialogTitle, DialogTrigger } from '../src/components/dialog.js';
 import {
   PageHeader,
   PageHeaderActions,
@@ -100,6 +102,76 @@ describe('application shell', () => {
     await user.click(screen.getByRole('button', { name: 'Open navigation' }));
     await user.click(await screen.findByRole('link', { name: 'Flows' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  });
+
+  it('rejects a stray dialog trigger instead of binding it to the navigation drawer', () => {
+    mobile = true;
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    expect(() =>
+      render(
+        <AppShell>
+          <AppShellMain>
+            <DialogTrigger>Stray trigger</DialogTrigger>
+          </AppShellMain>
+        </AppShell>,
+      ),
+    ).toThrow(/Dialog\.Trigger/);
+    consoleError.mockRestore();
+  });
+
+  it('announces supplied names for the navigation and dialog dismiss controls', async () => {
+    mobile = true;
+    const user = userEvent.setup();
+    render(
+      <AppShell
+        navigationLabel="Espace de travail"
+        openNavigationLabel="Ouvrir la navigation"
+        closeNavigationLabel="Fermer la navigation"
+      >
+        <AppShellSidebar>
+          <AppShellNav label="Sections">
+            <AppShellNavLink href="/home">Home</AppShellNavLink>
+          </AppShellNav>
+        </AppShellSidebar>
+        <AppShellHeader>Workspace</AppShellHeader>
+        <AppShellMain>
+          <Dialog>
+            <DialogTrigger>Open dialog</DialogTrigger>
+            <DialogPopup closeLabel="Fermer la fenêtre">
+              <DialogTitle>Plain dialog</DialogTitle>
+            </DialogPopup>
+          </Dialog>
+        </AppShellMain>
+      </AppShell>,
+    );
+    expect(screen.queryByRole('button', { name: 'Open navigation' })).not.toBeInTheDocument();
+    const open = screen.getByRole('button', { name: 'Ouvrir la navigation' });
+    await user.click(open);
+    const drawer = await screen.findByRole('dialog', { name: 'Espace de travail' });
+    await user.click(within(drawer).getByRole('button', { name: 'Fermer la navigation' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() => expect(open).toHaveFocus());
+    await user.click(screen.getByRole('button', { name: 'Open dialog' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Plain dialog' });
+    await user.click(within(dialog).getByRole('button', { name: 'Fermer la fenêtre' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  });
+
+  it('names the confirmation dismiss control with the supplied label', () => {
+    render(
+      <ConfirmationDialog
+        open
+        onOpenChange={() => undefined}
+        title="Delete record?"
+        description="This removes the record."
+        actionLabel="Delete"
+        closeLabel="Fermer la confirmation"
+        onAction={() => undefined}
+      />,
+    );
+    const dialog = screen.getByRole('alertdialog', { name: 'Delete record?' });
+    expect(within(dialog).getByRole('button', { name: 'Fermer la confirmation' })).toBeVisible();
+    expect(within(dialog).queryByRole('button', { name: 'Close dialog' })).not.toBeInTheDocument();
   });
 });
 

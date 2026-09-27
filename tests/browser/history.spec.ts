@@ -7,6 +7,21 @@ test('virtual rows measure, paginate and preserve a focused row across scrolling
   page,
 }) => {
   const viewport = page.getByRole('region', { name: 'Records' });
+  const rows = await viewport.evaluate((element) =>
+    [...element.querySelectorAll<HTMLElement>('[role="listitem"]')]
+      .map((row) => ({
+        index: Number(row.getAttribute('aria-posinset')) - 1,
+        top: row.getBoundingClientRect().top,
+        height: row.getBoundingClientRect().height,
+      }))
+      .sort((a, b) => a.index - b.index)
+      .slice(0, 6),
+  );
+  expect(rows.map((row) => row.index)).toEqual([0, 1, 2, 3, 4, 5]);
+  // Even records carry long text, so measured rows differ from the fixed estimate.
+  expect(rows[0]!.height).toBeGreaterThan(rows[1]!.height);
+  for (const [previous, row] of rows.slice(0, -1).map((row, i) => [row, rows[i + 1]!] as const))
+    expect(Math.abs(row.top - (previous.top + previous.height))).toBeLessThanOrEqual(1);
   const first = page.getByRole('button', { name: /^Record 0 / });
   await first.focus();
   await expect(first).toBeFocused();
@@ -26,19 +41,19 @@ test('virtual rows measure, paginate and preserve a focused row across scrolling
   await page.getByRole('button', { name: /^Record 79 / }).click();
   await expect(page.getByText('Selected: 79')).toBeVisible();
 });
-test('chart keyboard selection and mobile panel focus restore work in both themes', async ({
+test('keyboard row selection and mobile panel focus restore work in both themes', async ({
   page,
   isMobile,
 }) => {
   for (const theme of ['light', 'dark']) {
     if (theme === 'dark') await page.getByRole('button', { name: 'Toggle theme' }).click();
-    const bar = page.getByRole('button', { name: 'Slow, 100 milliseconds' });
-    await bar.focus();
+    const row = page.getByRole('button', { name: /^Record 1 / });
+    await row.focus();
     await page.keyboard.press('Enter');
-    await expect(bar).toHaveAttribute('aria-current', 'true');
+    await expect(page.getByText('Selected: 1', { exact: true })).toBeVisible();
     const trigger = page.getByRole('button', { name: 'Open detail' });
     await trigger.click();
-    await expect(page.getByText('Selected record slow')).toBeVisible();
+    await expect(page.getByText('Selected record 1')).toBeVisible();
     if (isMobile && page.viewportSize()!.width < 768) {
       const dialog = page.getByRole('dialog', { name: 'Details' });
       await expect(dialog).toBeVisible();

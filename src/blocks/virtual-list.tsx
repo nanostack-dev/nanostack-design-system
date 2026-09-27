@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, useState, type Key, type ReactNode } from 'react';
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
 import { safeProps, type ElementProps } from '../internal/props.js';
+import { Button } from '../components/button.js';
 import { Spinner } from '../components/icon.js';
 
 export type VirtualListProps<T> = Omit<ElementProps<'div'>, 'children'> & {
@@ -16,8 +17,12 @@ export type VirtualListProps<T> = Omit<ElementProps<'div'>, 'children'> & {
   density?: 'compact' | 'comfortable';
   hasMore?: boolean;
   loadingMore?: boolean;
+  /** The last page request failed: the list stops requesting and offers Retry, which calls onEndReached. */
+  loadMoreFailed?: boolean;
   onEndReached?: () => void;
   loadingMessage?: string;
+  loadMoreFailedMessage?: string;
+  retryLabel?: string;
   emptyState?: ReactNode;
 };
 
@@ -31,8 +36,11 @@ export function VirtualList<T>({
   density = 'compact',
   hasMore = false,
   loadingMore = false,
+  loadMoreFailed = false,
   onEndReached,
   loadingMessage = 'Loading more…',
+  loadMoreFailedMessage = 'More items could not be loaded.',
+  retryLabel = 'Retry',
   emptyState,
   ...props
 }: VirtualListProps<T>) {
@@ -49,7 +57,7 @@ export function VirtualList<T>({
     [focusedIndex, items.length],
   );
   const virtualizer = useVirtualizer({
-    count: items.length + (hasMore || loadingMore ? 1 : 0),
+    count: items.length + (hasMore || loadingMore || loadMoreFailed ? 1 : 0),
     getScrollElement: () => viewport.current,
     getItemKey: (index) => (index < items.length ? getItemKey(items[index]!) : '__ns-loading'),
     estimateSize: () => (density === 'compact' ? 64 : 80),
@@ -60,9 +68,10 @@ export function VirtualList<T>({
   const rows = virtualizer.getVirtualItems();
   const lastIndex = rows.at(-1)?.index ?? -1;
   useEffect(() => {
-    if (loadingMore || !hasMore) requestedCount.current = null;
+    if (!hasMore) requestedCount.current = null;
     if (
       !loadingMore &&
+      !loadMoreFailed &&
       hasMore &&
       onEndReached &&
       lastIndex >= items.length - 1 &&
@@ -71,7 +80,11 @@ export function VirtualList<T>({
       requestedCount.current = items.length;
       onEndReached();
     }
-  }, [hasMore, loadingMore, onEndReached, lastIndex, items.length]);
+  }, [hasMore, loadingMore, loadMoreFailed, onEndReached, lastIndex, items.length]);
+  const retry = () => {
+    viewport.current?.focus({ preventScroll: true });
+    onEndReached?.();
+  };
   return (
     <div
       {...safeProps(props)}
@@ -94,7 +107,7 @@ export function VirtualList<T>({
           if (!event.currentTarget.contains(event.relatedTarget)) setFocusedIndex(null);
         }}
       >
-        {items.length === 0 && !loadingMore && !hasMore ? (
+        {items.length === 0 && !loadingMore && !loadMoreFailed && !hasMore ? (
           emptyState
         ) : (
           <div
@@ -117,6 +130,13 @@ export function VirtualList<T>({
               >
                 {row.index < items.length ? (
                   renderItem(items[row.index]!, row.index)
+                ) : loadMoreFailed && !loadingMore ? (
+                  <div className="ns-virtual-loading">
+                    <span role="status">{loadMoreFailedMessage}</span>
+                    <Button variant="secondary" size="sm" onClick={retry}>
+                      {retryLabel}
+                    </Button>
+                  </div>
                 ) : (
                   <div className="ns-virtual-loading" role="status">
                     <Spinner />

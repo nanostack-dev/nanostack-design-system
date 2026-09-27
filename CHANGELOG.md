@@ -1,12 +1,48 @@
 # Changelog
 
-## 0.2.0-beta.4
+## 0.0.1
 
-- Add a nonmodal inspector: `DockSidebar` accepts `size="inspector"` and `side="end"`, and the new `DockSheet` covers the lower part of `DockMain` while the canvas stays interactive.
-- Add `GraphCanvasHandle.revealNode(nodeId, { occlusion, entering })`. It moves the viewport only enough to keep a node clear of the sidebar or sheet. An item larger than the free area keeps its start visible. Reduced motion shortens the move.
-- `BarStrip` accepts `selection="single"` for keyboard radio selection and `onPreview` for hover and focus previews. Points accept the `info` tone.
+Numbering restarts at 0.0.1 for the first release with the common-only scope. It supersedes the 0.2.0 betas: 0.2.0-beta.4 and 0.2.0-beta.5 were never published, and the inspector sidebar, `DockSheet`, `GraphCanvasHandle.revealNode` and `BarStrip` selection that beta.4 added left the library with those parts.
 
-Upgrade: install `@nanostackorg/design-system@0.2.0-beta.4`. Existing props keep their behavior. To inspect a node, render the detail inside `DockSidebar size="inspector" side="end"` or `DockSheet`, then call `canvas.current?.revealNode(id, { occlusion: 'sidebar', entering: true })` when the panel opens.
+- Publish the component catalog, the guidelines and this changelog at https://nanostack-dev.github.io/nanostack-design-system/.
+- Publish stable versions under npm's `latest` tag and GitHub releases; betas keep the `beta` tag and GitHub prereleases.
+- Require `@phosphor-icons/react` (^2.1.10) as a peer dependency. `Icon` glyphs and the library's own icons share the application's single copy.
+- Resolve every export through a `default` condition and export `package.json`, so CommonJS-aware resolvers and test runners find the package.
+- Ship JavaScript source maps with inline sources. Declaration maps are removed because their sources were never shipped.
+- `pnpm check` verifies the committed shadcn registry instead of regenerating it.
+- Show the backdrop of a `Dialog`, `ConfirmationDialog` or `ResponsivePanel` inside `AppShell`. The navigation drawer no longer wraps the shell, so a `DialogTrigger` outside a `Dialog` no longer opens navigation.
+- Connect `Select` to its surrounding `Field` for its label, description, error, invalid and disabled state.
+- Let the `hidden` attribute hide library elements, wrap static `ActivityItem` rows on narrow screens, and paint `--ns-canvas` behind a scoped `Theme`.
+- Give `brand="echopoint"` its own accent tokens: Echopoint blue in light mode and Echopoint lime in dark mode.
+- Add `openNavigationLabel` and `closeNavigationLabel` to `AppShell`, and `closeLabel` to `DialogPopup` and `ConfirmationDialog`.
+- Paint menus, tooltips, popovers and autocomplete lists above dialogs, the navigation drawer and mobile panels through the `--ns-layer-*` scale.
+- Add `ConfirmationDialog pending`: the action is busy, shows a spinner and ignores repeated activation.
+- Key `DataTable` row selection by row id. Add controlled `selectedRowIds` and `onSelectedRowIdsChange`, and `getRowLabel` for per-row checkbox names.
+- Stop `VirtualList` from re-requesting a failed page. Add `loadMoreFailed`, `loadMoreFailedMessage` and `retryLabel` for a retry affordance.
+- Render `CommandSeparator` as a presentational divider. A listbox may own only options and groups, so the previous `separator` role failed accessibility checks. It still hides during a search unless `alwaysRender` is set.
+- Let a consumer `id` and label name `CommandInput` and `TagAutocomplete`. Tag inputs ignore Enter during IME composition, keep a rejected draft, return focus to the input after a removal, and close their list on the first Escape without closing a parent dialog.
+- Keep external editor `value` updates out of undo history and keep the cursor in place. Add `documentKey` to give each document its own history.
+- Keep editor configuration stable across parent re-renders.
+- Require `label` or `aria-labelledby` on every editor. A `<label for>` that targets the editor `id` focuses it.
+- Return focus to the `EditableText` button after Enter commits or Escape cancels.
+- **Breaking:** narrow the library to UI that any Nanostack product can use unchanged. Remove these Echopoint-specific parts, their styles and their subpaths:
+  - graph canvas and flow nodes: `GraphCanvas`, `GraphCanvasHandle`, `GraphViewportControls`, `useGraphNodes`, `useGraphEdges`, `useGraphViewport`, `applyGraphNodeChanges`, `applyGraphEdgeChanges`, `addGraphEdge`, `graphAnchorSideFromHandle`, `isGraphAnchorSide`, the graph data, change and presentation types, `GraphNodeFrame`, `GraphNodeHeader`, `GraphNodeBody`, `GraphNodeFooter`, every `Node*` presentation part, and the `Dock` parts;
+  - fleet: `WorkerAvatar`, `CapacityMeter` and the `ResourceTile` parts;
+  - `HttpMethodBadge`;
+  - variable editing: `VariableAwareInput`, `VariableText`, `getVariableMatches`, `getCompletionMatch`, the `Variable` and `VariableTemplate` types, `KeyValueRow`, `KeyValueDraftRow`, and the `CodeEditor` props `variables`, `variablesEnabled`, `variablePattern`, `variableTemplates` and `variableResolver` with the single-line `input` variant;
+  - workbench panes: `Workspace`, `WorkspaceRail`, `WorkspaceMain`, the `Pane` parts, `WorkspaceSplit`, `useWorkspaceLayout`, `DocumentTabs`, `DocumentTab`, the `Tree` parts, `SourcePane` and `tokenizeSourceLine`;
+  - run history visuals: `BarStrip`, `TimelineRange`, `ConversationLog`, `MessageRow` and `MessageBubble`.
+- `CodeEditor` and `CodeViewer` stay as a plain multi-line JSON, XML, HTML and text editor and viewer. `PreviewFrame` moves to the `blocks/preview-frame` subpath. The package no longer depends on `@xyflow/react` or `react-resizable-panels`.
+
+Upgrade: install the exact version and the Phosphor peer with `pnpm add --save-exact @nanostackorg/design-system@0.0.1` and `pnpm add @phosphor-icons/react@^2.1.10`. 0.0.1 sorts below the 0.2.0 betas, so a range such as `^0.2.0-beta.3` never resolves to it: pin it exactly. Glyph imports do not change: `<Icon glyph={GearIcon} label="Settings" />`. The Clerk adapter needs React 19.2.3 or later because of Clerk's own peer range.
+
+Upgrade: a `DialogTrigger` or `DialogClose` inside `AppShell` must belong to its own `Dialog`, for example `<Dialog><DialogTrigger>Edit</DialogTrigger><DialogPopup>…</DialogPopup></Dialog>`. Inside a `Field`, the Field's `name` wins over the `Select`'s `name`, and manual `id`, `htmlFor` and `aria-describedby` wiring can be removed: `<Field name="environment"><FieldLabel>Environment</FieldLabel><Select options={options} /></Field>`.
+
+Upgrade: `DataTable` row selection requires `getRowId`, and `isRowSelected` cannot be combined with `enableRowSelection`: replace `<DataTable enableRowSelection isRowSelected={(row) => row.id === openId} … />` with `<DataTable enableRowSelection getRowId={(row) => row.id} selectedRowIds={ids} onSelectedRowIdsChange={setIds} … />`. Row checkboxes are named "Select <row label>" instead of "Select row", so tests that query "Select row" must change.
+
+Upgrade: name every editor: replace `<CodeEditor id="payload" aria-label="Payload" />` with `<CodeEditor id="payload" label="Payload" />`, or point `aria-labelledby` at a visible label. Pass `documentKey={activeDocument.id}` when one editor shows several documents.
+
+Upgrade: Echopoint now owns the removed parts under its own source tree, built from `--ns-*` tokens and library primitives; other applications did not use them. The scope rule in AGENTS.md decides what the library holds. Import `PreviewFrame` from the root or its new subpath: replace `import { PreviewFrame } from '@nanostackorg/design-system/blocks/workspace'` with `import { PreviewFrame } from '@nanostackorg/design-system/blocks/preview-frame'`. A plain editor drops the variable props: replace `<CodeEditor label="Body" language="json" variables={variables} />` with `<CodeEditor label="Body" language="json" />`, and keep a single-line template input such as a URL bar in the application.
 
 ## 0.2.0-beta.3
 
@@ -32,6 +68,20 @@ Upgrade: replace the beta package and keep existing imports. Use `WorkerAvatar v
 - Publish an interactive catalog at `?catalog`, component recipes, contribution guidance and an Anchor adoption path. Preserve Anchor's light-only preset.
 - Migrate Echopoint's full frontend and stories to library assemblies, with an enforced zero-override boundary. Remove local primitives, stylesheets and visual-engine dependencies.
 - Expand keyboard, focus, async clipboard, controlled state, scroll anchoring, graph pointer, responsive, accessibility, type and packaged-consumer coverage.
+
+Upgrade: replace `Text as="span"` with `display="inline"` and remove `as="p"`, which is the default. Replace `data-size`, `data-tone`, `data-disabled` and other state attributes, and `color` passed from JavaScript or spread objects, with the typed prop they imitated. Replace `sx`, `slots` and `component` with layout parts such as Cluster, or with named parts. Components now remove these keys at runtime, so an unconverted use has no visual effect.
+
+```tsx
+// 0.1.0-beta.1
+<Text as="span" data-tone="muted">Draft</Text>
+<Button data-size="sm" data-disabled="" {...{ sx: { ml: 2 } }}>Save</Button>
+
+// 0.2.0-beta.1
+<Cluster gap="sm">
+  <Text display="inline" tone="muted">Draft</Text>
+  <Button size="sm" disabled>Save</Button>
+</Cluster>
+```
 
 ## 0.1.0-beta.1
 

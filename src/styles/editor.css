@@ -112,23 +112,6 @@
   border-radius: 4px;
   font: inherit;
 }
-.ns-code-editor[data-ns-editor-variant='input'] {
-  height: 36px;
-  min-height: 36px;
-  padding-inline: 10px;
-}
-.ns-code-editor[data-ns-editor-variant='input'] .cm-scroller {
-  display: flex;
-  align-items: center;
-  overflow: hidden !important;
-  scrollbar-width: none;
-}
-.ns-code-editor[data-ns-editor-variant='input'] .cm-content {
-  padding: 0;
-}
-.ns-code-editor[data-ns-editor-variant='input'] .cm-line {
-  padding: 0;
-}
 .ns-code-editor[data-ns-editor-variant='viewer'] {
   border: 0;
   border-radius: 0;
@@ -172,124 +155,9 @@
 .ns-code-editor .tok-link {
   text-decoration: underline;
 }
-.ns-code-editor .cm-variable {
-  color: var(--ns-warning);
-  background: var(--ns-warning-soft);
-  border-radius: 3px;
-  padding-inline: 2px;
-  font-weight: 600;
-}
-.ns-code-editor .cm-variable-resolved {
-  color: var(--ns-success);
-  background: var(--ns-success-soft);
-}
-.ns-code-editor .cm-variable * {
-  color: inherit;
-  background: transparent;
-}
-.ns-code-editor .cm-completion-ghost {
-  color: var(--ns-muted);
-  opacity: 0.65;
-  pointer-events: none;
-}
-.ns-editor-popovers .cm-tooltip {
-  z-index: 1000;
-  color: var(--ns-text);
-  background: var(--ns-surface);
-  border: 1px solid var(--ns-border);
-  border-radius: 6px;
-  box-shadow: var(--ns-shadow);
-  font:
-    13px/1.5 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    monospace;
-}
-.ns-editor-popovers .cm-variable-tooltip {
-  padding: 12px;
-  min-width: 15rem;
-  max-width: min(20rem, calc(100vw - 24px));
-  overflow-wrap: anywhere;
-}
-.ns-editor-popovers .cm-variable-tooltip-name {
-  font-weight: 600;
-  margin-bottom: 8px;
-  white-space: pre-wrap;
-}
-.ns-editor-popovers .cm-variable-tooltip-value {
-  padding: 10px;
-  border-radius: 4px;
-  background: var(--ns-subtle);
-  border: 1px solid var(--ns-border);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-.ns-editor-popovers .cm-variable-tooltip-unresolved,
-.ns-editor-popovers .cm-variable-tooltip-empty {
-  color: var(--ns-muted);
-  font-style: italic;
-}
-.ns-editor-popovers .cm-tooltip-autocomplete {
-  overflow: hidden;
-  margin-top: 4px;
-}
-.ns-editor-popovers .cm-tooltip-autocomplete > ul {
-  font: inherit;
-  max-height: 16rem;
-  padding: 4px 0;
-  margin: 0;
-  list-style: none;
-}
-.ns-editor-popovers .cm-tooltip-autocomplete > ul > li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px !important;
-  min-height: 36px;
-  cursor: pointer;
-  color: var(--ns-text);
-}
-.ns-editor-popovers .cm-tooltip-autocomplete > ul > li:hover,
-.ns-editor-popovers .cm-tooltip-autocomplete > ul > li[aria-selected] {
-  color: var(--ns-text);
-  background: var(--ns-hover);
-}
-.ns-editor-popovers .cm-completionIcon {
-  width: 16px;
-  height: 16px;
-  padding: 0;
-  display: inline-grid;
-  place-items: center;
-  color: var(--ns-accent);
-  font-size: 10px;
-  opacity: 1;
-}
-.ns-editor-popovers .cm-completionLabel {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ns-editor-popovers .cm-completionDetail {
-  color: var(--ns-muted);
-  max-width: 16rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 11px;
-}
 @media (pointer: coarse) {
-  .ns-code-editor[data-ns-editor-variant='input'] {
-    height: 44px;
-    min-height: 44px;
-  }
   .ns-code-editor .cm-editor {
     font-size: 16px;
-  }
-  .ns-editor-popovers .cm-tooltip-autocomplete > ul > li {
-    min-height: 44px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -7,13 +7,7 @@ import {
   Heading,
   Button,
   Stack,
-  Cluster,
   Text,
-  ConversationLog,
-  MessageRow,
-  MessageBubble,
-  PreviewFrame,
-  WorkspaceMain,
   ResponsivePanel,
   Menu,
   MenuTrigger,
@@ -30,12 +24,6 @@ import '../../../src/styles.css';
 function Fixture() {
   const [choice, setChoice] = useState('newest');
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      id: `message-${i}`,
-      text: `Message ${i}: ${'An existing message with enough content to occupy several lines. '.repeat(5)}`,
-    })),
-  );
   return (
     <Theme colorScheme="dark">
       <DocumentTheme />
@@ -73,52 +61,6 @@ function Fixture() {
               <Button>Panel action</Button>
             </Stack>
           </ResponsivePanel>
-          <Cluster>
-            <Button
-              onClick={() =>
-                setMessages((items) => [
-                  ...items,
-                  { id: `message-${items.length}`, text: 'Appended message. '.repeat(12) },
-                ])
-              }
-            >
-              Append message
-            </Button>
-            <Button
-              onClick={() =>
-                setMessages((items) =>
-                  items.map((item, i) =>
-                    i === items.length - 1
-                      ? { ...item, text: item.text + 'Streamed text. '.repeat(20) }
-                      : item,
-                  ),
-                )
-              }
-            >
-              Stream text
-            </Button>
-            <Button
-              onClick={() =>
-                setMessages((items) => [
-                  { id: `earlier-${items.length}`, text: 'Earlier history. '.repeat(30) },
-                  ...items,
-                ])
-              }
-            >
-              Prepend history
-            </Button>
-          </Cluster>
-          <PreviewFrame height="panel">
-            <WorkspaceMain>
-              <ConversationLog label="Conversation" entryCount={messages.length}>
-                {messages.map((message) => (
-                  <MessageRow key={message.id}>
-                    <MessageBubble>{message.text}</MessageBubble>
-                  </MessageRow>
-                ))}
-              </ConversationLog>
-            </WorkspaceMain>
-          </PreviewFrame>
         </Stack>
       </Page>
     </Theme>

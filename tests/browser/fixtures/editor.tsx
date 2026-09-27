@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Surface } from '../../../src/components/layout.js';
+import { Label, Surface } from '../../../src/components/layout.js';
 import { Theme } from '../../../src/theme.js';
 import { CodeEditor, CodeViewer } from '../../../src/components/code-editor.js';
-import { VariableAwareInput } from '../../../src/components/variable-aware-input.js';
 import '../../../src/styles.css';
 import '../../../src/styles/editor.css';
 
@@ -17,29 +16,28 @@ function Fixture() {
         <h1>Editor interactions</h1>
         <button onClick={() => setDark((current) => !current)}>Toggle theme</button>
         <button onClick={() => setReadOnly((current) => !current)}>Toggle readonly</button>
-        <VariableAwareInput
-          aria-label="URL"
+        <CodeEditor
+          label="JSON body"
+          language="json"
           value={value}
           onChange={setValue}
           readOnly={readOnly}
-          variables={[{ name: 'host', value: 'https://example.com', description: 'API endpoint' }]}
-          placeholder="Enter URL…"
-        />
-        <output aria-label="Current value">{value}</output>
-        <CodeEditor
-          aria-label="JSON body"
-          language="json"
-          defaultValue={'{\n  "hello": true\n}'}
+          placeholder="Enter JSON…"
           height="compact"
           lineNumbers
         />
+        <output aria-label="Current value">{value}</output>
         <CodeViewer
-          aria-label="Response"
+          label="Response"
           height="content"
           autoDetectLanguage
           value={'{"long":"' + 'unbroken'.repeat(70) + '"}'}
         />
         <button>After editors</button>
+        <Label id="request-path-label" htmlFor="request-path">
+          Request path
+        </Label>
+        <CodeEditor id="request-path" aria-labelledby="request-path-label" height="compact" />
       </Surface>
     </Theme>
   );

@@ -49,7 +49,7 @@
   flex-shrink: 0;
 }
 .ns-menu-positioner {
-  z-index: 60;
+  z-index: var(--ns-layer-popover);
 }
 .ns-menu-content {
   min-width: 180px;
@@ -112,7 +112,7 @@
   visibility: hidden;
 }
 .ns-tooltip-positioner {
-  z-index: 70;
+  z-index: var(--ns-layer-tooltip);
 }
 .ns-tooltip-content {
   max-width: min(280px, var(--available-width));
@@ -176,5 +176,102 @@
   }
   .ns-input.ns-textarea {
     font-size: 16px;
+  }
+}
+.ns-choice-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ns-space-sm);
+  align-items: flex-start;
+  width: 100%;
+  padding: var(--ns-space-lg);
+  border: 1px solid var(--ns-border);
+  border-radius: 12px;
+  background: var(--ns-surface);
+  color: var(--ns-text);
+  text-align: start;
+  cursor: pointer;
+  font: inherit;
+}
+.ns-choice-card:hover,
+.ns-choice-card[aria-pressed='true'] {
+  border-color: var(--ns-accent);
+  background: var(--ns-accent-soft);
+}
+.ns-choice-card:focus-visible {
+  outline: 2px solid var(--ns-accent);
+  outline-offset: 3px;
+}
+.ns-choice-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ns-choice-card-icon {
+  color: var(--ns-accent);
+}
+.ns-choice-card-title {
+  font-weight: 600;
+}
+.ns-choice-card-description {
+  color: var(--ns-muted);
+  font-size: 13px;
+}
+.ns-editable-text {
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 6px;
+  background: transparent;
+  color: var(--ns-text);
+  font: inherit;
+  text-align: start;
+}
+button.ns-editable-text {
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+button.ns-editable-text:hover:not(:disabled),
+input.ns-editable-text {
+  background: var(--ns-subtle);
+}
+.ns-editable-text[data-variant='title'] {
+  font-size: 15px;
+  font-weight: 600;
+}
+.ns-editable-text[data-variant='code'] {
+  font-family: ui-monospace, monospace;
+}
+.ns-control-row {
+  display: flex;
+  gap: var(--ns-space-sm);
+  align-items: center;
+  min-width: 0;
+}
+.ns-control-row[data-align='start'] {
+  align-items: flex-start;
+}
+.ns-control-row > .ns-input,
+.ns-control-row > .ns-select,
+.ns-control-row > .ns-code-editor,
+.ns-control-row > .ns-stack {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+}
+.ns-control-row > .ns-button,
+.ns-control-row > .ns-text {
+  flex: none;
+}
+@media (max-width: 480px) {
+  .ns-control-row {
+    flex-wrap: wrap;
+  }
+  .ns-control-row > .ns-input,
+  .ns-control-row > .ns-select,
+  .ns-control-row > .ns-code-editor,
+  .ns-control-row > .ns-stack {
+    flex-basis: 120px;
   }
 }

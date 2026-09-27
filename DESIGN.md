@@ -12,4 +12,4 @@ Spacing follows 4/8/12/16/24/32px. Control heights are 32/36px with a larger tou
 
 AppShell separates navigation, a compact context header and main content. PageHeader owns the page title and primary actions. Section groups related work with one title and optional action; it does not add another decorative card. ActivityList is a structured row list. Empty, error and loading states occupy the same region as ready content.
 
-Mobile navigation is a focus-managed Base UI dialog. Main content becomes one column and retains the desktop order. Navigation and action labels remain explicit. Motion is limited to state feedback and honors reduced motion. All styling is library-owned; consumers select semantic variants, never CSS.
+Mobile navigation is a focus-managed Base UI dialog. Main content becomes one column and retains the desktop order. Navigation and action labels remain explicit. Motion is limited to state feedback and honors reduced motion. Library components own their styling; consumers select semantic variants, never CSS. A product's own visuals live in that product and draw on the same tokens.
