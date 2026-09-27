@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const sections = ['Foundations', 'Controls', 'Collections', 'Workspace', 'Graph', 'History'];
+const sections = ['Foundations', 'Controls', 'Collections', 'Workspace', 'History'];
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/?catalog');

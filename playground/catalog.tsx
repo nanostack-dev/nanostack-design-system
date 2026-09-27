@@ -1,4 +1,3 @@
-import { InspectorExample } from './inspector-example.js';
 import { useState, type ReactNode } from 'react';
 import {
   ArrowRight,
@@ -15,7 +14,6 @@ const sections = [
   'Controls',
   'Collections',
   'Workspace',
-  'Graph',
   'History',
 ] as const;
 type CatalogSection = (typeof sections)[number];
@@ -156,6 +154,7 @@ function Controls() {
   const [checked, setChecked] = useState(true);
   const [priority, setPriority] = useState('normal');
   const [notice, setNotice] = useState('Try the controls. All changes stay in this preview.');
+  const [start, setStart] = useState<'template' | 'empty'>('template');
   return (
     <UI.Stack gap="xl">
       <Example
@@ -307,6 +306,27 @@ function Controls() {
             </UI.Text>
           </UI.FormActions>
         </UI.Form>
+      </Example>
+      <Example
+        title="Whole-card choices"
+        description="A choice card is one native button with a title, a description and an optional icon. Selection state is application data."
+      >
+        <UI.Grid columns={2}>
+          <UI.ChoiceCard
+            title="Start from a template"
+            description="Copy a working example and adapt it to your data."
+            icon={<UI.Icon glyph={Cube} />}
+            selected={start === 'template'}
+            onClick={() => setStart('template')}
+          />
+          <UI.ChoiceCard
+            title="Start from scratch"
+            description="Begin with an empty record and add each part yourself."
+            icon={<UI.Icon glyph={CheckCircle} />}
+            selected={start === 'empty'}
+            onClick={() => setStart('empty')}
+          />
+        </UI.Grid>
       </Example>
       <UI.Disclosure>
         <UI.DisclosureTrigger>How to add a new variation</UI.DisclosureTrigger>
@@ -641,193 +661,6 @@ function Workspace() {
   );
 }
 
-function Graph() {
-  const [readOnly, setReadOnly] = useState(false);
-  const [selection, setSelection] = useState('Select a node to inspect its meaning.');
-  const [nodes, setNodes] = useState<UI.GraphNode[]>([
-    {
-      id: 'receive',
-      position: { x: 40, y: 80 },
-      data: {},
-      width: 'compact',
-      ariaLabel: 'Receive event',
-      content: (
-        <>
-          <UI.GraphNodeHeader>
-            <UI.Icon glyph={Cube} />
-            <UI.Text weight="semibold">Receive event</UI.Text>
-          </UI.GraphNodeHeader>
-          <UI.GraphNodeBody>
-            <UI.Text size="sm" tone="muted">
-              A neutral node with common anatomy.
-            </UI.Text>
-          </UI.GraphNodeBody>
-          <UI.GraphNodeFooter>
-            <UI.Badge tone="info">Input</UI.Badge>
-          </UI.GraphNodeFooter>
-        </>
-      ),
-    },
-    {
-      id: 'verify',
-      position: { x: 380, y: 160 },
-      data: {},
-      width: 'compact',
-      ariaLabel: 'Verify response',
-      content: (
-        <>
-          <UI.GraphNodeHeader>
-            <UI.Icon glyph={CheckCircle} tone="success" />
-            <UI.Text weight="semibold">Verify response</UI.Text>
-          </UI.GraphNodeHeader>
-          <UI.GraphNodeBody>
-            <UI.Text size="sm" tone="muted">
-              Application meaning, library geometry.
-            </UI.Text>
-          </UI.GraphNodeBody>
-          <UI.GraphNodeFooter>
-            <UI.Badge tone="success">Ready</UI.Badge>
-          </UI.GraphNodeFooter>
-        </>
-      ),
-    },
-  ]);
-  return (
-    <UI.Stack gap="xl">
-      <Example
-        title="Graph anatomy and interaction"
-        description="The package owns canvas controls, node chrome, anchors and engine styling. Positions and connection meaning are data."
-      >
-        <UI.Stack>
-          <UI.Cluster justify="between">
-            <UI.Text size="sm" role="status">
-              {selection}
-            </UI.Text>
-            <UI.Button variant="secondary" size="sm" onClick={() => setReadOnly(!readOnly)}>
-              {readOnly ? 'Enable editing' : 'Make read-only'}
-            </UI.Button>
-          </UI.Cluster>
-          <UI.GraphCanvas
-            label="Example workflow"
-            nodes={nodes}
-            edges={[
-              {
-                id: 'receive-verify',
-                source: 'receive',
-                target: 'verify',
-                sourceAnchor: 'right',
-                targetAnchor: 'left',
-                label: 'Continue',
-                motion: 'flow',
-              },
-            ]}
-            mode={readOnly ? 'readonly' : 'interactive'}
-            onNodesChange={(changes) =>
-              setNodes((current) => UI.applyGraphNodeChanges(changes, current))
-            }
-            onNodeActivate={(node) =>
-              setSelection(`Selected node: ${node.ariaLabel ?? node.id}`)
-            }
-            controls={<UI.GraphViewportControls />}
-          />
-        </UI.Stack>
-      </Example>
-      <Example title="Nonmodal inspection" description="A finite sidebar or bottom sheet keeps the canvas interactive; reveal moves only enough to keep an item visible. Run selection uses keyboard radio behavior.">
-        <InspectorExample />
-      </Example>
-      <Example
-        title="Node presentation parts"
-        description="Compact checks, values, progress and outcomes share named anatomy without importing an application node type."
-      >
-        <UI.Grid columns={2}>
-          <UI.GraphNodeFrame family="logic" phase="success">
-            <UI.GraphNodeHeader>
-              <UI.NodeHeading
-                icon={<UI.NodeIcon glyph={CheckCircle} />}
-                title="Verify conditions"
-                subtitle="Two checks"
-              />
-            </UI.GraphNodeHeader>
-            <UI.GraphNodeBody>
-              <UI.NodeSection label="Checks">
-                <UI.NodeChecks
-                  items={[
-                    { label: 'Status is accepted', state: 'passed' },
-                    { label: 'Identifier is present', state: 'passed' },
-                  ]}
-                />
-              </UI.NodeSection>
-            </UI.GraphNodeBody>
-            <UI.GraphNodeFooter>
-              <UI.NodeRunGlyph phase="success" />
-              <UI.NodeCaption tone="success">Passed</UI.NodeCaption>
-            </UI.GraphNodeFooter>
-          </UI.GraphNodeFrame>
-          <UI.GraphNodeFrame family="data">
-            <UI.GraphNodeHeader>
-              <UI.NodeHeading
-                icon={<UI.NodeIcon glyph={Cube} />}
-                title="Prepare values"
-                subtitle="Named inputs"
-              />
-            </UI.GraphNodeHeader>
-            <UI.GraphNodeBody>
-              <UI.NodeSection label="Values">
-                <UI.NodeValueList
-                  items={[
-                    { name: 'environment', value: 'staging' },
-                    { name: 'verified', value: 'true' },
-                  ]}
-                />
-              </UI.NodeSection>
-              <UI.NodeSection label="Progress">
-                <UI.NodeMeter label="Preparation" value={0.75} />
-              </UI.NodeSection>
-            </UI.GraphNodeBody>
-          </UI.GraphNodeFrame>
-        </UI.Grid>
-      </Example>
-      <Example
-        title="Shared time axis"
-        description="Numeric start, end and total values place each interval; consumers choose only a semantic tone and size."
-      >
-        <UI.Stack gap="sm">
-          <UI.Text size="sm">Receive event · 0–200 ms</UI.Text>
-          <UI.TimelineRange
-            start={0}
-            end={200}
-            total={1000}
-            label="Receive event, 0 to 200 milliseconds"
-            tone="info"
-          />
-          <UI.Text size="sm">Verify response · 200–900 ms</UI.Text>
-          <UI.TimelineRange
-            start={200}
-            end={900}
-            total={1000}
-            label="Verify response, 200 to 900 milliseconds"
-            tone="success"
-          />
-        </UI.Stack>
-      </Example>
-      <UI.Grid columns={2}>
-        <UI.ChoiceCard
-          title="Common node anatomy"
-          description="Add common visual capabilities in the library and compose meaning in the product."
-          icon={<UI.Icon glyph={Cube} />}
-          onClick={() => setSelection('Common node anatomy selected.')}
-        />
-        <UI.ChoiceCard
-          title="Keep engine details private"
-          description="Consumers provide neutral models and behavior without CSS or renderer overrides."
-          icon={<UI.Icon glyph={CheckCircle} />}
-          onClick={() => setSelection('The visual engine remains inside the library.')}
-        />
-      </UI.Grid>
-    </UI.Stack>
-  );
-}
-
 const historyRows = Array.from({ length: 30 }, (_, index) => ({
   id: `run_${index + 1}`,
   name: `Example run ${index + 1}`,
@@ -1034,9 +867,6 @@ export function Catalog() {
               </UI.TabsPanel>
               <UI.TabsPanel value="Workspace">
                 <Workspace />
-              </UI.TabsPanel>
-              <UI.TabsPanel value="Graph">
-                <Graph />
               </UI.TabsPanel>
               <UI.TabsPanel value="History">
                 <History />
