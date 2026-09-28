@@ -130,13 +130,15 @@ export const TrendTones: Story = {
 
 export const CustomDirectionLabel: Story = {
   render: () => (
-    <StatCard className="w-72">
-      <StatCardLabel>Visitors</StatCardLabel>
-      <StatCardValue>12,480</StatCardValue>
-      <StatCardTrend direction="up" directionLabel="Hausse">
-        +8%
-      </StatCardTrend>
-    </StatCard>
+    <div className="w-72">
+      <StatCard>
+        <StatCardLabel>Visitors</StatCardLabel>
+        <StatCardValue>12,480</StatCardValue>
+        <StatCardTrend direction="up" directionLabel="Hausse">
+          +8%
+        </StatCardTrend>
+      </StatCard>
+    </div>
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getByText('Hausse')).toHaveClass('sr-only');
@@ -146,16 +148,18 @@ export const CustomDirectionLabel: Story = {
 
 export const LongContent: Story = {
   render: () => (
-    <StatCard className="w-64" role="group" aria-label="Long content">
-      <StatCardLabel>
-        Monthly recurring revenue across every region and every subscription plan
-      </StatCardLabel>
-      <StatCardValue>$1,234,567,890,123.45</StatCardValue>
-      <StatCardTrend direction="up">+123.45%</StatCardTrend>
-      <StatCardDescription>
-        Includes annual plans converted to a monthly amount and excludes refunds.
-      </StatCardDescription>
-    </StatCard>
+    <div className="w-64">
+      <StatCard role="group" aria-label="Long content">
+        <StatCardLabel>
+          Monthly recurring revenue across every region and every subscription plan
+        </StatCardLabel>
+        <StatCardValue>$1,234,567,890,123.45</StatCardValue>
+        <StatCardTrend direction="up">+123.45%</StatCardTrend>
+        <StatCardDescription>
+          Includes annual plans converted to a monthly amount and excludes refunds.
+        </StatCardDescription>
+      </StatCard>
+    </div>
   ),
   play: async ({ canvas }) => {
     const card = canvas.getByRole('group', { name: 'Long content' });

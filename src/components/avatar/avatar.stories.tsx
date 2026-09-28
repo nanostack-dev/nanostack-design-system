@@ -10,22 +10,41 @@ import {
   AvatarGroupCount,
   AvatarImage,
   type AvatarSize,
-} from './avatar';
+} from '@/components/avatar';
+import { Inline } from '@/layout/inline';
 
-const sizes: AvatarSize[] = ['sm', 'default', 'lg'];
+const sizes: AvatarSize[] = ['sm', 'md', 'lg'];
+
+const usage = `
+A picture of a person or an organization, with initials when the image does not load. Use it in lists, menus, comments and account controls.
+
+The props are the whole API. The parts do not accept \`className\` or \`style\`.
+
+## size
+
+| Value | Size | Use it for |
+| --- | --- | --- |
+| \`sm\` | 24 px | Inside a table row, a chip, or a dense list. |
+| \`md\` | 32 px | The default. Menus, the account control in a top bar, comments. |
+| \`lg\` | 40 px | A profile header or a list item with two lines of text. |
+
+## Parts
+
+- \`AvatarImage\` needs an \`alt\` with the name. \`AvatarFallback\` shows the initials while the image loads or when it fails.
+- \`AvatarBadge\` is a small dot in the corner, for a presence or a check. Give it \`role="img"\` and an \`aria-label\`.
+- \`AvatarGroup\` overlaps a few avatars. \`AvatarGroupCount\` shows how many more there are.
+
+## Do not
+
+- Do not resize an avatar or colour its fallback. Choose \`size\`.
+- Do not use an avatar for an icon that is not a person or an organization.
+`;
 
 const meta = {
   title: 'Components/Avatar',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A picture of a person or an organization, with initials when the image does not load. Use it in lists, menus and account controls.',
-      },
-    },
-  },
   component: Avatar,
-  args: { size: 'default' },
+  parameters: { docs: { description: { component: usage } } },
+  args: { size: 'md' },
   argTypes: { size: { control: 'select', options: sizes } },
   render: (args) => (
     <Avatar {...args}>
@@ -46,21 +65,20 @@ export const Fallback: Story = {
 
 export const Sizes: Story = {
   render: (args) => (
-    <div className="flex items-center gap-3">
+    <Inline space="sm" alignY="center">
       {sizes.map((size) => (
         <Avatar key={size} {...args} size={size}>
-          <AvatarFallback>{size.toUpperCase().slice(0, 2)}</AvatarFallback>
+          <AvatarFallback>{size.toUpperCase()}</AvatarFallback>
         </Avatar>
       ))}
-    </div>
+    </Inline>
   ),
   play: async ({ canvas }) => {
-    const widths = ['SM', 'DE', 'LG'].map(
+    const widths = ['SM', 'MD', 'LG'].map(
       (label) =>
         canvas.getByText(label).closest('[data-slot="avatar"]')!.getBoundingClientRect().width,
     );
-    await expect([...widths].sort((a, b) => a - b)).toEqual(widths);
-    await expect(new Set(widths).size).toBe(3);
+    await expect(widths).toEqual([24, 32, 40]);
   },
 };
 
@@ -70,7 +88,7 @@ export const WithBadge: Story = {
     <Avatar {...args}>
       <AvatarFallback>GH</AvatarFallback>
       <AvatarBadge role="img" aria-label="Verified">
-        <CheckIcon />
+        <CheckIcon aria-hidden />
       </AvatarBadge>
     </Avatar>
   ),

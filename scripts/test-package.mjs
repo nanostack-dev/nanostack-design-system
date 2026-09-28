@@ -191,7 +191,7 @@ const output = renderToString(
   h(library.TooltipProvider, null,
     h('main', null,
       h(library.Button, { variant: 'outline' }, 'Tested button'),
-      h(library.Badge, { variant: 'success' }, 'Healthy'),
+      h(library.Badge, { tone: 'success' }, 'Healthy'),
       h(library.Card, null, h(library.CardHeader, null, h(library.CardTitle, null, 'Card title'))),
       h(library.Field, null, h(library.FieldLabel, { htmlFor: 'name' }, 'Name'), h(library.Input, { id: 'name' })))));
 for (const text of ['Tested button', 'Healthy', 'Card title', 'Name']) {
@@ -212,20 +212,24 @@ import { Button as SubpathButton } from '@nanostackorg/design-system/components/
 import { cn as subpathCn } from '@nanostackorg/design-system/utils';
 const ref = createRef<HTMLButtonElement>();
 export const valid = (
-  <Card className={cn('w-full', subpathCn('max-w-sm'))}>
+  <div className={cn('w-full', subpathCn('max-w-sm'))}>
+  <Card variant="outline" size="sm">
     <CardContent>
       <Button ref={ref} variant="ghost" size="sm" type="submit">Save</Button>
       <SubpathButton variant="soft" tone="critical">Delete</SubpathButton>
-      <Badge variant="warning">Degraded</Badge>
+      <Badge tone="warning">Degraded</Badge>
     </CardContent>
   </Card>
+  </div>
 );
 // @ts-expect-error Variants are closed unions.
 export const invalidVariant = <Button variant="custom" />;
 // @ts-expect-error Components do not accept className.
 export const invalidClassName = <Button className="rounded-full">Save</Button>;
-// @ts-expect-error Badge status variants are closed unions too.
-export const invalidBadge = <Badge variant="danger" />;
+// @ts-expect-error Badge tones are closed unions too.
+export const invalidBadge = <Badge tone="danger" />;
+// @ts-expect-error Card parts do not accept className.
+export const invalidCard = <Card className="p-2" />;
 `,
   );
   const openFolders = [];

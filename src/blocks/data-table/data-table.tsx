@@ -29,7 +29,15 @@ import type { ReactNode } from 'react';
 import { Button } from '@/components/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import { Skeleton } from '@/components/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableEmpty,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/table';
 
 const dataTableFeatures = tableFeatures({
   rowSortingFeature,
@@ -152,7 +160,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
                 <TableRow key={rowIndex}>
                   {Array.from({ length: columnCount }, (_, cellIndex) => (
                     <TableCell key={cellIndex}>
-                      <Skeleton className="h-4 w-full" />
+                      <Skeleton />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -168,11 +176,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={columnCount} className="h-24 text-center whitespace-normal">
-                  {emptyState}
-                </TableCell>
-              </TableRow>
+              <TableEmpty colSpan={columnCount}>{emptyState}</TableEmpty>
             )}
           </TableBody>
         </Table>

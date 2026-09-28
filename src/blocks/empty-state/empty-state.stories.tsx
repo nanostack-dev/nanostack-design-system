@@ -41,7 +41,11 @@ const meta = {
     onCreate.mockClear();
     onImport.mockClear();
   },
-  render: (args) => <EmptyState {...args} className="w-96 border" />,
+  render: (args) => (
+    <div className="w-96">
+      <EmptyState {...args} variant="outline" />
+    </div>
+  ),
 } satisfies Meta<typeof EmptyState>;
 
 export default meta;
@@ -103,14 +107,16 @@ export const InsideCard: Story = {
     ),
   },
   render: (args) => (
-    <Card className="w-md">
-      <CardHeader>
-        <CardTitle>Items</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <EmptyState {...args} />
-      </CardContent>
-    </Card>
+    <div className="w-md">
+      <Card>
+        <CardHeader>
+          <CardTitle>Items</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <EmptyState {...args} />
+        </CardContent>
+      </Card>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     await expect(canvas.getByText('Items')).toBeVisible();

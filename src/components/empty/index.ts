@@ -1,1 +1,15 @@
-export * from './empty';
+export {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  type EmptyContentProps,
+  type EmptyDescriptionProps,
+  type EmptyHeaderProps,
+  type EmptyMediaProps,
+  type EmptyProps,
+  type EmptyTitleProps,
+  type EmptyVariant,
+} from './empty';
