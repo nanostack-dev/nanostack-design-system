@@ -117,3 +117,26 @@ export const Keyboard: Story = {
     await expect(args.onClick).toHaveBeenCalledOnce();
   },
 };
+
+export const DestructiveOnMutedSurface: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '**Nanostack addition:** destructive text uses `--destructive-on-tint`, so a small destructive button passes WCAG AA on a muted surface as well as on the page background.',
+      },
+    },
+  },
+  args: { variant: 'destructive', size: 'xs', children: 'Delete' },
+  render: (args) => (
+    <div className="flex gap-2 rounded-xl bg-muted p-4">
+      <Button {...args} />
+      <Button {...args} size="sm" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const [button] = canvas.getAllByRole('button', { name: 'Delete' });
+    await expect(button).toHaveClass('text-destructive-on-tint');
+    await expect(button).not.toHaveClass('text-destructive');
+  },
+};
