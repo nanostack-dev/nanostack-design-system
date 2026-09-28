@@ -35,18 +35,28 @@ export type InputGroupProps = ClosedProps<ComponentProps<'div'>> & {
   size?: InputGroupSize;
 };
 
-export function InputGroup({ size = 'md', ...props }: InputGroupProps) {
+type InputGroupPrimitiveProps = InputGroupProps & { className?: string };
+
+export function InputGroupPrimitive({
+  size = 'md',
+  className,
+  ...props
+}: InputGroupPrimitiveProps) {
   return (
     <InputGroupSizeContext.Provider value={size}>
       <div
         data-slot="input-group"
         data-size={size}
         role="group"
-        className={cn(inputGroupClasses({ size }))}
+        className={cn(inputGroupClasses({ size }), className)}
         {...props}
       />
     </InputGroupSizeContext.Provider>
   );
+}
+
+export function InputGroup(props: InputGroupProps) {
+  return <InputGroupPrimitive {...props} />;
 }
 
 const inputGroupAddonClasses = cva(
