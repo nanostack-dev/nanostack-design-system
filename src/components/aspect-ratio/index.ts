@@ -1,1 +1,1 @@
-export * from './aspect-ratio';
+export { AspectRatio, type AspectRatioProps } from './aspect-ratio';

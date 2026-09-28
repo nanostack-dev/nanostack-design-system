@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   type AccordionProps,
-} from './accordion';
+} from '@/components/accordion';
 
 const questions = [
   {
@@ -29,7 +29,7 @@ const questions = [
 
 function Faq(props: AccordionProps) {
   return (
-    <Accordion className="w-96" {...props}>
+    <Accordion {...props}>
       {questions.map(({ value, question, answer }) => (
         <AccordionItem key={value} value={value}>
           <AccordionTrigger>{question}</AccordionTrigger>
@@ -40,19 +40,34 @@ function Faq(props: AccordionProps) {
   );
 }
 
+const usage = `
+Stacked sections that open one at a time or together. Use it for FAQ lists and for long settings that the user reads section by section. For one section that shows or hides optional details, use \`Collapsible\`. For views of the same object, use \`Tabs\`.
+
+\`Accordion\` has no look props. It is a bordered, rounded group that fills the width of its container.
+
+## Behaviour props
+
+- \`multiple\`: more than one section can be open at a time. Use it for settings, where the user compares sections.
+- \`defaultValue\` or \`value\` with \`onValueChange\`: the open sections, as an array of item values.
+- \`disabled\` on \`AccordionItem\`: the section stays visible but cannot open.
+
+## Do not
+
+- Do not put an accordion inside an accordion.
+- Do not hide the only important content of a page in a closed section.
+- Do not restyle the trigger into a small uppercase label. Use \`Collapsible\` with your own trigger for a compact disclosure.
+`;
+
 const meta = {
   title: 'Components/Accordion',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'Stacked sections that open one at a time or together. Use it for FAQ lists and long settings that the user reads section by section.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Accordion,
   args: { onValueChange: fn() },
-  render: (args) => <Faq {...args} />,
+  render: (args) => (
+    <div className="w-96">
+      <Faq {...args} />
+    </div>
+  ),
 } satisfies Meta<typeof Accordion>;
 
 export default meta;
@@ -100,6 +115,11 @@ export const Keyboard: Story = {
 };
 
 export const Multiple: Story = {
+  parameters: {
+    docs: {
+      description: { story: 'With `multiple`, opening a section keeps the others open.' },
+    },
+  },
   args: { multiple: true, defaultValue: ['shipping'] },
   play: async ({ canvas, userEvent }) => {
     const shipping = canvas.getByRole('button', { name: 'How long does shipping take?' });
@@ -113,16 +133,18 @@ export const Multiple: Story = {
 
 export const Disabled: Story = {
   render: (args) => (
-    <Accordion className="w-96" {...args}>
-      <AccordionItem value="shipping">
-        <AccordionTrigger>How long does shipping take?</AccordionTrigger>
-        <AccordionContent>Orders ship within two business days.</AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="archived" disabled>
-        <AccordionTrigger>Archived question</AccordionTrigger>
-        <AccordionContent>This answer is no longer available.</AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className="w-96">
+      <Accordion {...args}>
+        <AccordionItem value="shipping">
+          <AccordionTrigger>How long does shipping take?</AccordionTrigger>
+          <AccordionContent>Orders ship within two business days.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="archived" disabled>
+          <AccordionTrigger>Archived question</AccordionTrigger>
+          <AccordionContent>This answer is no longer available.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   ),
   play: async ({ canvas }) => {
     const archived = canvas.getByRole('button', { name: 'Archived question' });
