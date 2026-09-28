@@ -2,7 +2,7 @@ import { DotsThreeIcon, PlusIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
-import { Badge, type BadgeVariant } from '@/components/badge';
+import { Badge, type BadgeTone } from '@/components/badge';
 import { Button, IconButton } from '@/components/button';
 import {
   DropdownMenu,
@@ -41,10 +41,10 @@ const people: Person[] = [
   person('Frances Allen', 'Member', 'Active'),
 ];
 
-const statusVariant: Record<Person['status'], BadgeVariant> = {
+const statusTone: Record<Person['status'], BadgeTone> = {
   Active: 'success',
   Invited: 'info',
-  Suspended: 'secondary',
+  Suspended: 'neutral',
 };
 
 const columns: ColumnDef<Person>[] = [
@@ -61,9 +61,7 @@ const columns: ColumnDef<Person>[] = [
     accessorKey: 'status',
     header: 'Status',
     enableSorting: false,
-    cell: ({ row }) => (
-      <Badge variant={statusVariant[row.original.status]}>{row.original.status}</Badge>
-    ),
+    cell: ({ row }) => <Badge tone={statusTone[row.original.status]}>{row.original.status}</Badge>,
   },
 ];
 

@@ -98,9 +98,7 @@ export const WithReactions: Story = {
       <Bubble {...args}>
         <BubbleContent>Shipped the fix to production.</BubbleContent>
         <BubbleReactions>
-          <Badge variant="secondary" aria-label="2 people reacted with thumbs up">
-            👍 2
-          </Badge>
+          <Badge aria-label="2 people reacted with thumbs up">👍 2</Badge>
         </BubbleReactions>
       </Bubble>
     </div>

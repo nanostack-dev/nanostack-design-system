@@ -43,7 +43,7 @@ import {
   StatCardValue,
 } from '@/blocks/stat-card';
 import { type Theme, ThemeProvider, ThemeToggle } from '@/blocks/theme';
-import { Badge, type BadgeVariant } from '@/components/badge';
+import { Badge, type BadgeTone } from '@/components/badge';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -86,10 +86,10 @@ const initialProjects: Project[] = [
   },
 ];
 
-const statusVariant: Record<ProjectStatus, BadgeVariant> = {
+const statusTone: Record<ProjectStatus, BadgeTone> = {
   Healthy: 'success',
   Degraded: 'warning',
-  Paused: 'secondary',
+  Paused: 'neutral',
 };
 
 const storageKey = 'nanostack-theme-showcase';
@@ -121,7 +121,7 @@ function projectColumns(archive: (project: Project) => void): ColumnDef<Project>
       header: 'Status',
       enableSorting: false,
       cell: ({ row }) => (
-        <Badge variant={statusVariant[row.original.status]}>{row.original.status}</Badge>
+        <Badge tone={statusTone[row.original.status]}>{row.original.status}</Badge>
       ),
     },
     {
