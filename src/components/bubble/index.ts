@@ -1,1 +1,16 @@
-export * from './bubble';
+export {
+  Bubble,
+  BubbleButton,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  type BubbleAlign,
+  type BubbleButtonProps,
+  type BubbleContentProps,
+  type BubbleGroupProps,
+  type BubbleProps,
+  type BubbleReactionsProps,
+  type BubbleReactionsSide,
+  type BubbleTone,
+  type BubbleVariant,
+} from './bubble';

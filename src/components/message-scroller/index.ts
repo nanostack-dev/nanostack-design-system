@@ -1,1 +1,18 @@
-export * from './message-scroller';
+export {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+  useMessageScroller,
+  useMessageScrollerScrollable,
+  useMessageScrollerVisibility,
+  type MessageScrollerButtonDirection,
+  type MessageScrollerButtonProps,
+  type MessageScrollerContentProps,
+  type MessageScrollerItemProps,
+  type MessageScrollerProps,
+  type MessageScrollerProviderProps,
+  type MessageScrollerViewportProps,
+} from './message-scroller';

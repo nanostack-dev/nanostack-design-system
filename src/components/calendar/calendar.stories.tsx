@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { DateRange, Matcher } from 'react-day-picker';
 import { expect, fn } from 'storybook/test';
 
-import { Calendar } from './calendar';
+import { Calendar } from '@/components/calendar';
 
 const january2026 = new Date(2026, 0, 1);
 const fixedToday = new Date(2026, 0, 8);
@@ -48,16 +48,41 @@ function RangeCalendar({ onSelect }: { onSelect: (range: DateRange | undefined) 
   );
 }
 
+const usage = `
+A month grid to pick a date or a date range. Use it inside a \`Popover\` for a date field, or alone on a scheduling page. For a time of day or a cron expression, use an \`Input\`.
+
+The props are the whole API. \`Calendar\` takes the react-day-picker behaviour props (\`mode\`, \`selected\`, \`onSelect\`, \`disabled\`, \`numberOfMonths\`, \`locale\` and the rest). It does not take \`className\`, \`style\`, \`classNames\`, \`styles\` or \`components\`: the day cells, the navigation and the caption have one look.
+
+## mode: what the person picks
+
+| Value | Use it for |
+| --- | --- |
+| \`single\` | One date: a due date, a start date. |
+| \`range\` | A period: a report window, a pause from and to. Show two months with \`numberOfMonths={2}\`. |
+| \`multiple\` | A set of dates with no order, such as holidays. |
+
+## captionLayout: how the person changes the month
+
+| Value | Use it for |
+| --- | --- |
+| \`label\` | The default. Dates near today. The arrows move one month. |
+| \`dropdown\` | Dates far from today, such as a birth date. Set \`startMonth\` and \`endMonth\`. |
+
+## Other props
+
+- \`disabled\`: a matcher for days that cannot be picked, for example \`{ before: today }\`.
+- \`showWeekNumber\`: shows the ISO week in a row header. Use it for planning pages.
+- Keyboard focus moves to the focused day, so the arrow keys and Page Up and Page Down work as soon as the grid has focus.
+
+## Do not
+
+- Do not use a calendar to show events. It picks dates. It does not list what happens on them.
+- Do not hide the outside days to save space. They keep the grid stable from month to month.
+`;
+
 const meta = {
   title: 'Components/Calendar',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A month grid to select a date or a date range. Use it inside a `Popover` for a date field, or alone on a scheduling page.\n\n**Nanostack addition:** keyboard focus moves to the focused day, so the arrow keys work after the grid opens.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Calendar,
   args: { defaultMonth: january2026, today: fixedToday },
 } satisfies Meta<typeof Calendar>;
@@ -126,6 +151,14 @@ export const MonthNavigation: Story = {
 const onSelectRange = fn();
 
 export const Range: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A range shows two months. The ends are solid brand, and the days between are muted.',
+      },
+    },
+  },
   render: () => <RangeCalendar onSelect={onSelectRange} />,
   beforeEach: () => onSelectRange.mockClear(),
   play: async ({ canvas, userEvent }) => {
@@ -163,6 +196,13 @@ export const DisabledDays: Story = {
 };
 
 export const DropdownCaption: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'With `captionLayout="dropdown"`, the month and the year are native selects.',
+      },
+    },
+  },
   args: {
     captionLayout: 'dropdown',
     startMonth: new Date(2024, 0, 1),
