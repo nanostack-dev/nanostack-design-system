@@ -29,6 +29,8 @@ const buttonClasses = cva(
       width: { auto: '', fill: 'w-full' },
       iconOnly: { true: 'px-0', false: '' },
       bleed: { true: '', false: '' },
+      quietIcon: { true: '', false: '' },
+      pressed: { true: '', false: '' },
     },
     compoundVariants: [
       {
@@ -105,6 +107,18 @@ const buttonClasses = cva(
       { iconOnly: true, size: 'sm', class: 'size-8' },
       { iconOnly: true, size: 'md', class: 'size-9' },
       { iconOnly: true, size: 'lg', class: 'size-10' },
+      {
+        quietIcon: true,
+        variant: 'ghost',
+        tone: 'neutral',
+        class:
+          'text-muted-foreground hover:text-foreground focus-visible:text-foreground aria-expanded:text-foreground',
+      },
+      {
+        pressed: true,
+        class:
+          'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus-visible:text-accent-foreground aria-expanded:bg-accent aria-expanded:text-accent-foreground dark:hover:bg-accent',
+      },
     ],
     defaultVariants: {
       variant: 'outline',
@@ -113,6 +127,8 @@ const buttonClasses = cva(
       width: 'auto',
       iconOnly: false,
       bleed: false,
+      quietIcon: false,
+      pressed: false,
     },
   },
 );
@@ -141,12 +157,13 @@ export type ButtonProps = NativeButtonProps &
     bleed?: boolean;
   };
 
-export type IconButtonProps = NativeButtonProps &
+export type IconButtonProps = Omit<NativeButtonProps, 'aria-pressed'> &
   ButtonAppearance & {
     icon: Icon;
     label: string;
     loading?: boolean;
     tooltip?: boolean;
+    pressed?: boolean;
   };
 
 export type ButtonLinkProps = ClosedProps<
@@ -227,6 +244,7 @@ export function IconButton({
   label,
   loading = false,
   tooltip = true,
+  pressed,
   disabled,
   ...props
 }: IconButtonProps) {
@@ -234,7 +252,15 @@ export function IconButton({
     <ButtonPrimitive
       data-slot="icon-button"
       aria-label={label}
-      className={buttonStyles({ variant, tone, size, iconOnly: true })}
+      aria-pressed={pressed}
+      className={buttonStyles({
+        variant,
+        tone,
+        size,
+        iconOnly: true,
+        quietIcon: true,
+        pressed: pressed === true,
+      })}
       disabled={disabled || loading}
       focusableWhenDisabled={loading}
       aria-busy={loading || undefined}
