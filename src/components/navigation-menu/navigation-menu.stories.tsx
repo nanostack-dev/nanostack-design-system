@@ -86,6 +86,8 @@ export const Keyboard: Story = {
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(trigger).toHaveAttribute('aria-expanded', 'false'));
     await expect(trigger).toHaveFocus();
+    await waitFor(() => expect(screen.queryByRole('link', { name: /Analytics/ })).toBeNull());
+    await waitFor(() => expect(document.querySelector('[data-base-ui-focus-guard]')).toBeNull());
   },
 };
 
