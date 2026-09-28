@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- New `Autocomplete` (`@nanostackorg/design-system/components/autocomplete`): a text field that suggests values while the typed text stays free, built on the Base UI Autocomplete. Parts: `Autocomplete`, `AutocompleteInput` (`size` `sm` | `md`, `font` `sans` | `mono`, `width` `auto` | `fill`, `icon`), `AutocompleteContent`, `AutocompleteList`, `AutocompleteItem`, `AutocompleteEmpty`, `AutocompleteGroup`, `AutocompleteGroupLabel`, `AutocompleteCollection`. It shares the Combobox field, list and item look. Upgrade: replace a `Combobox` that copies the typed text into its value, or a `Command` with a positioned `CommandList`, with `Autocomplete value={text} onValueChange={setText}`.
+
 ## 0.2.0
 
 Breaking: the design system owns its shadcn code, and every component has a closed, typed API. See `docs/adr/0001-own-shadcn-with-a-closed-api.md` and the "Guides/Using the system" page.

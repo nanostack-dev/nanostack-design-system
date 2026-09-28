@@ -32,7 +32,7 @@ const body = within(document.body);
 const usage = `
 A text field with a filtered list of options. Use it to choose a value in a form when the list is long and the user knows what to type: an environment, a member, a tag.
 
-Use \`Select\` for a short list the user reads. Use \`Command\` for a list of commands. Do not build an autocomplete from \`Command\`.
+Use \`Autocomplete\` when any typed text is a valid value and the list only suggests. Use \`Select\` for a short list the user reads. Use \`Command\` for a list of commands. Do not build an autocomplete from \`Command\`.
 
 The parts do not accept \`className\` or \`style\`. \`ComboboxInput\` and \`ComboboxChips\` fill the width of their container, like \`Input\`. Put them in a \`Field\` or a layout block to set the width.
 
