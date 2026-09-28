@@ -38,6 +38,7 @@ import {
   AppShellSidebar,
   AppShellSidebarContent,
   AppShellSidebarFooter,
+  AppShellBrand,
   AppShellSidebarHeader,
   useAppShell,
 } from './app-shell';
@@ -76,6 +77,8 @@ The parts are closed. They do not accept \`className\` or \`style\`. The frame t
 
 ## Other props
 
+- \`AppShellBrand\`: the product mark at the top of the sidebar. Give it a Phosphor \`icon\` or your own \`logo\`, a \`name\`, an optional \`description\` and the home \`href\`. In the collapsed sidebar only the mark shows, with the name as its tooltip.
+
 - \`skipLinkLabel\`: shows a "skip to content" link first in the tab order. It moves focus to \`AppShellMain\`. Give it on every product with more than a few sidebar links.
 - \`mainId\`: the id of \`AppShellMain\`, the skip link target. Change it only when the page already uses \`app-shell-main\`.
 - \`AppShellHeader actions\`: the end of the top bar, for example the theme toggle, notifications and the account menu. \`children\` is the start: the breadcrumb or the page title.
@@ -108,9 +111,12 @@ function Workspace({
     <AppShell {...props}>
       <AppShellSidebar>
         <AppShellSidebarHeader>
-          <AppShellNav>
-            <AppShellNavItem icon={CubeIcon} label="Acme workspace" href="#workspace" />
-          </AppShellNav>
+          <AppShellBrand
+            icon={CubeIcon}
+            name="Acme workspace"
+            description="Team plan"
+            href="#workspace"
+          />
         </AppShellSidebarHeader>
         <AppShellSidebarContent>
           <AppShellNav label="Workspace">
@@ -198,6 +204,11 @@ export const Default: Story = {
     await expect(canvas.getByRole('group', { name: 'Library' })).toBeInTheDocument();
     await expect(canvas.getByRole('navigation', { name: 'breadcrumb' })).toBeInTheDocument();
     await expect(canvas.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+
+    await expect(
+      within(sidebarElement(canvasElement)).getByRole('link', { name: /Acme workspace/ }),
+    ).toHaveAttribute('href', '#workspace');
+    await expect(canvas.getByText('Team plan')).toBeVisible();
 
     const overview = navLink(canvasElement, 'Overview');
     await expect(overview).toHaveAttribute('aria-current', 'page');

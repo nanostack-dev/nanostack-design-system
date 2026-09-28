@@ -24,6 +24,7 @@ import {
   AppShellSidebar,
   AppShellSidebarContent,
   AppShellSidebarFooter,
+  AppShellBrand,
   AppShellSidebarHeader,
 } from '@/blocks/app-shell';
 import { ConfirmDialog } from '@/blocks/confirm-dialog';
@@ -173,9 +174,12 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
       <AppShell defaultOpen>
         <AppShellSidebar>
           <AppShellSidebarHeader>
-            <AppShellNav>
-              <AppShellNavItem icon={CubeIcon} label="Acme workspace" href="#workspace" />
-            </AppShellNav>
+            <AppShellBrand
+              icon={CubeIcon}
+              name="Acme workspace"
+              description="Team plan"
+              href="#workspace"
+            />
           </AppShellSidebarHeader>
           <AppShellSidebarContent>
             <AppShellNav label="Workspace">

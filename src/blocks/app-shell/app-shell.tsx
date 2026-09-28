@@ -162,6 +162,43 @@ export function AppShellNav({ label, children }: AppShellNavProps) {
   );
 }
 
+export type AppShellBrandProps = {
+  name: string;
+  href: string;
+  description?: string;
+  icon?: Icon;
+  logo?: ReactNode;
+};
+
+export function AppShellBrand({
+  name,
+  href,
+  description,
+  icon: BrandIcon,
+  logo,
+}: AppShellBrandProps) {
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton size="lg" href={href} tooltip={name}>
+          <span
+            data-slot="app-shell-brand-mark"
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+          >
+            {logo ?? (BrandIcon ? <BrandIcon aria-hidden /> : null)}
+          </span>
+          <span className="grid min-w-0 flex-1 text-left leading-tight">
+            <span className="truncate font-heading text-sm font-semibold">{name}</span>
+            {description ? (
+              <span className="truncate text-xs text-muted-foreground">{description}</span>
+            ) : null}
+          </span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
+
 export function AppShellNavItem({
   label,
   href,
