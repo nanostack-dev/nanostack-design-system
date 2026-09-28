@@ -1,117 +1,97 @@
-# Nanostack design system
+# @nanostackorg/design-system
 
-Composable React building blocks that any Nanostack product can use unchanged, starting with Echopoint and Anchor. Product-specific visuals stay in the product that owns their meaning. Built on Base UI, with shadcn's component anatomy and semantic token conventions. **The public API never accepts custom CSS.** Choose a typed variant or compose smaller parts; change the shared library when a new visual variation is needed.
+shadcn/ui components, blocks and design tokens for Nanostack products. React 19, Tailwind CSS v4, Base UI primitives, Phosphor icons.
 
-**[Documentation site](https://nanostack-dev.github.io/nanostack-design-system/)**: every component with a working example, the guidelines and the changelog.
-
-Status: **0.0.6**. 0.0.1 was the first release of the common-only library. React 19.2+ consumers; development and browser verification use React 19.3. TypeScript strict mode, native refs, ESM subpath exports, and explicit client boundaries. The library ships CSS and needs neither Tailwind nor a CSS build plugin in the consuming app.
-
-## Try it
-
-```sh
-pnpm install --frozen-lockfile
-pnpm dev
-```
-
-The documentation site opens at `http://127.0.0.1:4317`: an overview, the [component catalog](http://127.0.0.1:4317/?page=components), the guidelines rendered from this repository's documents, and the changelog. Switch brand, color scheme and density to inspect the same assemblies. The examples use local sample data and make no service requests. The complete API and composition rules are documented in the [catalog](docs/components.md).
-
-`pnpm build:docs` writes the static site to `site/`. The Pages workflow builds it with `DOCS_BASE=/nanostack-design-system/ pnpm build:docs` and deploys every push to `main`.
+Storybook: https://nanostack-dev.github.io/nanostack-design-system/
 
 ## Install
 
-Install an exact version from the public npm registry:
+1. Add the package, its peers and the fonts:
 
-```sh
-pnpm add --save-exact @nanostackorg/design-system@0.0.6
-pnpm add @phosphor-icons/react@^2.1.10
-```
+   ```bash
+   pnpm add @nanostackorg/design-system tailwindcss @tailwindcss/vite @fontsource-variable/plus-jakarta-sans @fontsource-variable/outfit @fontsource-variable/geist-mono
+   ```
 
-The application provides the peer dependencies: React 19.2+ and `@phosphor-icons/react` 2.1.10+, whose glyph components `Icon` receives. The library and the application then share one icon package. Install `@clerk/clerk-react` 5.61.3+ only when importing `@nanostackorg/design-system/adapters/clerk`. Clerk's own peer range requires React 19.2.3 or later.
+2. Add the Tailwind plugin to `vite.config.ts`:
 
-Commit the manifest and lockfile together; the lockfile records the archive's integrity. Import the stylesheet once at the application entry point. No registry token, Tailwind configuration or copied components are needed to consume the package.
+   ```ts
+   import tailwindcss from '@tailwindcss/vite';
+   export default defineConfig({ plugins: [react(), tailwindcss()] });
+   ```
 
-Stable versions use npm's `latest` tag and prereleases use `beta`. Numbering restarted at 0.0.1, which sorts below the earlier 0.2.0 betas, so pin the exact version instead of a range. Product applications pin reviewed versions; any update before 1.0 may require a coordinated migration. The identical package and checksum are attached to the [GitHub release](https://github.com/nanostack-dev/nanostack-design-system/releases/tag/v0.0.6).
+3. In the main CSS file, import Tailwind, then the library tokens, then register the package output so Tailwind generates the classes its components use. The `@source` path is relative to this CSS file:
 
-Existing Nanostack applications can preserve their `@nanostack/design-system` imports with an npm alias: `pnpm add --save-exact @nanostack/design-system@npm:@nanostackorg/design-system@0.0.6`. New consumers can import the public package directly as shown below.
+   ```css
+   @import 'tailwindcss';
+   @import '@nanostackorg/design-system/styles.css';
+   @source "../node_modules/@nanostackorg/design-system/dist";
+   ```
+
+4. Load the fonts once in the entry point:
+
+   ```ts
+   import '@fontsource-variable/plus-jakarta-sans';
+   import '@fontsource-variable/outfit';
+   import '@fontsource-variable/geist-mono';
+   ```
+
+5. Wrap the app:
+
+   ```tsx
+   import { ThemeProvider, TooltipProvider } from '@nanostackorg/design-system';
+
+   createRoot(root).render(
+     <ThemeProvider defaultTheme="system">
+       <TooltipProvider>
+         <App />
+       </TooltipProvider>
+     </ThemeProvider>,
+   );
+   ```
+
+## Use
 
 ```tsx
-import '@nanostackorg/design-system/styles.css';
-import { Theme } from '@nanostackorg/design-system/theme';
-import { Stack, Grid } from '@nanostackorg/design-system/components/layout';
-import { Button } from '@nanostackorg/design-system/components/button';
 import {
-  PageHeader, PageHeaderTitle, PageHeaderDescription, PageHeaderActions,
-} from '@nanostackorg/design-system/blocks/page-header';
-import { Metric } from '@nanostackorg/design-system/blocks/metric';
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@nanostackorg/design-system';
+import { DataTable } from '@nanostackorg/design-system/blocks/data-table';
 
-export function Overview({ createFlow, flowCount, runnerCount }: {
-  createFlow: () => void;
-  flowCount: number;
-  runnerCount: number;
-}) {
-  return (
-    <Theme brand="echopoint" colorScheme="light" density="compact">
-      <PageHeader>
-        <Stack gap="xs">
-          <PageHeaderTitle>Home</PageHeaderTitle>
-          <PageHeaderDescription>Your workspace activity.</PageHeaderDescription>
-        </Stack>
-        <PageHeaderActions><Button onClick={createFlow}>Create flow</Button></PageHeaderActions>
-      </PageHeader>
-      <Grid columns={2}>
-        <Metric label="Flows" value={flowCount} />
-        <Metric label="Online runners" value={runnerCount} tone="success" />
-      </Grid>
-    </Theme>
-  );
-}
+<Card>
+  <CardHeader>
+    <CardTitle>Deployments</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <Badge variant="success">Healthy</Badge>
+    <Button variant="outline" size="sm">
+      Retry
+    </Button>
+  </CardContent>
+</Card>;
 ```
 
-The application supplies `createFlow`, `flowCount`, `runnerCount`, permissions and data loading. Anchor uses `brand="anchor" colorScheme="light"`; this library does not add a dark-mode requirement to Anchor.
+- Every shadcn component has a wrapper with the same name and API: `@nanostackorg/design-system/components/<name>` or the root import.
+- Blocks: `app-shell`, `page-header`, `empty-state`, `data-table`, `stat-card`, `confirm-dialog`, `theme`, under `@nanostackorg/design-system/blocks/<name>`.
+- `cn` merges Tailwind classes: `@nanostackorg/design-system/utils`.
+- Style with tokens only (`bg-primary`, `text-muted-foreground`, `text-success-on-tint`). Use `className` for layout. A missing variant goes back to this repository.
+- Dark mode is the `dark` class on `<html>`. `ThemeProvider` and `ThemeToggle` manage it.
 
-## Building vocabulary
+## Develop
 
-The [component catalog](docs/components.md) covers the full set of named parts, finite variations, composition rules, and Anchor adoption path.
-
-| Surface | Compose from |
-| --- | --- |
-| Application structure | AppShell, Page, Section, Card, screen and responsive-panel parts |
-| Forms and actions | Field, Input, Select, Checkbox, Autocomplete, tags, Menu, Dialog, Popover |
-| Collections and detail | ResourceList, DataTable, Table, VirtualList, Inspector, DefinitionList |
-| Editing | CodeEditor, CodeViewer, EditableText, ChoiceCard |
-| Activity and feedback | TimelineItem, Report, StatusMarker, Sparkline, Progress |
-
-Applications own data, routes, permissions, copy, assemblies of library parts, and the visuals that only their product explains, such as Echopoint's flow nodes or runner avatars. The [scope rule](AGENTS.md#scope) decides where a part lives: the library holds UI that a second Nanostack product would use unchanged, with no product vocabulary. A missing common element becomes a primitive or block here. A product visual stays in its app, built from `--ns-*` tokens and library primitives.
-
-A router adapter can wrap a library link while preserving its native anchor and ref. Keep independent controls in ResourceRowActions rather than inside ResourceRowLink. DialogPopup contains DialogTitle; Field composes its label, control, description and error. Native semantics and keyboard behavior are part of the public contract.
-
-Rejected props include `className`, `style`, `css`, `classNames`, `unstyled`, `render`, and `asChild`. Compile-time checks and runtime sanitization enforce this component contract. Consumer CI enforces the assembly boundary around library parts, including nested content. This is not browser CSS isolation: host styles and imperative DOM access remain technically possible, so product teams evolve variants here instead of overriding selectors or CSS variables.
-
-## shadcn source distribution
-
-`pnpm registry:build` generates schema-validated `registry.json` and `public/r/system.json` from the same source as the package. The `system` block targets `src/components/nanostack/` and preserves relative imports. Optional identity-provider adapters are package subpaths and are excluded from this source bundle, so installing the registry does not require Clerk. Import its `styles.css` and use its `index.ts` exports. The package remains the preferred transport for synchronized upgrades; source installation is for deliberate ownership, with the same closed API policy.
-
-```sh
-# From a configured React 19.2+ shadcn consumer; point to your cloned payload:
-pnpm dlx shadcn@4.21.0 add /path/to/nanostack-design-system/public/r/system.json
+```bash
+pnpm install
+pnpm storybook
 ```
 
-The command pins the shadcn CLI whose schema validates this registry. The source registry assumes a `src/` application. Check the CLI preview before installing into another layout. A hosted shadcn registry has not been deployed; package consumers do not need one.
-
-## Verify and evolve
-
-```sh
-pnpm check
-pnpm test:browser
-pnpm test:package
-```
-
-The checks cover rejected API props, native/ref behavior, keyboard interaction, modal focus, theme portals, contrast pairs, mobile/landscape overflow, browser axe scans, generated registry freshness and an installed package consumer. Automated checks are not a WCAG certification.
-
-Read the [component catalog](docs/components.md) to assemble a surface; [research](docs/research.md) for official Airbnb, Stripe, Linear, React, Base UI and shadcn evidence; [contribution rules](docs/contributing.md) for changes; [design decisions](DESIGN.md) for the visual language; and [AGENTS.md](AGENTS.md) for agent invariants.
-
-Maintainers follow the [release procedure](docs/releasing.md) to validate, publish and verify an immutable package before upgrading a consumer.
+- `pnpm lint`, `pnpm typecheck`, `pnpm test` (Storybook play and a11y tests in Chromium, light and dark), `pnpm build`, `pnpm test:package`.
+- Add or update a shadcn component: `pnpm dlx shadcn@latest add <name>` then write its wrapper. See `.claude/skills/wrap-shadcn-component/SKILL.md`.
+- Rules for contributors and consumer apps: [AGENTS.md](AGENTS.md).
 
 ## License
 
-[MIT](LICENSE). Third-party foundations and adapted code retain the notices in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for shadcn/ui and Base UI.
