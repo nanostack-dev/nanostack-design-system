@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
 import { Button } from '@/components/button';
-
 import {
   Drawer,
   DrawerClose,
@@ -12,20 +11,41 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from './drawer';
+} from '@/components/drawer';
+import { Text } from '@/components/text';
 
 const onSubmit = fn();
 
+const usage = `
+A panel that slides in from the edge of the screen and closes with a swipe. Use it on a phone: for a mobile menu, a side panel that the desktop shows inline, or a short task. On a wide screen, prefer \`Sheet\` or \`Dialog\`.
+
+The parts are closed. \`DrawerContent\` does not accept \`className\` or \`style\`. The drawer sizes itself to its content, up to the screen height less 96 px.
+
+## swipeDirection: where the drawer comes from
+
+| Value | Use it for |
+| --- | --- |
+| \`down\` | The default. A bottom drawer on a phone, for a menu or a short task. |
+| \`right\` or \`left\` | A side panel on a tablet. The drawer is 75% wide, and 384 px from the \`sm\` breakpoint. |
+| \`up\` | A top drawer. Rare. |
+
+## Other props
+
+- \`showSwipeHandle\` on \`Drawer\`: shows the grab bar. Use it on a bottom drawer that the user can swipe closed.
+- \`snapPoints\` on \`Drawer\`: stops the drawer at set heights, for a panel that opens half way first.
+- \`DrawerTrigger\` and \`DrawerClose\` take \`render\`: \`<DrawerTrigger render={<Button>Menu</Button>} />\`.
+- \`DrawerHeader visuallyHidden\`: hides the title and description on screen and keeps them for screen readers.
+
+## Do not
+
+- Do not set a height on the content. Use \`snapPoints\` when the drawer must stop part way.
+- Do not remove \`DrawerTitle\`. Every drawer needs a name. Use \`DrawerHeader visuallyHidden\` to hide it.
+- Do not use a drawer for a desktop dialog.
+`;
+
 const meta = {
   title: 'Components/Drawer',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A panel that slides in from the edge of the screen and closes with a swipe. Use it for mobile menus and for short tasks on a phone.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Drawer,
   args: { onOpenChange: fn() },
   beforeEach: () => {
@@ -108,5 +128,37 @@ export const RightSide: Story = {
       expect(bounds.right).toBeLessThanOrEqual(window.innerWidth);
       expect(bounds.left).toBeGreaterThan(window.innerWidth / 2 - 200);
     });
+  },
+};
+
+export const SwipeHandleAndHiddenHeader: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A side panel shown as a bottom drawer on a phone. `showSwipeHandle` adds the grab bar. `DrawerHeader visuallyHidden` names the drawer, because the panel shows its own heading.',
+      },
+    },
+  },
+  args: { showSwipeHandle: true, defaultOpen: true },
+  render: (args) => (
+    <Drawer {...args}>
+      <DrawerTrigger render={<Button variant="outline" />}>Open panel</DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader visuallyHidden>
+          <DrawerTitle>Step settings</DrawerTitle>
+        </DrawerHeader>
+        <div className="flex flex-col gap-2 p-4">
+          <Text weight="medium">Step settings</Text>
+          <Text tone="muted">Retries: 3. Timeout: 30 s.</Text>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  ),
+  play: async () => {
+    const drawer = await screen.findByRole('dialog', { name: 'Step settings' });
+    await expect(drawer.querySelector('[data-slot="drawer-swipe-handle"]')).toBeInTheDocument();
+    const header = drawer.querySelector<HTMLElement>('[data-slot="drawer-header"]')!;
+    await expect(header.getBoundingClientRect().width).toBeLessThanOrEqual(1);
   },
 };
