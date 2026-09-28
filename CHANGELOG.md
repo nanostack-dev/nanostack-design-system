@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- SearchButton: `size="lg"` (40 px), so the search lines up with 40 px top bar controls such as `IconButton size="lg"`.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.2`. Nothing else changes.
+
 ## 0.2.1
 
 - Sheet: `size="lg"` (512 px) for a version history and `size="xl"` (65% of the screen, from 832 px to 1344 px) for a run report, on left and right sheets.

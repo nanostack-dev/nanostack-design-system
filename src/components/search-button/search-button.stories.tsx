@@ -8,7 +8,7 @@ import {
 } from '@/components/search-button';
 import { Stack } from '@/layout/stack';
 
-const sizes: SearchButtonSize[] = ['sm', 'md'];
+const sizes: SearchButtonSize[] = ['sm', 'md', 'lg'];
 const widths: SearchButtonWidth[] = ['auto', 'fill'];
 
 const usage = `
@@ -22,6 +22,7 @@ The props are the whole API. \`SearchButton\` does not accept \`className\` or \
 | --- | --- | --- |
 | \`sm\` | 32 px | A dense header, a sidebar, or a top bar on a phone. |
 | \`md\` | 36 px | The default. The search of a top bar. |
+| \`lg\` | 40 px | A top bar whose other controls are 40 px, such as \`IconButton size="lg"\`, so the row lines up. |
 
 ## width
 
@@ -90,7 +91,7 @@ export const Sizes: Story = {
       (size) =>
         canvas.getByRole('button', { name: `Search ${size}` }).getBoundingClientRect().height,
     );
-    await expect(heights).toEqual([32, 36]);
+    await expect(heights).toEqual([32, 36, 40]);
   },
 };
 
