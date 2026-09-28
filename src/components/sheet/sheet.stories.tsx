@@ -21,6 +21,12 @@ const sides: SheetSide[] = ['top', 'right', 'bottom', 'left'];
 const sizes: { size: SheetSize; width: string }[] = [
   { size: 'sm', width: 'sm:max-w-xs' },
   { size: 'md', width: 'sm:max-w-sm' },
+  { size: 'lg', width: 'sm:max-w-lg' },
+  {
+    size: 'xl',
+    width:
+      'sm:max-w-none sm:data-[side=left]:w-[min(100vw,clamp(52rem,65vw,84rem))] sm:data-[side=right]:w-[min(100vw,clamp(52rem,65vw,84rem))]',
+  },
 ];
 const onApply = fn();
 
@@ -44,6 +50,8 @@ The parts are closed. \`SheetContent\` does not accept \`className\` or \`style\
 | --- | --- | --- |
 | \`sm\` | 320 px | A list or a tree: folders, chats. |
 | \`md\` | 384 px | The default. Filters, details, a short form. |
+| \`lg\` | 512 px | A history or a list whose rows carry detail, such as the versions of a flow. |
+| \`xl\` | 65% of the screen, from 832 px to 1344 px | A report that needs room beside the page, such as a run report with a timeline. Under 832 px it takes the full width. |
 
 On a phone, a left or right sheet takes three quarters of the screen. A top or bottom sheet takes the full width and at most 90% of the height. \`size\` has no effect on them.
 
@@ -179,7 +187,7 @@ export const Sizes: Story = {
     docs: {
       description: {
         story:
-          '`sm` fits a list or a tree, such as folders. `md` is the default, for filters and details.',
+          '`sm` fits a list or a tree, such as folders. `md` is the default, for filters and details. `lg` fits a version history. `xl` fits a run report.',
       },
     },
   },
@@ -278,5 +286,47 @@ export const HiddenHeader: Story = {
     const sheet = await screen.findByRole('dialog', { name: 'Chats' });
     const header = sheet.querySelector<HTMLElement>('[data-slot="sheet-header"]')!;
     await expect(header.getBoundingClientRect().width).toBeLessThanOrEqual(1);
+  },
+};
+
+export const WideReport: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`size="xl"` gives a run report 65% of the screen, between 832 px and 1344 px, so the timeline and the step detail fit side by side. Under 832 px it takes the full width.',
+      },
+    },
+  },
+  args: { defaultOpen: true },
+  render: (args) => (
+    <Sheet {...args}>
+      <SheetTrigger render={<Button variant="outline" />}>Run report</SheetTrigger>
+      <SheetContent side="right" size="xl">
+        <SheetHeader>
+          <SheetTitle>Run report</SheetTitle>
+          <SheetDescription>Run 482 failed at step 3 of 7.</SheetDescription>
+        </SheetHeader>
+        <div className="flex flex-col gap-3 px-6 pb-6">
+          {Array.from({ length: 7 }, (_, index) => (
+            <Text key={index} tone="muted">
+              Step {index + 1} finished in {120 + index * 15} ms.
+            </Text>
+          ))}
+        </div>
+      </SheetContent>
+    </Sheet>
+  ),
+  play: async () => {
+    const sheet = await screen.findByRole('dialog', { name: 'Run report' });
+    await expect(sheet).toHaveAttribute('data-size', 'xl');
+    const viewport = window.innerWidth;
+    const expected =
+      viewport >= 640
+        ? Math.min(viewport, Math.min(Math.max(832, viewport * 0.65), 1344))
+        : viewport * 0.75;
+    await waitFor(() =>
+      expect(Math.abs(sheet.getBoundingClientRect().width - expected)).toBeLessThan(1),
+    );
   },
 };

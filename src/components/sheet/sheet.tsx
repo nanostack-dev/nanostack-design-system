@@ -8,7 +8,7 @@ import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
 export type SheetSide = 'top' | 'right' | 'bottom' | 'left';
-export type SheetSize = 'sm' | 'md';
+export type SheetSize = 'sm' | 'md' | 'lg' | 'xl';
 
 export type SheetProps = SheetPrimitive.Root.Props;
 export type SheetTriggerProps = ClosedProps<SheetPrimitive.Trigger.Props>;
@@ -28,6 +28,8 @@ export type SheetDescriptionProps = ClosedProps<Omit<SheetPrimitive.Description.
 const sideWidthClass: Record<SheetSize, string> = {
   sm: 'sm:max-w-xs',
   md: 'sm:max-w-sm',
+  lg: 'sm:max-w-lg',
+  xl: 'sm:max-w-none sm:data-[side=left]:w-[min(100vw,clamp(52rem,65vw,84rem))] sm:data-[side=right]:w-[min(100vw,clamp(52rem,65vw,84rem))]',
 };
 
 function Sheet({ ...props }: SheetProps) {
