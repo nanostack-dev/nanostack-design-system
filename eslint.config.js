@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';
 const rawShadcnImport = {
   group: ['@/components/ui', '@/components/ui/*', '**/components/ui/*', '../ui/*', './ui/*'],
   message:
-    'Only a wrapper file (src/components/<name>/<name>.tsx) imports the raw shadcn component. Import the wrapper instead.',
+    'src/components/ui/ is gone: each component is owned in src/components/<name>/<name>.tsx. Import that component instead.',
 };
 
 const upstreamImport = {
@@ -35,7 +35,6 @@ export default tseslint.config(
       'site',
       'storybook-static',
       'coverage',
-      'src/components/ui/**',
       'src/hooks/use-mobile.ts',
       'upstream/**',
     ],

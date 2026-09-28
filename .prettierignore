@@ -2,7 +2,6 @@ dist
 site
 storybook-static
 pnpm-lock.yaml
-src/components/ui
 upstream
 src/hooks/use-mobile.ts
 src/lib/utils.ts

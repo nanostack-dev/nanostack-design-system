@@ -3,6 +3,7 @@
  *
  *   pnpm shadcn:update --check        list components whose upstream changed
  *   pnpm shadcn:update button dialog  merge the upstream change into the owned files
+ *   pnpm shadcn:update --add kbd      start owning a new component from the CLI output
  *
  * Example, `pnpm shadcn:update dialog` when upstream dropped its "use client" line:
  *   base   upstream/ui/dialog.tsx               the CLI output we started from
@@ -14,7 +15,7 @@
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -22,6 +23,7 @@ const lockPath = 'upstream/lock.json';
 const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
 const args = process.argv.slice(2);
 const checkOnly = args.includes('--check');
+const addNew = args.includes('--add');
 const requested = args.filter((arg) => !arg.startsWith('--'));
 const names = requested.length
   ? requested
@@ -58,6 +60,21 @@ for (const name of names) {
   const file = `${name}.tsx`;
   const basePath = `upstream/ui/${file}`;
   const ownedPath = `src/components/${name}/${file}`;
+  if (addNew) {
+    if (existsSync(basePath) || existsSync(ownedPath)) {
+      console.error(`${name}: already owned`);
+      process.exitCode = 1;
+      continue;
+    }
+    const upstream = fetchUpstream(name);
+    writeFileSync(basePath, upstream);
+    mkdirSync(`src/components/${name}`, { recursive: true });
+    writeFileSync(ownedPath, upstream);
+    writeFileSync(`src/components/${name}/index.ts`, `export * from './${name}';\n`);
+    lock.files[file] = sha(upstream);
+    console.log(`${name}: added; close its API in ${ownedPath}`);
+    continue;
+  }
   if (!existsSync(basePath)) {
     console.error(`${name}: no upstream/ui/${file}`);
     process.exitCode = 1;

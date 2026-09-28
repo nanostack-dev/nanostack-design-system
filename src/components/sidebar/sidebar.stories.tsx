@@ -10,6 +10,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, fn, waitFor, within } from 'storybook/test';
 
+import { Text } from '@/components/text';
+import { Inline } from '@/layout/inline';
+import { Stack } from '@/layout/stack';
+
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +44,64 @@ import {
   useSidebar,
 } from './sidebar';
 
+const usage = `
+The parts of a collapsible application sidebar. For the frame of a signed-in product, use the \`AppShell\` block: it composes these parts with the right defaults. Use the parts directly only for a sidebar that \`AppShell\` cannot express.
+
+The parts are closed. They do not accept \`className\` or \`style\`. The width comes from \`SidebarProvider\`, the surface from \`material\`, and a link from \`href\` and the \`DesignSystemProvider\` link component.
+
+## SidebarProvider width: the expanded width
+
+| Value | Width | Use it for |
+| --- | --- | --- |
+| \`md\` | 16 rem | The default. A sidebar with one column of labels. |
+| \`lg\` | 17 rem | A sidebar with an icon rail and a panel side by side. |
+
+## SidebarProvider iconWidth: the collapsed width
+
+| Value | Width | Use it for |
+| --- | --- | --- |
+| \`md\` | 3 rem | The default. \`SidebarMenuButton\` icons in the collapsed sidebar. |
+| \`lg\` | 3.75 rem | A custom icon rail with 40 px targets. The collapsed width must equal the rail width. |
+
+## Sidebar material: the surface
+
+| Value | Use it for |
+| --- | --- |
+| \`solid\` | The default. An opaque sidebar surface. |
+| \`frosted\` | A translucent surface that blurs what is behind it. It becomes \`solid\` when the person asks for reduced transparency. |
+
+## Sidebar collapsible: how it closes
+
+| Value | Use it for |
+| --- | --- |
+| \`offcanvas\` | The default. The sidebar slides out of view. Use it when the page needs the full width. |
+| \`icon\` | The sidebar keeps a column of icons with tooltips. Use it for the main navigation of a product. |
+| \`none\` | The sidebar never closes. Use it inside a page, for example a settings section. |
+
+## SidebarMenuButton size
+
+| Value | Height | Use it for |
+| --- | --- | --- |
+| \`sm\` | 32 px | A dense secondary list. |
+| \`md\` | 36 px | The default. Navigation items. |
+| \`lg\` | 56 px | The workspace or account switcher at the top or bottom. |
+
+## Other props
+
+- \`SidebarMenuButton href\`: renders the link component of \`DesignSystemProvider\`. Use \`render\` only for a trigger, such as \`DropdownMenuTrigger\` or \`CollapsibleTrigger\`.
+- \`SidebarMenuButton tooltip\`: the label shown when the sidebar is collapsed to icons. Give one to every item.
+- \`SidebarMenuAction showOnHover\`: shows the action only when the item has hover or focus.
+- \`SidebarTrigger label\` and \`SidebarRail label\`: the accessible name. The default is "Toggle Sidebar".
+- \`Ctrl+B\` or \`Cmd+B\` opens and closes the sidebar.
+
+## Do not
+
+- Do not put two sidebars in one \`SidebarProvider\`.
+- Do not leave out \`tooltip\` on an item of a sidebar that collapses to icons. The icon alone has no name.
+- Do not set \`iconWidth\` smaller than the content of a custom rail. The rail is cut.
+- Do not use \`frosted\` for a sidebar with nothing behind it that moves. It only adds cost.
+`;
+
 const navigation = [
   { title: 'Home', href: '#home', icon: HouseIcon, active: true },
   { title: 'Reports', href: '#reports', icon: ChartBarIcon, badge: '12' },
@@ -50,16 +112,15 @@ function SidebarState() {
   const { state, open, isMobile } = useSidebar();
   const isMobileViewport = useIsMobile();
   return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-      <dt className="text-muted-foreground">State</dt>
-      <dd data-testid="sidebar-state">{state}</dd>
-      <dt className="text-muted-foreground">Open</dt>
-      <dd>{String(open)}</dd>
-      <dt className="text-muted-foreground">Layout</dt>
-      <dd data-testid="sidebar-layout">
+    <Stack space="xs">
+      <Text tone="muted">
+        State <span data-testid="sidebar-state">{state}</span>
+      </Text>
+      <Text tone="muted">Open {String(open)}</Text>
+      <Text tone="muted" data-testid="sidebar-layout">
         {isMobile || isMobileViewport ? 'Mobile layout' : 'Desktop layout'}
-      </dd>
-    </dl>
+      </Text>
+    </Stack>
   );
 }
 
@@ -87,11 +148,7 @@ function AppSidebar(props: SidebarProps) {
             <SidebarMenu>
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    render={<a href={item.href} />}
-                    isActive={item.active}
-                    tooltip={item.title}
-                  >
+                  <SidebarMenuButton href={item.href} isActive={item.active} tooltip={item.title}>
                     <item.icon />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
@@ -159,10 +216,14 @@ function Shell({
     <SidebarProvider {...providerProps}>
       <AppSidebar {...sidebarProps} />
       <SidebarInset>
-        <header className="flex h-12 items-center gap-2 border-b px-4">
-          <SidebarTrigger />
-          <h1 className="text-sm font-medium">Home</h1>
-        </header>
+        <div className="flex h-12 items-center gap-2 border-b px-4">
+          <Inline space="sm" wrap={false}>
+            <SidebarTrigger />
+            <Text weight="medium" data-testid="page-title">
+              Home
+            </Text>
+          </Inline>
+        </div>
         <div className="p-4">
           <SidebarState />
         </div>
@@ -181,23 +242,22 @@ function sidebarElement(canvasElement: HTMLElement) {
   return canvasElement.querySelector<HTMLElement>('[data-slot="sidebar"]')!;
 }
 
+function sidebarContainer(canvasElement: HTMLElement) {
+  return canvasElement.querySelector<HTMLElement>('[data-slot="sidebar-container"]')!;
+}
+
 const meta = {
   title: 'Components/Sidebar',
   component: Sidebar,
-  args: { side: 'left', variant: 'sidebar', collapsible: 'icon' },
+  args: { side: 'left', collapsible: 'icon', material: 'solid' },
   argTypes: {
     side: { control: 'select', options: ['left', 'right'] },
-    variant: { control: 'select', options: ['sidebar', 'floating', 'inset'] },
     collapsible: { control: 'select', options: ['offcanvas', 'icon', 'none'] },
+    material: { control: 'select', options: ['solid', 'frosted'] },
   },
   parameters: {
     layout: 'fullscreen',
-    docs: {
-      description: {
-        component:
-          'The parts of a collapsible application sidebar. Use the `AppShell` block for a full application frame. Use these parts only for a custom layout.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   render: (args) => <Shell {...args} />,
 } satisfies Meta<typeof Sidebar>;
@@ -211,12 +271,18 @@ export const Default: Story = {
     const trigger = sidebarTrigger(canvasElement);
     await expect(sidebar).toHaveAttribute('data-state', 'expanded');
     await expect(canvas.getByRole('link', { name: 'Home' })).toHaveAttribute('data-active');
+    await expect(canvas.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '#home');
+    await expect(canvas.getByRole('link', { name: 'Tokens' })).toHaveAttribute('data-active');
     await expect(canvas.getByTestId('sidebar-layout')).toHaveTextContent('Desktop layout');
+    await expect(sidebarContainer(canvasElement).getBoundingClientRect().width).toBe(256);
 
     await userEvent.click(trigger);
     await expect(sidebar).toHaveAttribute('data-state', 'collapsed');
     await expect(sidebar).toHaveAttribute('data-collapsible', 'icon');
     await expect(canvas.getByTestId('sidebar-state')).toHaveTextContent('collapsed');
+    await waitFor(() =>
+      expect(sidebarContainer(canvasElement).getBoundingClientRect().width).toBe(48),
+    );
 
     await userEvent.click(trigger);
     await expect(sidebar).toHaveAttribute('data-state', 'expanded');
@@ -224,10 +290,45 @@ export const Default: Story = {
   },
 };
 
+export const Widths: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A sidebar with an icon rail and a panel uses `width="lg"` (17 rem) and `iconWidth="lg"` (3.75 rem), so the collapsed sidebar is exactly the rail.',
+      },
+    },
+  },
+  render: (args) => <Shell {...args} providerProps={{ width: 'lg', iconWidth: 'lg' }} />,
+  play: async ({ canvasElement, userEvent }) => {
+    const container = sidebarContainer(canvasElement);
+    await expect(container.getBoundingClientRect().width).toBe(272);
+    await userEvent.click(sidebarTrigger(canvasElement));
+    await waitFor(() => expect(container.getBoundingClientRect().width).toBe(60));
+  },
+};
+
+export const Frosted: Story = {
+  args: { material: 'frosted' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The `frosted` material is 82% of the sidebar colour with a blur. With reduced transparency it is the solid colour.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(sidebarElement(canvasElement)).toHaveAttribute('data-material', 'frosted');
+    const inner = canvasElement.querySelector<HTMLElement>('[data-slot="sidebar-inner"]')!;
+    await expect(getComputedStyle(inner).backdropFilter).toContain('blur');
+  },
+};
+
 export const KeyboardShortcut: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     const sidebar = sidebarElement(canvasElement);
-    await userEvent.click(canvas.getByRole('heading', { name: 'Home' }));
+    await userEvent.click(canvas.getByTestId('page-title'));
 
     await userEvent.keyboard('{Control>}b{/Control}');
     await expect(sidebar).toHaveAttribute('data-state', 'collapsed');
@@ -285,24 +386,10 @@ export const Controlled: Story = {
 export const Offcanvas: Story = {
   args: { collapsible: 'offcanvas' },
   play: async ({ canvasElement, userEvent }) => {
-    const container = canvasElement.querySelector<HTMLElement>('[data-slot="sidebar-container"]')!;
+    const container = sidebarContainer(canvasElement);
     await userEvent.click(sidebarTrigger(canvasElement));
     await expect(sidebarElement(canvasElement)).toHaveAttribute('data-collapsible', 'offcanvas');
     await waitFor(() => expect(container.getBoundingClientRect().right).toBeLessThanOrEqual(0));
-  },
-};
-
-export const Floating: Story = {
-  args: { variant: 'floating' },
-  play: async ({ canvasElement }) => {
-    await expect(sidebarElement(canvasElement)).toHaveAttribute('data-variant', 'floating');
-  },
-};
-
-export const Inset: Story = {
-  args: { variant: 'inset' },
-  play: async ({ canvasElement }) => {
-    await expect(sidebarElement(canvasElement)).toHaveAttribute('data-variant', 'inset');
   },
 };
 
@@ -312,5 +399,14 @@ export const RightSide: Story = {
     await expect(sidebarElement(canvasElement)).toHaveAttribute('data-side', 'right');
     await userEvent.click(sidebarTrigger(canvasElement));
     await expect(sidebarElement(canvasElement)).toHaveAttribute('data-state', 'collapsed');
+  },
+};
+
+export const Dark: Story = {
+  globals: { theme: 'dark' },
+  play: async ({ canvas, canvasElement }) => {
+    await waitFor(() => expect(document.documentElement).toHaveClass('dark'));
+    await expect(sidebarElement(canvasElement)).toHaveAttribute('data-state', 'expanded');
+    await expect(canvas.getByRole('link', { name: 'Home' })).toHaveAttribute('data-active');
   },
 };

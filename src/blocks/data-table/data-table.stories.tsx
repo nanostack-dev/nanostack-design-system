@@ -1,5 +1,6 @@
 import { DotsThreeIcon, PlusIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
 import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
 import { Badge, type BadgeTone } from '@/components/badge';
@@ -11,7 +12,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
 
-import { DataTable, DataTableColumnHeader, type ColumnDef } from './data-table';
+import { Text } from '@/components/text';
+import { Stack } from '@/layout/stack';
+
+import {
+  DataTable,
+  DataTableColumnHeader,
+  type ColumnDef,
+  type DataTablePagination,
+} from './data-table';
 
 type Person = {
   id: string;
@@ -65,6 +74,89 @@ const columns: ColumnDef<Person>[] = [
   },
 ];
 
+const usage = `
+A table with sort, search, pages, a loading state and an empty state, built on TanStack Table v9. Use it for a list of records that the person searches and sorts. For a table of a few fixed rows, use \`Table\`.
+
+The block is closed. It does not accept \`className\` or \`style\`. Columns are TanStack \`ColumnDef\` values, and a cell renders design-system components.
+
+## Where the rows live
+
+| Props | Use it for |
+| --- | --- |
+| \`data\`, \`pageSize\` | The default. Every row is in the browser. The table sorts, searches and pages them. |
+| \`pagination\`, \`onPaginationChange\`, \`rowCount\` | The server holds the rows. \`data\` is the current page, \`rowCount\` is the total. The table asks for a page through \`onPaginationChange\` and does not filter or page the rows itself. |
+| \`pagination\`, \`onPaginationChange\` without \`rowCount\` | Every row is in the browser, and the page keeps the page index, for example in the URL. |
+
+## Search
+
+| Props | Use it for |
+| --- | --- |
+| \`searchLabel\` | The table owns the search text and filters the rows in the browser. |
+| \`searchLabel\`, \`searchValue\`, \`onSearchChange\` | The page owns the search text, for example to send it to the server or keep it in the URL. With \`rowCount\`, a new search also asks for the first page. |
+
+## Other props
+
+- \`loading\`: shows skeleton rows. With \`rowCount\`, the pager stays in place and its buttons are disabled.
+- \`emptyState\`: the content of the empty table. Pass an \`EmptyState\` for a first-use message.
+- \`toolbar\`: controls at the end of the search row, for example filters and export.
+- \`DataTableColumnHeader\`: a sortable header. A column with \`enableSorting: false\` shows plain text.
+
+## Do not
+
+- Do not pass every row and \`rowCount\` together. \`rowCount\` means the server pages the rows.
+- Do not sort a server page in the browser and call it sorted. Sorting applies to the current page only.
+- Do not put a second search box in \`toolbar\`.
+`;
+
+type ServerPage = { rows: Person[]; total: number };
+
+function fetchPage(search: string, pagination: DataTablePagination): ServerPage {
+  const query = search.trim().toLowerCase();
+  const matches = people.filter((entry) =>
+    [entry.name, entry.email, entry.role, entry.status].some((value) =>
+      value.toLowerCase().includes(query),
+    ),
+  );
+  const start = pagination.pageIndex * pagination.pageSize;
+  return { rows: matches.slice(start, start + pagination.pageSize), total: matches.length };
+}
+
+const onServerPagination = fn();
+const onServerSearch = fn();
+
+function ServerTable() {
+  const [pagination, setPagination] = useState<DataTablePagination>({
+    pageIndex: 0,
+    pageSize: 5,
+  });
+  const [search, setSearch] = useState('');
+  const page = fetchPage(search, pagination);
+  return (
+    <Stack space="sm">
+      <DataTable
+        columns={columns}
+        data={page.rows}
+        getRowId={(entry) => entry.id}
+        rowCount={page.total}
+        pagination={pagination}
+        onPaginationChange={(next) => {
+          onServerPagination(next);
+          setPagination(next);
+        }}
+        searchLabel="Search people"
+        searchValue={search}
+        onSearchChange={(value) => {
+          onServerSearch(value);
+          setSearch(value);
+        }}
+      />
+      <Text tone="muted" data-testid="server-state">
+        {`page=${pagination.pageIndex} search=${search}`}
+      </Text>
+    </Stack>
+  );
+}
+
 const onCopyEmail = fn();
 const onRemove = fn();
 
@@ -112,12 +204,7 @@ const meta = {
   component: DataTable<Person, unknown>,
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'A table with sort, search, pages, a loading state and an empty state, built on TanStack Table. Use it for lists of records that the user searches and sorts.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   args: {
     columns,
@@ -129,6 +216,8 @@ const meta = {
   beforeEach: () => {
     onCopyEmail.mockClear();
     onRemove.mockClear();
+    onServerPagination.mockClear();
+    onServerSearch.mockClear();
   },
 } satisfies Meta<typeof DataTable<Person, unknown>>;
 
@@ -238,13 +327,12 @@ export const CustomEmptyState: Story = {
   args: {
     data: [],
     emptyState: (
-      <div className="flex flex-col items-center gap-2">
-        <span>No people yet.</span>
-        <Button variant="solid" tone="brand" size="sm">
-          <PlusIcon data-icon="inline-start" aria-hidden="true" />
+      <Stack space="sm" align="center">
+        <Text tone="muted">No people yet.</Text>
+        <Button variant="solid" tone="brand" size="sm" icon={PlusIcon}>
           Invite people
         </Button>
-      </div>
+      </Stack>
     ),
   },
   play: async ({ canvas }) => {
@@ -294,5 +382,78 @@ export const Dark: Story = {
     await expect(bodyRows(canvasElement)).toHaveLength(10);
     await userEvent.type(canvas.getByRole('searchbox', { name: 'Search people' }), 'admin');
     await waitFor(() => expect(bodyRows(canvasElement)).toHaveLength(2));
+  },
+};
+
+export const ServerPagination: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The server holds the rows. The table shows `data` as the current page, counts pages from `rowCount`, and asks for another page with `onPaginationChange`. A new search asks for the first page.',
+      },
+    },
+  },
+  render: () => <ServerTable />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const next = canvas.getByRole('button', { name: 'Next' });
+    await expect(canvas.getByText('Page 1 of 3')).toBeVisible();
+    await expect(bodyRows(canvasElement)).toHaveLength(5);
+
+    await userEvent.click(next);
+    await expect(onServerPagination).toHaveBeenLastCalledWith({ pageIndex: 1, pageSize: 5 });
+    await expect(canvas.getByText('Page 2 of 3')).toBeVisible();
+    await expect(firstCellTexts(canvasElement)[0]).toBe('Margaret Hamilton');
+
+    await userEvent.click(next);
+    await expect(canvas.getByText('Page 3 of 3')).toBeVisible();
+    await expect(bodyRows(canvasElement)).toHaveLength(2);
+    await expect(next).toBeDisabled();
+
+    await userEvent.type(canvas.getByRole('searchbox', { name: 'Search people' }), 'member');
+    await expect(onServerSearch).toHaveBeenLastCalledWith('member');
+    await waitFor(() =>
+      expect(canvas.getByTestId('server-state')).toHaveTextContent('page=0 search=member'),
+    );
+    await expect(canvas.getByText('Page 1 of 2')).toBeVisible();
+  },
+};
+
+export const ServerLoading: Story = {
+  args: {
+    data: people.slice(0, 5),
+    rowCount: 12,
+    pagination: { pageIndex: 1, pageSize: 5 },
+    onPaginationChange: fn(),
+    loading: true,
+  },
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvas.getByRole('table')).toHaveAttribute('aria-busy', 'true');
+    await expect(bodyRows(canvasElement)).toHaveLength(5);
+    await expect(canvas.getByText('Page 2 of 3')).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Next' })).toBeDisabled();
+  },
+};
+
+export const ControlledSearch: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The page owns the search text with `searchValue` and `onSearchChange`. Without `rowCount`, the table still filters the rows in the browser.',
+      },
+    },
+  },
+  render: function Render(args) {
+    const [search, setSearch] = useState('grace');
+    return <DataTable {...args} searchValue={search} onSearchChange={setSearch} />;
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const search = canvas.getByRole('searchbox', { name: 'Search people' });
+    await expect(search).toHaveValue('grace');
+    await expect(bodyRows(canvasElement)).toHaveLength(1);
+    await userEvent.clear(search);
+    await waitFor(() => expect(bodyRows(canvasElement)).toHaveLength(10));
   },
 };

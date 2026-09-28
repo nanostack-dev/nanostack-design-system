@@ -112,7 +112,6 @@ export const Vertical: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { a11y: { test: 'todo' } },
   render: (args) => (
     <div className="w-72">
       <Field disabled>

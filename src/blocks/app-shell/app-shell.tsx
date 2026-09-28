@@ -1,5 +1,5 @@
 import type { Icon } from '@phosphor-icons/react';
-import { type ComponentProps, type ReactElement, type ReactNode, useId } from 'react';
+import { createContext, useContext, useId, type ReactNode } from 'react';
 
 import { Separator } from '@/components/separator';
 import {
@@ -18,23 +18,40 @@ import {
   SidebarRail,
   SidebarTrigger,
   useSidebar,
+  type SidebarContentProps,
+  type SidebarFooterProps,
+  type SidebarHeaderProps,
+  type SidebarIconWidth,
+  type SidebarInsetProps,
+  type SidebarMaterial,
+  type SidebarWidth,
 } from '@/components/sidebar';
-import { cn } from '@/lib/utils';
+import { Box } from '@/layout/box';
+import { Inline } from '@/layout/inline';
+
+export type AppShellSidebarWidth = SidebarWidth;
+export type AppShellSidebarIconWidth = SidebarIconWidth;
+export type AppShellSidebarMaterial = SidebarMaterial;
 
 export interface AppShellProps {
   children: ReactNode;
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  sidebarWidth?: AppShellSidebarWidth;
+  sidebarIconWidth?: AppShellSidebarIconWidth;
+  skipLinkLabel?: string;
+  mainId?: string;
 }
 
 export interface AppShellSidebarProps {
   children: ReactNode;
+  material?: AppShellSidebarMaterial;
 }
 
-export type AppShellSidebarHeaderProps = ComponentProps<typeof SidebarHeader>;
-export type AppShellSidebarContentProps = ComponentProps<typeof SidebarContent>;
-export type AppShellSidebarFooterProps = ComponentProps<typeof SidebarFooter>;
+export type AppShellSidebarHeaderProps = SidebarHeaderProps;
+export type AppShellSidebarContentProps = SidebarContentProps;
+export type AppShellSidebarFooterProps = SidebarFooterProps;
 
 export interface AppShellNavProps {
   label?: string;
@@ -43,20 +60,22 @@ export interface AppShellNavProps {
 
 export interface AppShellNavItemProps {
   label: string;
+  href: string;
   icon?: Icon;
   active?: boolean;
-  render?: ReactElement;
-  href?: string;
   badge?: ReactNode;
 }
 
-export type AppShellInsetProps = ComponentProps<typeof SidebarInset>;
+export type AppShellInsetProps = SidebarInsetProps;
 
 export interface AppShellHeaderProps {
   children?: ReactNode;
+  actions?: ReactNode;
 }
 
-export type AppShellMainProps = ComponentProps<'div'>;
+export interface AppShellMainProps {
+  children?: ReactNode;
+}
 
 export interface AppShellContextValue {
   state: 'expanded' | 'collapsed';
@@ -68,17 +87,53 @@ export interface AppShellContextValue {
   toggle: () => void;
 }
 
-export function AppShell({ children, defaultOpen, open, onOpenChange }: AppShellProps) {
+const defaultMainId = 'app-shell-main';
+
+const MainIdContext = createContext(defaultMainId);
+
+export function AppShell({
+  children,
+  defaultOpen,
+  open,
+  onOpenChange,
+  sidebarWidth = 'md',
+  sidebarIconWidth = 'md',
+  skipLinkLabel,
+  mainId = defaultMainId,
+}: AppShellProps) {
   return (
-    <SidebarProvider defaultOpen={defaultOpen} open={open} onOpenChange={onOpenChange}>
-      {children}
-    </SidebarProvider>
+    <MainIdContext.Provider value={mainId}>
+      <SidebarProvider
+        defaultOpen={defaultOpen}
+        open={open}
+        onOpenChange={onOpenChange}
+        width={sidebarWidth}
+        iconWidth={sidebarIconWidth}
+      >
+        {skipLinkLabel ? (
+          <a
+            href={`#${mainId}`}
+            onClick={(event) => {
+              const main = document.getElementById(mainId);
+              if (!main) return;
+              event.preventDefault();
+              main.focus();
+            }}
+            data-slot="app-shell-skip-link"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:inline-flex focus:h-9 focus:items-center focus:rounded-xl focus:border focus:border-border focus:bg-popover focus:px-3 focus:text-sm focus:font-medium focus:text-popover-foreground focus:shadow-lg focus:ring-3 focus:ring-ring/30 focus:outline-none"
+          >
+            {skipLinkLabel}
+          </a>
+        ) : null}
+        {children}
+      </SidebarProvider>
+    </MainIdContext.Provider>
   );
 }
 
-export function AppShellSidebar({ children }: AppShellSidebarProps) {
+export function AppShellSidebar({ children, material = 'solid' }: AppShellSidebarProps) {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" material={material}>
       {children}
       <SidebarRail />
     </Sidebar>
@@ -107,18 +162,54 @@ export function AppShellNav({ label, children }: AppShellNavProps) {
   );
 }
 
+export type AppShellBrandProps = {
+  name: string;
+  href: string;
+  description?: string;
+  icon?: Icon;
+  logo?: ReactNode;
+};
+
+export function AppShellBrand({
+  name,
+  href,
+  description,
+  icon: BrandIcon,
+  logo,
+}: AppShellBrandProps) {
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton size="lg" href={href} tooltip={name}>
+          <span
+            data-slot="app-shell-brand-mark"
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+          >
+            {logo ?? (BrandIcon ? <BrandIcon aria-hidden /> : null)}
+          </span>
+          <span className="grid min-w-0 flex-1 text-left leading-tight">
+            <span className="truncate font-heading text-sm font-semibold">{name}</span>
+            {description ? (
+              <span className="truncate text-xs text-muted-foreground">{description}</span>
+            ) : null}
+          </span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
+
 export function AppShellNavItem({
   label,
+  href,
   icon: ItemIcon,
   active = false,
-  render,
-  href,
   badge,
 }: AppShellNavItemProps) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        render={render ?? <a href={href} />}
+        href={href}
         isActive={active}
         aria-current={active ? 'page' : undefined}
         tooltip={label}
@@ -135,26 +226,38 @@ export function AppShellInset(props: AppShellInsetProps) {
   return <SidebarInset {...props} />;
 }
 
-export function AppShellHeader({ children }: AppShellHeaderProps) {
+export function AppShellHeader({ children, actions }: AppShellHeaderProps) {
   return (
-    <header
+    <Box
+      as="header"
       data-slot="app-shell-header"
-      className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background px-4"
+      className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background px-3 md:px-4"
     >
-      <SidebarTrigger className="-ml-1" />
+      <SidebarTrigger />
       <Separator orientation="vertical" length="short" />
-      <div className="flex min-w-0 flex-1 items-center gap-2">{children}</div>
-    </header>
+      <Box data-slot="app-shell-header-content" className="flex min-w-0 flex-1 items-center gap-2">
+        {children}
+      </Box>
+      {actions ? (
+        <Inline data-slot="app-shell-header-actions" space="sm" wrap={false}>
+          {actions}
+        </Inline>
+      ) : null}
+    </Box>
   );
 }
 
-export function AppShellMain({ className, ...props }: AppShellMainProps) {
+export function AppShellMain({ children }: AppShellMainProps) {
+  const mainId = useContext(MainIdContext);
   return (
-    <div
+    <Box
+      id={mainId}
+      tabIndex={-1}
       data-slot="app-shell-main"
-      className={cn('flex flex-1 flex-col gap-4 p-4 md:p-6', className)}
-      {...props}
-    />
+      className="flex flex-1 flex-col gap-6 p-4 outline-none md:p-6"
+    >
+      {children}
+    </Box>
   );
 }
 

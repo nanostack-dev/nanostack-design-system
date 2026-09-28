@@ -24,6 +24,7 @@ import {
   AppShellSidebar,
   AppShellSidebarContent,
   AppShellSidebarFooter,
+  AppShellBrand,
   AppShellSidebarHeader,
 } from '@/blocks/app-shell';
 import { ConfirmDialog } from '@/blocks/confirm-dialog';
@@ -53,6 +54,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/breadcrumb';
 import { Button, IconButton } from '@/components/button';
+import { Text } from '@/components/text';
 
 type ProjectStatus = 'Healthy' | 'Degraded' | 'Paused';
 
@@ -110,7 +112,11 @@ function projectColumns(archive: (project: Project) => void): ColumnDef<Project>
     {
       accessorKey: 'name',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Project" />,
-      cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+      cell: ({ row }) => (
+        <Text as="span" weight="medium">
+          {row.original.name}
+        </Text>
+      ),
     },
     {
       accessorKey: 'owner',
@@ -127,7 +133,11 @@ function projectColumns(archive: (project: Project) => void): ColumnDef<Project>
     {
       accessorKey: 'updated',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Updated" />,
-      cell: ({ row }) => <span className="tabular-nums">{row.original.updated}</span>,
+      cell: ({ row }) => (
+        <Text as="span" tabular>
+          {row.original.updated}
+        </Text>
+      ),
     },
     {
       id: 'actions',
@@ -141,7 +151,7 @@ function projectColumns(archive: (project: Project) => void): ColumnDef<Project>
             title={`Archive ${row.original.name}?`}
             description="The project stops and leaves this list. An owner can restore it for 30 days."
             confirmLabel="Archive project"
-            tone="destructive"
+            tone="critical"
             onConfirm={() => archive(row.original)}
           />
         </div>
@@ -164,14 +174,12 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
       <AppShell defaultOpen>
         <AppShellSidebar>
           <AppShellSidebarHeader>
-            <div className="flex h-10 items-center gap-2 overflow-hidden">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <CubeIcon aria-hidden />
-              </span>
-              <span className="min-w-0 truncate font-heading text-sm font-semibold">
-                Acme workspace
-              </span>
-            </div>
+            <AppShellBrand
+              icon={CubeIcon}
+              name="Acme workspace"
+              description="Team plan"
+              href="#workspace"
+            />
           </AppShellSidebarHeader>
           <AppShellSidebarContent>
             <AppShellNav label="Workspace">
@@ -189,7 +197,7 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
           </AppShellSidebarFooter>
         </AppShellSidebar>
         <AppShellInset>
-          <AppShellHeader>
+          <AppShellHeader actions={<ThemeToggle />}>
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -201,11 +209,8 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="ml-auto">
-              <ThemeToggle />
-            </div>
           </AppShellHeader>
-          <AppShellMain className="gap-6">
+          <AppShellMain>
             <PageHeader>
               <PageHeaderContent>
                 <PageHeaderTitle>Overview</PageHeaderTitle>
@@ -214,12 +219,10 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
                 </PageHeaderDescription>
               </PageHeaderContent>
               <PageHeaderActions>
-                <Button variant="outline" onClick={onExport}>
-                  <DownloadSimpleIcon data-icon="inline-start" aria-hidden />
+                <Button variant="outline" icon={DownloadSimpleIcon} onClick={onExport}>
                   Export
                 </Button>
-                <Button variant="solid" tone="brand" onClick={onCreateProject}>
-                  <PlusIcon data-icon="inline-start" aria-hidden />
+                <Button variant="solid" tone="brand" icon={PlusIcon} onClick={onCreateProject}>
                   New project
                 </Button>
               </PageHeaderActions>

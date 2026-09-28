@@ -2,9 +2,29 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, screen, waitFor, within } from 'storybook/test';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
+import { Text } from '@/components/text';
 import { Spread } from '@/layout/spread';
+import { Stack } from '@/layout/stack';
 
 import { ThemeProvider, type ThemeProviderProps, ThemeToggle, useTheme } from './theme';
+
+const usage = `
+\`ThemeProvider\` stores the light, dark or system choice and sets the \`dark\` class on \`<html>\`. \`ThemeToggle\` is the menu that changes it. \`useTheme()\` reads and sets the choice from any component. Put the provider at the root of the application.
+
+The block has no look props. \`ThemeToggle\` is a ghost icon button that opens a menu with three choices.
+
+## Props
+
+- \`defaultTheme\`: \`system\` by default. The choice before the person picks one.
+- \`storageKey\`: the \`localStorage\` key. Give each product its own key.
+- \`ThemeToggle labels\`: the menu and button text, for a translated product.
+
+## Do not
+
+- Do not set the \`dark\` class on \`<html>\` yourself. Call \`setTheme\` from \`useTheme()\`.
+- Do not put two \`ThemeProvider\` in one application.
+- Do not show a theme toggle on a screen that does not change with the theme.
+`;
 
 const storageKey = 'nanostack-theme-story';
 
@@ -19,12 +39,14 @@ function clearStoredTheme() {
 function ThemeStatus() {
   const { theme, resolvedTheme } = useTheme();
   return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-      <dt className="text-muted-foreground">Choice</dt>
-      <dd data-testid="theme-choice">{theme}</dd>
-      <dt className="text-muted-foreground">Applied</dt>
-      <dd data-testid="theme-resolved">{resolvedTheme}</dd>
-    </dl>
+    <Stack space="xs">
+      <Text tone="muted">
+        Choice <span data-testid="theme-choice">{theme}</span>
+      </Text>
+      <Text tone="muted">
+        Applied <span data-testid="theme-resolved">{resolvedTheme}</span>
+      </Text>
+    </Stack>
   );
 }
 
@@ -64,12 +86,7 @@ async function openThemeMenu(
 const meta = {
   title: 'Blocks/Theme',
   parameters: {
-    docs: {
-      description: {
-        component:
-          '`ThemeProvider` stores the light, dark or system choice and sets the `dark` class on `<html>`. `ThemeToggle` is the menu that changes it. Put the provider at the root of the application.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   component: ThemeProvider,
   args: { defaultTheme: 'light', storageKey, children: null },

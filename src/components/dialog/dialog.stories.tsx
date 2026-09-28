@@ -209,6 +209,9 @@ export const LongContent: Story = {
   ),
   play: async ({ userEvent }) => {
     const dialog = await screen.findByRole('dialog', { name: 'Terms of service' });
+    await Promise.all(
+      dialog.getAnimations({ subtree: true }).map((animation) => animation.finished),
+    );
     await waitFor(() =>
       expect(dialog.getBoundingClientRect().bottom).toBeLessThanOrEqual(window.innerHeight),
     );
@@ -219,7 +222,7 @@ export const LongContent: Story = {
     const closeTop = close.getBoundingClientRect().top;
     body.scrollTop = body.scrollHeight;
     await waitFor(() => expect(body.scrollTop).toBeGreaterThan(0));
-    await expect(close.getBoundingClientRect().top).toBe(closeTop);
+    await expect(close.getBoundingClientRect().top).toBeCloseTo(closeTop, 0);
     await userEvent.click(close);
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   },

@@ -1,4 +1,4 @@
-import { CheckIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { CheckIcon, MagnifyingGlassIcon, XIcon } from '@phosphor-icons/react';
 import { Command as CommandPrimitive } from 'cmdk';
 import { cva } from 'class-variance-authority';
 import { createContext, useContext, type ComponentProps, type ReactNode } from 'react';
@@ -6,11 +6,13 @@ import { createContext, useContext, type ComponentProps, type ReactNode } from '
 import { InputGroup, InputGroupAddon } from '@/components/input-group/input-group';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogPaletteContent,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/dialog/dialog';
+import { buttonStyles } from '@/components/button/button';
+import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -64,16 +66,24 @@ export function CommandDialog({
 }: CommandDialogProps) {
   return (
     <Dialog {...props}>
-      <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
-      </DialogHeader>
-      <DialogContent
-        className="top-1/3 translate-y-0 overflow-hidden rounded-4xl! p-0"
-        showCloseButton={showCloseButton}
-      >
+      <DialogPaletteContent>
+        <DialogHeader visuallyHidden>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
         <CommandVariantContext.Provider value="ghost">{children}</CommandVariantContext.Provider>
-      </DialogContent>
+        {showCloseButton ? (
+          <DialogPrimitive.Close
+            aria-label="Close"
+            className={cn(
+              buttonStyles({ variant: 'soft', tone: 'neutral', size: 'sm', iconOnly: true }),
+              'absolute top-3 right-3',
+            )}
+          >
+            <XIcon aria-hidden />
+          </DialogPrimitive.Close>
+        ) : null}
+      </DialogPaletteContent>
     </Dialog>
   );
 }

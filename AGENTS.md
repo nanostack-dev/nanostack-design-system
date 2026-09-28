@@ -12,13 +12,12 @@
 | `src/provider/`                      | `DesignSystemProvider` (router link, tooltip provider)           | Hand-written                            |
 | `src/styles.css`                     | Tokens, `@theme inline` mapping, base layer                      | Hand-written                            |
 | `upstream/ui/`, `upstream/lock.json` | Untouched shadcn CLI output, the merge base                      | Only `pnpm shadcn:update`               |
-| `src/components/ui/`                 | 0.1.0 CLI output, removed as each component is owned             | Nobody; it goes away in 0.2.0           |
 | `.claude/skills/shadcn/`             | Official shadcn skill, installed with `skills`                   | `npx skills@latest update shadcn -p -y` |
 
 ## Rules
 
 1. Components start from the latest shadcn CLI output (`base-luma`, `neutral`, CSS variables, `phosphor`, Base UI, Tailwind v4) and are then owned: edited in place in `src/components/<name>/<name>.tsx`. Procedure: `.claude/skills/own-shadcn-component/SKILL.md`. An upstream update goes through `pnpm shadcn:update`, a three-way merge against `upstream/`.
-2. Every exported part is closed: typed props only, no `className`, no `style`. `pnpm test:package` checks every export. A folder with a `.open-api` file is not converted yet.
+2. Every exported part is closed: typed props only, no `className`, no `style`. `pnpm test:package` checks every export.
 3. Variants use one vocabulary: `variant` (`solid`, `soft`, `outline`, `ghost`), `tone` (`neutral`, `brand`, `critical`, `success`, `warning`, `info`), `size` (`xs`, `sm`, `md`, `lg`), `width` (`auto`, `fill`). No shape, radius, colour or margin props. A new value needs two real product uses and a story.
 4. Components have no outer margin. Layout blocks own spacing on the scale `none`, `xxs`, `xs`, `sm`, `md`, `lg`, `xl`, `xxl`.
 5. `Box` is the only open export. It is for product component files that build a look no component gives, with tokens only.

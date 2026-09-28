@@ -11,12 +11,12 @@ import {
   type CardProps,
 } from '@/components/card';
 import { Box } from '@/layout/box';
-import { cn } from '@/lib/utils';
+import type { ClosedProps } from '@/lib/closed-props';
 
 export type StatCardProps = CardProps;
 export type StatCardLabelProps = CardDescriptionProps;
-export type StatCardValueProps = ComponentPropsWithRef<'div'>;
-export type StatCardDescriptionProps = ComponentPropsWithRef<'div'>;
+export type StatCardValueProps = ClosedProps<ComponentPropsWithRef<'div'>>;
+export type StatCardDescriptionProps = ClosedProps<ComponentPropsWithRef<'div'>>;
 export type StatCardTrendDirection = 'up' | 'down' | 'flat';
 export type StatCardTrendTone = 'positive' | 'negative' | 'neutral';
 export type StatCardTrendProps = Omit<BadgeProps, 'variant' | 'tone' | 'icon' | 'children'> & {
@@ -62,11 +62,11 @@ export function StatCardLabel(props: StatCardLabelProps) {
   return <CardDescription data-slot="stat-card-label" {...props} />;
 }
 
-export function StatCardValue({ className, ...props }: StatCardValueProps) {
+export function StatCardValue(props: StatCardValueProps) {
   return (
     <Box
       data-slot="stat-card-value"
-      className={cn('font-heading text-3xl font-semibold tabular-nums wrap-anywhere', className)}
+      className="font-heading text-3xl font-semibold tabular-nums wrap-anywhere"
       {...props}
     />
   );
@@ -96,11 +96,11 @@ export function StatCardTrend({
   );
 }
 
-export function StatCardDescription({ className, ...props }: StatCardDescriptionProps) {
+export function StatCardDescription(props: StatCardDescriptionProps) {
   return (
     <Box
       data-slot="stat-card-description"
-      className={cn('col-span-full text-sm text-muted-foreground', className)}
+      className="col-span-full text-sm text-muted-foreground"
       {...props}
     />
   );

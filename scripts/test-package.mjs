@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -232,23 +231,7 @@ export const invalidBadge = <Badge tone="danger" />;
 export const invalidCard = <Card className="p-2" />;
 `,
   );
-  const openFolders = [];
-  for (const folder of ['components', 'blocks']) {
-    for (const entry of await readdir(join(projectRoot, 'src', folder), { withFileTypes: true })) {
-      if (
-        entry.isDirectory() &&
-        existsSync(join(projectRoot, 'src', folder, entry.name, '.open-api'))
-      ) {
-        openFolders.push(`${folder}/${entry.name}`);
-      }
-    }
-  }
   const openComponents = ['Box'];
-  for (const folder of openFolders) {
-    openComponents.push(
-      ...Object.keys(await import(join(projectRoot, 'dist', folder, 'index.js'))),
-    );
-  }
   const builtLibrary = await import(join(projectRoot, 'dist/index.js'));
   const componentExports = Object.entries(builtLibrary)
     .filter(([name, value]) => /^[A-Z]/.test(name) && typeof value === 'function')
