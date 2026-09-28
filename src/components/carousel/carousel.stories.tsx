@@ -10,7 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselProps,
-} from './carousel';
+} from '@/components/carousel';
 
 const slides = [1, 2, 3, 4, 5];
 const slideClassName = [
@@ -23,24 +23,25 @@ function Slides(props: CarouselProps) {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <Carousel
-        className="w-full max-w-xs"
-        aria-label="Featured slides"
-        setApi={(api: CarouselApi) => {
-          api?.on('select', () => setCurrent(api.selectedScrollSnap() + 1));
-        }}
-        {...props}
-      >
-        <CarouselContent>
-          {slides.map((slide) => (
-            <CarouselItem key={slide} aria-label={`Slide ${slide} of ${slides.length}`}>
-              <div className={slideClassName}>{slide}</div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+      <div className="w-full max-w-xs">
+        <Carousel
+          aria-label="Featured slides"
+          setApi={(api: CarouselApi) => {
+            api?.on('select', () => setCurrent(api.selectedScrollSnap() + 1));
+          }}
+          {...props}
+        >
+          <CarouselContent>
+            {slides.map((slide) => (
+              <CarouselItem key={slide} aria-label={`Slide ${slide} of ${slides.length}`}>
+                <div className={slideClassName}>{slide}</div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Slide {current} of {slides.length}
       </p>
@@ -48,17 +49,39 @@ function Slides(props: CarouselProps) {
   );
 }
 
+const usage = `
+A row of slides with previous and next controls. Use it for media, or for a few cards that do not all fit on the screen and that the user browses one at a time. For content the user must see, use a list or a grid: people skip slides.
+
+\`Carousel\` has no look props. Each \`CarouselItem\` fills the width of the carousel. The controls sit outside the slides, so leave 48 px of space on each side.
+
+## orientation
+
+| Value | Use it for |
+| --- | --- |
+| \`horizontal\` | The default. Slides move left and right. |
+| \`vertical\` | Slides move up and down, in a tall and narrow place. |
+
+## Behaviour props
+
+- \`opts\`: Embla options, such as \`loop\` and \`startIndex\`.
+- \`plugins\`: Embla plugins, such as autoplay.
+- \`setApi\`: receives the Embla API, to show the current slide or to move to a slide.
+- \`label\` on \`CarouselPrevious\` and \`CarouselNext\`: the accessible name. The defaults are "Previous slide" and "Next slide".
+- \`useCarousel()\`: builds a custom control, such as slide dots, inside \`Carousel\`.
+
+## Do not
+
+- Do not autoplay without a pause control.
+- Do not put a form or a primary action in a slide the user may never reach.
+- Do not give the carousel an \`aria-label\` that says "carousel". The role description already says it.
+`;
+
 const meta = {
   title: 'Components/Carousel',
   component: Carousel,
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'A horizontal row of slides with previous and next controls. Use it for media or for cards that do not all fit on the screen.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   decorators: [
     (Story) => (

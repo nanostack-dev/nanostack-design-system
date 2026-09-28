@@ -57,6 +57,7 @@ const colorGroups = [
     name: 'Status',
     tokens: [
       'destructive',
+      'destructive-foreground',
       'destructive-on-tint',
       'success',
       'success-foreground',
@@ -127,14 +128,14 @@ function ColorTokens() {
       {colorGroups.map((group) => (
         <section key={group.name} aria-labelledby={`tokens-${group.name}`}>
           <Table>
-            <TableCaption id={`tokens-${group.name}`} className="mt-0 mb-3 text-left caption-top">
+            <TableCaption id={`tokens-${group.name}`} side="top">
               <span className="font-heading text-lg font-semibold text-foreground">
                 {group.name}
               </span>
             </TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-1/3">Token</TableHead>
+                <TableHead>Token</TableHead>
                 <TableHead>Light</TableHead>
                 <TableHead>Dark</TableHead>
               </TableRow>
@@ -161,9 +162,9 @@ function ColorTokens() {
 }
 
 function ContrastResult({ ratio }: { ratio: number }) {
-  if (ratio >= enhancedTextContrast) return <Badge variant="success">AAA</Badge>;
-  if (ratio >= minimumTextContrast) return <Badge variant="success">AA</Badge>;
-  return <Badge variant="destructive">Fails</Badge>;
+  if (ratio >= enhancedTextContrast) return <Badge tone="success">AAA</Badge>;
+  if (ratio >= minimumTextContrast) return <Badge tone="success">AA</Badge>;
+  return <Badge tone="critical">Fails</Badge>;
 }
 
 function ContrastSample({ theme, pairIndex }: { theme: ThemeName; pairIndex: number }) {
@@ -190,7 +191,7 @@ function TextContrastTable() {
   return (
     <div className="w-full max-w-4xl">
       <Table>
-        <TableCaption className="mt-0 mb-3 text-left caption-top">
+        <TableCaption side="top">
           WCAG 2 contrast of each text token on the surface it sits on. AA needs 4.5:1 for body
           text, AAA needs 7:1. A tinted surface is the status color at 10% over{' '}
           <code className="font-mono">--background</code>, as in a badge.

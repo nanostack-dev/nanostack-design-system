@@ -1,1 +1,18 @@
-export * from './drawer';
+export {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+  type DrawerCloseProps,
+  type DrawerContentProps,
+  type DrawerDescriptionProps,
+  type DrawerFooterProps,
+  type DrawerHeaderProps,
+  type DrawerProps,
+  type DrawerTitleProps,
+  type DrawerTriggerProps,
+} from './drawer';

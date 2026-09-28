@@ -7,7 +7,19 @@ import tseslint from 'typescript-eslint';
 const rawShadcnImport = {
   group: ['@/components/ui', '@/components/ui/*', '**/components/ui/*', '../ui/*', './ui/*'],
   message:
-    'Only a wrapper file (src/components/<name>/<name>.tsx) imports the raw shadcn component. Import the wrapper instead.',
+    'src/components/ui/ is gone: each component is owned in src/components/<name>/<name>.tsx. Import that component instead.',
+};
+
+const upstreamImport = {
+  group: ['**/upstream/**', 'upstream/*'],
+  message:
+    'upstream/ is the merge base for pnpm shadcn:update. Import the owned component instead.',
+};
+
+const deepComponentImport = {
+  group: ['@/components/*/*'],
+  message:
+    'Blocks, layout and stories use the public barrel (@/components/<name>), the same API a product gets.',
 };
 
 const paletteColor =
@@ -23,8 +35,8 @@ export default tseslint.config(
       'site',
       'storybook-static',
       'coverage',
-      'src/components/ui/**',
       'src/hooks/use-mobile.ts',
+      'upstream/**',
     ],
   },
   js.configs.recommended,
@@ -40,7 +52,7 @@ export default tseslint.config(
   {
     files: ['src/**/*.{ts,tsx}'],
     rules: {
-      'no-restricted-imports': ['error', { patterns: [rawShadcnImport] }],
+      'no-restricted-imports': ['error', { patterns: [rawShadcnImport, upstreamImport] }],
       'no-restricted-syntax': [
         'error',
         { selector: `Literal[value=/${paletteColor}/]`, message: tokenOnlyMessage },
@@ -53,6 +65,20 @@ export default tseslint.config(
   {
     files: ['src/components/*/*.tsx'],
     ignores: ['src/components/**/*.stories.tsx'],
-    rules: { 'no-restricted-imports': 'off' },
+    rules: { 'no-restricted-imports': ['error', { patterns: [upstreamImport] }] },
+  },
+  {
+    files: [
+      'src/blocks/**/*.{ts,tsx}',
+      'src/layout/**/*.{ts,tsx}',
+      'src/stories/**/*.{ts,tsx}',
+      'src/**/*.stories.tsx',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: [rawShadcnImport, upstreamImport, deepComponentImport] },
+      ],
+    },
   },
 );

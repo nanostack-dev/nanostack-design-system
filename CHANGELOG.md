@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.0
+
+Breaking: the design system owns its shadcn code, and every component has a closed, typed API. See `docs/adr/0001-own-shadcn-with-a-closed-api.md` and the "Guides/Using the system" page.
+
+- No component accepts `className` or `style`. `Box` is the only open part, for product component files. `pnpm test:package` checks every export.
+- One vocabulary for the look: `variant` (`solid`, `soft`, `outline`, `ghost`), `tone` (`neutral`, `brand`, `critical`, `success`, `warning`, `info`), `size` (`xs`, `sm`, `md`, `lg`, and `xl` on Dialog), `width` (`auto`, `fill`). Each component story explains when to use each value.
+- New layout blocks own spacing: `Box`, `Stack`, `Inline`, `Columns` with `Column`, `Spread` (`@nanostackorg/design-system/layout/<name>`).
+- New `Text`, `Heading`, `TextLink`, `IconButton`, `ButtonLink`, `DropdownMenuLinkItem`, `ItemLink`, `TableEmpty`, and `DesignSystemProvider` (router link and tooltip context, `@nanostackorg/design-system/provider`).
+- Components now carry what products used to add with classes: Input and Textarea `font="mono"`, Select and Input sizes aligned with Button heights, Dialog and Sheet sizes with a scrolling body, DropdownMenuContent `width`, ScrollArea `maxHeight` and `overscroll`, Table cell `align` and `numeric`, a Collapsible height animation, a frosted Sidebar `material`, AppShell sidebar widths and a skip link, DataTable server pagination and a controlled search.
+- Removed from the public API: every `*Variants` cva function, the Overlay and Portal parts, `ScrollBar`, `ChartStyle`, the Toast parts other than `Toaster` and `toast`, and `render` on parts that are not triggers.
+- Accessibility: critical text on a tint uses `--destructive-on-tint`; a disabled field label stays readable; Accordion, Breadcrumb and MenubarTrigger show keyboard focus; a scrolling dialog body is keyboard reachable.
+- New `--destructive-foreground` token.
+- The shadcn CLI output is kept in `upstream/` as a merge base. `pnpm shadcn:update` merges an upstream change three ways into the owned file, and `pnpm shadcn:update --add <name>` starts a new component.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.0`, wrap the app in `<DesignSystemProvider linkComponent={RouterLink}>`, then follow `docs/migration/0.2.0.md`, which lists every 0.1.0 prop and class with its 0.2.0 replacement.
+
 ## 0.1.0
 
 Breaking: a new library built on shadcn/ui. Nothing from 0.0.x keeps its API.

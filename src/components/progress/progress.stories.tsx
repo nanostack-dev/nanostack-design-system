@@ -3,26 +3,41 @@ import { useState } from 'react';
 import { expect } from 'storybook/test';
 
 import { Button } from '@/components/button';
+import { Progress, ProgressLabel, ProgressValue } from '@/components/progress';
+import { Stack } from '@/layout/stack';
 
-import { Progress, ProgressLabel, ProgressValue } from './progress';
+const usage = `
+A bar that shows how much of a task is done. Use it when you know the total, such as an upload or a quota. When you do not know it, use \`Spinner\`.
+
+The props are the whole API. The parts do not accept \`className\` or \`style\`. \`Progress\` fills the width of its container.
+
+## Parts
+
+- \`Progress\` draws the track and the bar. \`value\` goes from 0 to 100, or \`null\` when the total is not known yet.
+- \`ProgressLabel\` names the bar. Without a label, give \`Progress\` an \`aria-label\`.
+- \`ProgressValue\` shows the value as a percentage, at the end of the label row.
+
+## Do not
+
+- Do not draw a second track or bar next to \`Progress\`. It already has one.
+- Do not colour the bar to show a status. Put a \`Badge\` or an \`Alert\` next to it.
+- Do not use a progress bar for a wait that you cannot measure.
+`;
 
 const meta = {
   title: 'Components/Progress',
   parameters: {
-    docs: {
-      description: {
-        component:
-          'A bar that shows how much of a task is done. Use it when you know the total. Use `Spinner` when you do not.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   component: Progress,
   args: { value: 40 },
   render: (args) => (
-    <Progress {...args} className="w-72">
-      <ProgressLabel>Upload</ProgressLabel>
-      <ProgressValue />
-    </Progress>
+    <div className="w-72">
+      <Progress {...args}>
+        <ProgressLabel>Upload</ProgressLabel>
+        <ProgressValue />
+      </Progress>
+    </div>
   ),
 } satisfies Meta<typeof Progress>;
 
@@ -64,7 +79,11 @@ export const Indeterminate: Story = {
 
 export const WithoutLabel: Story = {
   args: { value: 64, 'aria-label': 'Storage used' },
-  render: (args) => <Progress {...args} className="w-72" />,
+  render: (args) => (
+    <div className="w-72">
+      <Progress {...args} />
+    </div>
+  ),
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('progressbar', { name: 'Storage used' })).toHaveAttribute(
       'aria-valuenow',
@@ -76,14 +95,14 @@ export const WithoutLabel: Story = {
 function UpdatingProgress() {
   const [value, setValue] = useState(20);
   return (
-    <div className="flex w-72 flex-col items-start gap-3">
-      <Progress value={value} className="w-full">
-        <ProgressLabel>Import</ProgressLabel>
-        <ProgressValue />
-      </Progress>
-      <Button variant="outline" onClick={() => setValue((current) => Math.min(current + 30, 100))}>
-        Advance
-      </Button>
+    <div className="w-72">
+      <Stack space="md" align="start">
+        <Progress value={value}>
+          <ProgressLabel>Import</ProgressLabel>
+          <ProgressValue />
+        </Progress>
+        <Button onClick={() => setValue((current) => Math.min(current + 30, 100))}>Advance</Button>
+      </Stack>
     </div>
   );
 }

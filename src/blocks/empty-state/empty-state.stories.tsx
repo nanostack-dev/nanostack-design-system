@@ -4,8 +4,33 @@ import { expect, fn } from 'storybook/test';
 
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import { Inline } from '@/layout/inline';
 
 import { EmptyState } from './empty-state';
+
+const usage = `
+A message for a list or a page with no content, with an optional icon and actions. Use it to tell the person why the area is empty and what to do next. For an empty table, pass it as \`emptyState\` of \`DataTable\`. For an error, use \`Alert\`.
+
+The block is closed. It does not accept \`className\` or \`style\`.
+
+## variant: the frame
+
+| Value | Use it for |
+| --- | --- |
+| \`ghost\` | The default. Inside a card, a panel or a table, which already has a frame. |
+| \`outline\` | Alone on a page, where the empty area needs an edge. |
+
+## Other props
+
+- \`icon\`: a Phosphor icon that says what the area holds, for example a folder for projects.
+- \`children\`: the actions. Put the main action first. Use at most two.
+
+## Do not
+
+- Do not write "No data". Say what is missing and what to do.
+- Do not put an \`outline\` empty state inside a card.
+- Do not use more than one \`solid brand\` button.
+`;
 
 const onCreate = fn();
 const onImport = fn();
@@ -13,12 +38,7 @@ const onImport = fn();
 const meta = {
   title: 'Blocks/Empty State',
   parameters: {
-    docs: {
-      description: {
-        component:
-          'A message for a list or a page with no content, with an optional icon and actions. Use it to tell the user why the area is empty and what to do next.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   component: EmptyState,
   args: {
@@ -26,22 +46,25 @@ const meta = {
     title: 'No projects yet',
     description: 'Create a project to start collecting results.',
     children: (
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button onClick={onCreate}>
-          <PlusIcon data-icon="inline-start" aria-hidden="true" />
+      <Inline space="sm" align="center">
+        <Button variant="solid" tone="brand" icon={PlusIcon} onClick={onCreate}>
           Create project
         </Button>
         <Button variant="outline" onClick={onImport}>
           Import
         </Button>
-      </div>
+      </Inline>
     ),
   },
   beforeEach: () => {
     onCreate.mockClear();
     onImport.mockClear();
   },
-  render: (args) => <EmptyState {...args} className="w-96 border" />,
+  render: (args) => (
+    <div className="w-96">
+      <EmptyState {...args} variant="outline" />
+    </div>
+  ),
 } satisfies Meta<typeof EmptyState>;
 
 export default meta;
@@ -103,14 +126,16 @@ export const InsideCard: Story = {
     ),
   },
   render: (args) => (
-    <Card className="w-md">
-      <CardHeader>
-        <CardTitle>Items</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <EmptyState {...args} />
-      </CardContent>
-    </Card>
+    <div className="w-md">
+      <Card>
+        <CardHeader>
+          <CardTitle>Items</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <EmptyState {...args} />
+        </CardContent>
+      </Card>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     await expect(canvas.getByText('Items')).toBeVisible();

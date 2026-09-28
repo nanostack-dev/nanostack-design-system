@@ -84,6 +84,7 @@ export const textPairs: TextPair[] = [
   { text: 'muted-foreground', surface: 'muted', use: 'Supporting text on a muted fill' },
   { text: 'accent-foreground', surface: 'accent', use: 'Highlighted menu item' },
   { text: 'destructive', surface: 'background', use: 'Error message' },
+  { text: 'destructive-foreground', surface: 'destructive', use: 'Solid critical button' },
   { text: 'destructive-on-tint', surface: 'destructive', tintOpacity: 0.1, use: 'Error badge' },
   { text: 'success-foreground', surface: 'success', use: 'Solid success fill' },
   { text: 'success-on-tint', surface: 'success', tintOpacity: 0.1, use: 'Success badge, alert' },

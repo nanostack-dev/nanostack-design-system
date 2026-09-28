@@ -1,7 +1,12 @@
 import type { ComponentProps } from 'react';
 
-import { Label } from '@/components/ui/label';
+import type { ClosedProps } from '@/lib/closed-props';
 
-export type LabelProps = ComponentProps<typeof Label>;
+export const labelClasses =
+  'flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50';
 
-export { Label };
+export type LabelProps = ClosedProps<ComponentProps<'label'>>;
+
+export function Label(props: LabelProps) {
+  return <label data-slot="label" className={labelClasses} {...props} />;
+}

@@ -11,6 +11,37 @@ import {
   type StatCardTrendTone,
 } from './stat-card';
 
+const usage = `
+A card with one key number, its label and a trend badge. Use it in a row at the top of a dashboard. For a number inside a sentence or a table, use \`Text\` with \`tabular\`.
+
+The parts are closed. They do not accept \`className\` or \`style\`. \`StatCard\` takes the \`variant\` and \`size\` of \`Card\`.
+
+## StatCardTrend direction: where the number moved
+
+| Value | Use it for |
+| --- | --- |
+| \`up\` | The number went up. The default tone is \`positive\`. |
+| \`down\` | The number went down. The default tone is \`negative\`. |
+| \`flat\` | No change. The default tone is \`neutral\`. |
+
+## StatCardTrend tone: whether the move is good
+
+| Value | Use it for |
+| --- | --- |
+| \`positive\` | The move is good. Set it on \`down\` when lower is better, for example an error rate. |
+| \`negative\` | The move is bad. Set it on \`up\` when higher is worse. |
+| \`neutral\` | The move is neither good nor bad. |
+
+## Other props
+
+- \`directionLabel\`: the words a screen reader says before the change. Translate it with the page.
+
+## Do not
+
+- Do not put more than one number in \`StatCardValue\`.
+- Do not show a trend without a period in \`StatCardDescription\`, for example "Compared with last month".
+`;
+
 type Stat = {
   label: string;
   value: string;
@@ -80,12 +111,7 @@ const meta = {
   component: StatCard,
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'A card with one key number, its label and a trend badge. Use it in a row at the top of a dashboard.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   render: () => <StatGrid />,
 } satisfies Meta<typeof StatCard>;
@@ -105,6 +131,14 @@ export const Grid: Story = {
 };
 
 export const TrendTones: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The tone follows the direction by default. The error rate sets `tone="negative"` on an `up` trend, because higher is worse.',
+      },
+    },
+  },
   play: async ({ canvas }) => {
     const revenue = trendOf(canvas.getByRole('group', { name: 'Total revenue' }));
     await expect(revenue).toHaveAttribute('data-tone', 'positive');
@@ -130,13 +164,15 @@ export const TrendTones: Story = {
 
 export const CustomDirectionLabel: Story = {
   render: () => (
-    <StatCard className="w-72">
-      <StatCardLabel>Visitors</StatCardLabel>
-      <StatCardValue>12,480</StatCardValue>
-      <StatCardTrend direction="up" directionLabel="Hausse">
-        +8%
-      </StatCardTrend>
-    </StatCard>
+    <div className="w-72">
+      <StatCard>
+        <StatCardLabel>Visitors</StatCardLabel>
+        <StatCardValue>12,480</StatCardValue>
+        <StatCardTrend direction="up" directionLabel="Hausse">
+          +8%
+        </StatCardTrend>
+      </StatCard>
+    </div>
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getByText('Hausse')).toHaveClass('sr-only');
@@ -146,16 +182,18 @@ export const CustomDirectionLabel: Story = {
 
 export const LongContent: Story = {
   render: () => (
-    <StatCard className="w-64" role="group" aria-label="Long content">
-      <StatCardLabel>
-        Monthly recurring revenue across every region and every subscription plan
-      </StatCardLabel>
-      <StatCardValue>$1,234,567,890,123.45</StatCardValue>
-      <StatCardTrend direction="up">+123.45%</StatCardTrend>
-      <StatCardDescription>
-        Includes annual plans converted to a monthly amount and excludes refunds.
-      </StatCardDescription>
-    </StatCard>
+    <div className="w-64">
+      <StatCard role="group" aria-label="Long content">
+        <StatCardLabel>
+          Monthly recurring revenue across every region and every subscription plan
+        </StatCardLabel>
+        <StatCardValue>$1,234,567,890,123.45</StatCardValue>
+        <StatCardTrend direction="up">+123.45%</StatCardTrend>
+        <StatCardDescription>
+          Includes annual plans converted to a monthly amount and excludes refunds.
+        </StatCardDescription>
+      </StatCard>
+    </div>
   ),
   play: async ({ canvas }) => {
     const card = canvas.getByRole('group', { name: 'Long content' });

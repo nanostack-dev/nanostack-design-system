@@ -1,7 +1,7 @@
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react-vite';
 
-import { TooltipProvider } from '../src/components/tooltip';
+import { DesignSystemProvider } from '../src/provider';
 import { ThemedDocsContainer } from './docs-container';
 import './preview.css';
 
@@ -13,9 +13,9 @@ function defaultTheme() {
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <TooltipProvider>
+      <DesignSystemProvider>
         <Story />
-      </TooltipProvider>
+      </DesignSystemProvider>
     ),
     withThemeByClassName({
       themes: { light: 'light', dark: 'dark' },
@@ -29,7 +29,7 @@ const preview: Preview = {
     docs: { container: ThemedDocsContainer, toc: { headingSelector: 'h2, h3' } },
     options: {
       storySort: {
-        order: ['Welcome', 'Foundations', 'Components', 'Blocks', 'Showcase'],
+        order: ['Welcome', 'Foundations', 'Guides', 'Layout', 'Components', 'Blocks', 'Showcase'],
       },
     },
   },

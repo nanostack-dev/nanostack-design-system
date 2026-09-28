@@ -12,14 +12,14 @@ import { NAVIGATE_URL } from 'storybook/internal/core-events';
 
 import { Badge } from '@/components/badge';
 import {
-  Item,
   ItemActions,
   ItemContent,
   ItemDescription,
-  ItemGroup,
+  ItemLink,
   ItemMedia,
   ItemTitle,
 } from '@/components/item';
+import { Box } from '@/layout/box';
 
 type Section = { title: string; description: string; path: string; icon: Icon };
 
@@ -63,22 +63,16 @@ export function SectionLinks() {
 
   return (
     <nav aria-label="Sections">
-      <ItemGroup className="grid gap-3 sm:grid-cols-2">
+      <Box className="grid gap-3 sm:grid-cols-2">
         {sections.map((section) => (
-          <Item
+          <ItemLink
             key={section.title}
             variant="outline"
-            render={
-              <a
-                href={`./?path=${section.path}`}
-                target="_top"
-                onClick={(event) => openSection(event, section.path)}
-              />
-            }
+            href={`./?path=${section.path}`}
+            target="_top"
+            onClick={(event) => openSection(event, section.path)}
           >
-            <ItemMedia variant="icon">
-              <section.icon aria-hidden />
-            </ItemMedia>
+            <ItemMedia icon={section.icon} />
             <ItemContent>
               <ItemTitle>{section.title}</ItemTitle>
               <ItemDescription>{section.description}</ItemDescription>
@@ -86,9 +80,9 @@ export function SectionLinks() {
             <ItemActions>
               <CaretRightIcon aria-hidden />
             </ItemActions>
-          </Item>
+          </ItemLink>
         ))}
-      </ItemGroup>
+      </Box>
     </nav>
   );
 }
@@ -97,7 +91,7 @@ export function WelcomeHero() {
   return (
     <div className="mb-10 flex flex-col gap-4 font-sans text-foreground">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="info">0.1.0</Badge>
+        <Badge tone="info">0.1.0</Badge>
         <Badge variant="outline">React 19</Badge>
         <Badge variant="outline">Tailwind CSS v4</Badge>
         <Badge variant="outline">Base UI</Badge>

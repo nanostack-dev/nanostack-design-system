@@ -2,26 +2,38 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn } from 'storybook/test';
 
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/field';
+import { Slider } from '@/components/slider';
 
-import { Slider } from './slider';
+const usage = `
+A handle on a track that sets a value or a range. Use it when an approximate value is enough, such as a volume or a sample rate. For an exact number, use \`Input type="number"\`.
+
+The props are the whole API. \`Slider\` does not accept \`className\` or \`style\`, and it has no variants. A horizontal slider fills its container. A vertical slider fills the height of its container.
+
+## Other props
+
+- \`value\`, \`defaultValue\` and \`onValueChange\`: a number gives one handle and a number back. An array gives one handle per value and an array back.
+- \`min\`, \`max\` and \`step\`: the scale. The default is 0 to 100.
+- \`orientation="vertical"\`: a vertical track, 160 px high at least.
+- Name the slider with \`aria-labelledby\` and the id of its \`FieldLabel\`.
+
+## Do not
+
+- Do not use a slider for an exact value. Use \`Input type="number"\`.
+- Do not show a slider without its current value when the value matters. Show the value in the label or next to the slider.
+`;
 
 const meta = {
   title: 'Components/Slider',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A handle on a track to select a value or a range. Use it when an approximate value is enough.\n\n**Nanostack addition:** `value` and `defaultValue` accept a number as well as an array, and `onValueChange` then gives back a number.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Slider,
   args: { defaultValue: 50, max: 100, step: 1, onValueChange: fn(), 'aria-labelledby': 'volume' },
   render: (args) => (
-    <Field className="w-72">
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="w-72">
+      <Field>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
 } satisfies Meta<typeof Slider>;
 
@@ -52,12 +64,19 @@ export const Keyboard: Story = {
 };
 
 export const Range: Story = {
+  parameters: {
+    docs: {
+      description: { story: 'An array value gives one handle per value, for a range.' },
+    },
+  },
   args: { defaultValue: [20, 80], 'aria-labelledby': 'price' },
   render: (args) => (
-    <Field className="w-72">
-      <FieldLabel id="price">Price range</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="w-72">
+      <Field>
+        <FieldLabel id="price">Price range</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     const [lower, upper] = canvas.getAllByRole('slider', { name: 'Price range' });
@@ -75,10 +94,12 @@ export const Range: Story = {
 export const Vertical: Story = {
   args: { orientation: 'vertical' },
   render: (args) => (
-    <Field className="h-48 w-auto items-center">
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="flex h-48 w-fit">
+      <Field>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     const thumb = canvas.getByRole('slider', { name: 'Volume' });
@@ -91,12 +112,13 @@ export const Vertical: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { a11y: { test: 'todo' } },
   render: (args) => (
-    <Field className="w-72" data-disabled>
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="w-72">
+      <Field disabled>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ args, canvas, userEvent }) => {
     const thumb = canvas.getByRole('slider', { name: 'Volume' });
@@ -110,11 +132,13 @@ export const Disabled: Story = {
 export const Invalid: Story = {
   args: { defaultValue: 95, 'aria-invalid': true },
   render: (args) => (
-    <Field className="w-72" data-invalid>
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-      <FieldError>Volume above 90 can damage hearing.</FieldError>
-    </Field>
+    <div className="w-72">
+      <Field invalid>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+        <FieldError>Volume above 90 can damage hearing.</FieldError>
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     const field = canvas.getByRole('slider', { name: 'Volume' }).closest('[data-slot=field]');
@@ -128,11 +152,13 @@ export const Invalid: Story = {
 export const WithDescription: Story = {
   args: { 'aria-describedby': 'volume-description' },
   render: (args) => (
-    <Field className="w-72">
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-      <FieldDescription id="volume-description">Applies to every speaker.</FieldDescription>
-    </Field>
+    <div className="w-72">
+      <Field>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+        <FieldDescription id="volume-description">Applies to every speaker.</FieldDescription>
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('slider', { name: 'Volume' })).toBeVisible();

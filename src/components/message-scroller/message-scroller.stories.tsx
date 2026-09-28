@@ -14,7 +14,7 @@ import {
   MessageScrollerItem,
   MessageScrollerProvider,
   MessageScrollerViewport,
-} from './message-scroller';
+} from '@/components/message-scroller';
 
 type ChatMessage = { id: string; role: 'user' | 'assistant'; text: string };
 
@@ -31,9 +31,9 @@ function Transcript({ messages }: { messages: ChatMessage[] }) {
   return (
     <MessageScroller>
       <MessageScrollerViewport>
-        <MessageScrollerContent className="p-4">
+        <MessageScrollerContent>
           <MessageScrollerItem>
-            <Marker variant="separator">
+            <Marker divider="sides">
               <MarkerContent>Today</MarkerContent>
             </Marker>
           </MessageScrollerItem>
@@ -46,7 +46,8 @@ function Transcript({ messages }: { messages: ChatMessage[] }) {
               <Message align={message.role === 'user' ? 'end' : 'start'}>
                 <MessageContent>
                   <Bubble
-                    variant={message.role === 'user' ? 'default' : 'secondary'}
+                    variant={message.role === 'user' ? 'solid' : 'soft'}
+                    tone={message.role === 'user' ? 'brand' : 'neutral'}
                     align={message.role === 'user' ? 'end' : 'start'}
                   >
                     <BubbleContent>{message.text}</BubbleContent>
@@ -62,16 +63,50 @@ function Transcript({ messages }: { messages: ChatMessage[] }) {
   );
 }
 
+const usage = `
+The scroll container of a conversation. It follows new messages and shows a button to go back to the latest one. Use it for chat and for streaming output. For a plain scroll area, use \`ScrollArea\`.
+
+The props are the whole API. No part accepts \`className\` or \`style\`. The content has a 16 px inset and a 32 px gap between items.
+
+## Structure
+
+\`\`\`tsx
+<MessageScrollerProvider defaultScrollPosition="end" autoScroll>
+  <MessageScroller>
+    <MessageScrollerViewport>
+      <MessageScrollerContent>
+        <MessageScrollerItem messageId={id} scrollAnchor={isUser}>…</MessageScrollerItem>
+      </MessageScrollerContent>
+    </MessageScrollerViewport>
+    <MessageScrollerButton />
+  </MessageScroller>
+</MessageScrollerProvider>
+\`\`\`
+
+## defaultScrollPosition: where the list opens
+
+| Value | Use it for |
+| --- | --- |
+| \`start\` | A transcript that people read from the top, such as a log of a finished run. |
+| \`end\` | A live chat. It opens on the latest message. |
+| \`last-anchor\` | An assistant chat. It opens on the last question, with the answer below it. |
+
+## Other props
+
+- \`autoScroll\` on the provider: the list follows new messages while the reader is at the end.
+- \`scrollAnchor\` on an item: the item that a new turn scrolls to, usually the question of the person.
+- \`direction\` on \`MessageScrollerButton\`: \`end\` (the default) jumps to the latest message, \`start\` to the first.
+- The hooks \`useMessageScroller\`, \`useMessageScrollerScrollable\` and \`useMessageScrollerVisibility\` read and drive the scroll from a custom part.
+
+## Do not
+
+- Do not put a \`MessageScroller\` in a container with no height. It fills its parent.
+- Do not put a second scroll area inside an item.
+`;
+
 const meta = {
   title: 'Components/Message Scroller',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'The scroll container of a conversation. It follows new messages and shows a button to go back to the latest one. Use it for chat and for streaming output.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: MessageScrollerProvider,
   args: { children: null },
   render: (args) => (
@@ -92,6 +127,7 @@ export const Conversation: Story = {
     await expect(canvas.getByRole('region', { name: 'Messages' })).toContainElement(log);
     await expect(canvas.getByText('Today')).toBeInTheDocument();
     await expect(canvas.getByText(/Question 1:/)).toBeVisible();
+    await expect(getComputedStyle(log).paddingTop).toBe('16px');
   },
 };
 
@@ -135,6 +171,8 @@ function LiveConversation() {
         </MessageScrollerProvider>
       </div>
       <Button
+        variant="solid"
+        tone="brand"
         onClick={() =>
           setMessages((current) => [
             ...current,

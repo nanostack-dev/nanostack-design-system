@@ -1,4 +1,4 @@
-import { WarningCircleIcon } from '@phosphor-icons/react';
+import { WarningCircleIcon, WarningIcon } from '@phosphor-icons/react';
 import { useState, type ReactElement, type ReactNode } from 'react';
 
 import { Alert, AlertDescription } from '@/components/alert';
@@ -10,15 +10,15 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/alert-dialog';
-import { Spinner } from '@/components/spinner';
 
-export type ConfirmDialogTone = 'default' | 'destructive';
+export type ConfirmDialogTone = 'neutral' | 'critical';
 
 export type ConfirmDialogProps = {
-  trigger: ReactElement;
+  trigger?: ReactElement;
   title: ReactNode;
   description?: ReactNode;
   confirmLabel?: ReactNode;
@@ -43,7 +43,7 @@ export function ConfirmDialog({
   description,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
-  tone = 'default',
+  tone = 'neutral',
   onConfirm,
   open,
   onOpenChange,
@@ -77,28 +77,30 @@ export function ConfirmDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={changeOpen}>
-      <AlertDialogTrigger render={trigger} />
-      <AlertDialogContent>
+      {trigger ? <AlertDialogTrigger render={trigger} /> : null}
+      <AlertDialogContent data-tone={tone}>
         <AlertDialogHeader>
+          {tone === 'critical' ? (
+            <AlertDialogMedia>
+              <WarningIcon aria-hidden className="text-destructive-on-tint" />
+            </AlertDialogMedia>
+          ) : null}
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
         </AlertDialogHeader>
         {errorMessage ? (
-          <Alert variant="destructive">
-            <WarningCircleIcon aria-hidden="true" />
+          <Alert tone="critical" icon={WarningCircleIcon}>
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         ) : null}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction
-            variant={tone === 'destructive' ? 'destructive' : 'default'}
+            tone={tone === 'critical' ? 'critical' : 'brand'}
             onClick={confirm}
-            disabled={pending}
-            focusableWhenDisabled
+            loading={pending}
             aria-busy={pending}
           >
-            {pending ? <Spinner data-icon="inline-start" aria-hidden="true" /> : null}
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

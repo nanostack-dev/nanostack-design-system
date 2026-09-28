@@ -1,75 +1,62 @@
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 
-import { cn } from '@/lib/utils';
+import { Heading } from '@/components/heading';
+import { Text } from '@/components/text';
+import { Box } from '@/layout/box';
+import type { ClosedProps } from '@/lib/closed-props';
 
-export type PageHeaderProps = ComponentProps<'header'>;
-export type PageHeaderBreadcrumbProps = ComponentProps<'div'>;
-export type PageHeaderContentProps = ComponentProps<'div'>;
+export type PageHeaderProps = ClosedProps<ComponentPropsWithRef<'header'>>;
+export type PageHeaderBreadcrumbProps = ClosedProps<ComponentPropsWithRef<'div'>>;
+export type PageHeaderContentProps = ClosedProps<ComponentPropsWithRef<'div'>>;
 export type PageHeaderTitleLevel = 1 | 2;
-export type PageHeaderTitleProps = ComponentProps<'h1'> & { level?: PageHeaderTitleLevel };
-export type PageHeaderDescriptionProps = ComponentProps<'p'>;
-export type PageHeaderActionsProps = ComponentProps<'div'>;
+export type PageHeaderTitleProps = ClosedProps<ComponentPropsWithRef<'h1'>> & {
+  level?: PageHeaderTitleLevel;
+};
+export type PageHeaderDescriptionProps = ClosedProps<ComponentPropsWithRef<'p'>>;
+export type PageHeaderActionsProps = ClosedProps<ComponentPropsWithRef<'div'>>;
 
-export function PageHeader({ className, ...props }: PageHeaderProps) {
+export function PageHeader(props: PageHeaderProps) {
   return (
-    <header
+    <Box
+      as="header"
       data-slot="page-header"
-      className={cn('flex w-full min-w-0 flex-wrap items-end justify-between gap-4', className)}
+      className="flex w-full min-w-0 flex-wrap items-end justify-between gap-4"
       {...props}
     />
   );
 }
 
-export function PageHeaderBreadcrumb({ className, ...props }: PageHeaderBreadcrumbProps) {
-  return (
-    <div
-      data-slot="page-header-breadcrumb"
-      className={cn('w-full min-w-0', className)}
-      {...props}
-    />
-  );
+export function PageHeaderBreadcrumb(props: PageHeaderBreadcrumbProps) {
+  return <Box data-slot="page-header-breadcrumb" className="w-full min-w-0" {...props} />;
 }
 
-export function PageHeaderContent({ className, ...props }: PageHeaderContentProps) {
+export function PageHeaderContent(props: PageHeaderContentProps) {
   return (
-    <div
+    <Box
       data-slot="page-header-content"
-      className={cn('flex min-w-0 flex-1 basis-80 flex-col gap-1', className)}
+      className="flex min-w-0 flex-1 basis-80 flex-col gap-1 wrap-break-word"
       {...props}
     />
   );
 }
 
-export function PageHeaderTitle({ level = 1, className, ...props }: PageHeaderTitleProps) {
-  const Heading = level === 2 ? 'h2' : 'h1';
+export function PageHeaderTitle({ level = 1, ...props }: PageHeaderTitleProps) {
+  return <Heading data-slot="page-header-title" level={level} {...props} />;
+}
+
+export function PageHeaderDescription(props: PageHeaderDescriptionProps) {
   return (
-    <Heading
-      data-slot="page-header-title"
-      className={cn(
-        'font-heading font-semibold tracking-tight wrap-break-word text-foreground',
-        level === 2 ? 'text-xl' : 'text-2xl',
-        className,
-      )}
-      {...props}
-    />
+    <Box data-slot="page-header-description" className="max-w-prose">
+      <Text tone="muted" {...props} />
+    </Box>
   );
 }
 
-export function PageHeaderDescription({ className, ...props }: PageHeaderDescriptionProps) {
+export function PageHeaderActions(props: PageHeaderActionsProps) {
   return (
-    <p
-      data-slot="page-header-description"
-      className={cn('max-w-prose text-sm wrap-break-word text-muted-foreground', className)}
-      {...props}
-    />
-  );
-}
-
-export function PageHeaderActions({ className, ...props }: PageHeaderActionsProps) {
-  return (
-    <div
+    <Box
       data-slot="page-header-actions"
-      className={cn('flex shrink-0 flex-wrap items-center gap-2', className)}
+      className="flex shrink-0 flex-wrap items-center gap-2"
       {...props}
     />
   );

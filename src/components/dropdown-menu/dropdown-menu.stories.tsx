@@ -1,9 +1,15 @@
-import { GearIcon, SignOutIcon, UserIcon } from '@phosphor-icons/react';
+import {
+  DotsThreeIcon,
+  GearIcon,
+  PencilSimpleIcon,
+  SignOutIcon,
+  TrashIcon,
+  UserIcon,
+} from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
-import { Button } from '@/components/button';
-
+import { Button, IconButton } from '@/components/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -11,6 +17,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuLinkItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -19,22 +26,58 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from './dropdown-menu';
+  type DropdownMenuContentWidth,
+} from '@/components/dropdown-menu';
+import { Inline } from '@/layout/inline';
+import { DesignSystemProvider, type LinkComponentProps } from '@/provider';
 
 const onProfile = fn();
 const onSettings = fn();
 const onSignOut = fn();
 
+const usage = `
+A menu of actions or options that opens from a button. Use it for the actions on a row, a card or a panel, and for an account menu.
+
+Use \`Select\` to pick one value in a form. Use \`Combobox\` when the list is long and the user types to find an option. Use \`ContextMenu\` only as a second way to open actions that a visible menu already offers.
+
+The parts do not accept \`className\` or \`style\`. Put a \`Button\` or an \`IconButton\` in \`DropdownMenuTrigger render\`.
+
+## DropdownMenuContent width
+
+| Value | Width | Use it for |
+| --- | --- | --- |
+| \`auto\` | Fits the labels, at least 192 px and at least the trigger | The default. Almost every menu. |
+| \`sm\` | 224 px | A menu of actions on a row or a card, when its labels change from row to row (a count, a name, a permission hint). Every row then opens a menu of the same width. |
+| \`md\` | 256 px | A menu that shows a current value next to each label, or a second line under a label, such as "Runner: Cloud" or "3 online". |
+
+Every width stops at the edge of the viewport. A long label wraps in \`sm\` and \`md\`, and never overflows.
+
+## DropdownMenuItem tone
+
+| Value | Use it for |
+| --- | --- |
+| \`neutral\` | The default. Any action. |
+| \`critical\` | An action that deletes or cannot be undone: Delete, Remove, Revoke, Sign out. Put it last, after a \`DropdownMenuSeparator\`. |
+
+## Other props
+
+- \`side\` and \`align\` on \`DropdownMenuContent\`: where the menu opens. The default is below the trigger, aligned to its start. Use \`align="end"\` for a menu on the right edge of a row, and \`side="right"\` for a menu that opens from a sidebar.
+- \`DropdownMenuLinkItem\` with \`href\`: an item that navigates. It renders the \`linkComponent\` of \`DesignSystemProvider\`, so the product router handles the click. Set \`aria-current="page"\` on the link of the current page.
+- \`inset\`: lines up the text of an item without an icon with the text of the items that have one.
+- \`DropdownMenuCheckboxItem\` and \`DropdownMenuRadioItem\`: a setting that the menu changes. The check mark shows the current value.
+
+## Do not
+
+- Do not use \`variant="destructive"\`. It is \`tone="critical"\` now.
+- Do not set the menu width with \`className\`. Use \`width\`. Most menus need no width.
+- Do not render a router link inside \`DropdownMenuItem\`. Use \`DropdownMenuLinkItem\`.
+- Do not show the selected option with a background colour. Use \`DropdownMenuRadioItem\` in a \`DropdownMenuRadioGroup\`.
+- Do not put a form or a text field in a menu. Use \`Popover\`.
+`;
+
 const meta = {
   title: 'Components/Dropdown Menu',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A menu of actions or options that opens from a button. Use it for actions on an item and for account menus.\n\n**Nanostack addition:** `DropdownMenuContent` is at least as wide as its trigger (minimum 12rem) and grows to fit long labels up to the available width, instead of a fixed width.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: DropdownMenu,
   args: { onOpenChange: fn() },
   beforeEach: () => {
@@ -61,7 +104,7 @@ const meta = {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={onSignOut}>
+          <DropdownMenuItem tone="critical" onClick={onSignOut}>
             <SignOutIcon />
             Sign out
           </DropdownMenuItem>
@@ -139,13 +182,62 @@ export const EscapeCloses: Story = {
   },
 };
 
+const onDelete = fn();
+
+export const CriticalItem: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`tone="critical"` marks an action that deletes. Its text uses `--destructive-on-tint`, so it passes WCAG AA on the menu and on its focus tint.',
+      },
+    },
+  },
+  beforeEach: () => {
+    onDelete.mockClear();
+  },
+  render: (args) => (
+    <DropdownMenu {...args}>
+      <DropdownMenuTrigger
+        render={<IconButton icon={DotsThreeIcon} label="Row actions" tooltip={false} />}
+      />
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>
+          <PencilSimpleIcon />
+          Rename
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem tone="critical" onClick={onDelete}>
+          <TrashIcon />
+          Delete request
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Row actions' }));
+    const menu = await screen.findByRole('menu');
+    const remove = within(menu).getByRole('menuitem', { name: 'Delete request' });
+    await expect(remove).toHaveAttribute('data-tone', 'critical');
+    await expect(remove).toHaveClass('text-destructive-on-tint');
+    await expect(within(menu).getByRole('menuitem', { name: 'Rename' })).toHaveAttribute(
+      'data-tone',
+      'neutral',
+    );
+    await userEvent.click(remove);
+    await expect(onDelete).toHaveBeenCalledOnce();
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+  },
+};
+
 const longLabel = 'Transfer ownership to another workspace member';
 
 export const LongLabel: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Nanostack fix: the menu grows past the trigger width to show a long label in full.',
+        story:
+          'With `width="auto"`, the menu grows past the trigger to show a long label on one line, and stops at the edge of the viewport.',
       },
     },
   },
@@ -181,6 +273,49 @@ export const LongLabel: Story = {
     );
     await expect(item.scrollWidth).toBeLessThanOrEqual(item.clientWidth);
     await expect(menu.scrollWidth).toBeLessThanOrEqual(menu.clientWidth);
+  },
+};
+
+const widths: { width: DropdownMenuContentWidth; pixels: number }[] = [
+  { width: 'auto', pixels: 192 },
+  { width: 'sm', pixels: 224 },
+  { width: 'md', pixels: 256 },
+];
+
+export const Widths: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Each trigger is an icon button. `auto` fits the labels and never goes below 192 px. `sm` and `md` keep one width for every row, whatever the labels say.',
+      },
+    },
+  },
+  render: (args) => (
+    <Inline space="sm">
+      {widths.map(({ width }) => (
+        <DropdownMenu key={width} {...args}>
+          <DropdownMenuTrigger
+            render={<IconButton icon={DotsThreeIcon} label={`Menu ${width}`} tooltip={false} />}
+          />
+          <DropdownMenuContent width={width}>
+            <DropdownMenuItem>Duplicate</DropdownMenuItem>
+            <DropdownMenuItem tone="critical">Delete 3 items</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ))}
+    </Inline>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    for (const { width, pixels } of widths) {
+      await userEvent.click(canvas.getByRole('button', { name: `Menu ${width}` }));
+      const menu = await screen.findByRole('menu');
+      await waitFor(() => expect(menu).toBeVisible());
+      await expect(menu).toHaveAttribute('data-width', width);
+      await waitFor(() => expect(menu.getBoundingClientRect().width).toBeCloseTo(pixels, 0));
+      await userEvent.keyboard('{Escape}');
+      await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+    }
   },
 };
 
@@ -277,5 +412,62 @@ export const Submenu: Story = {
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Platform' }));
     await expect(onMove).toHaveBeenCalledWith('platform');
     await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+  },
+};
+
+function StoryLink({ href, ref, onClick, ...props }: LinkComponentProps) {
+  return (
+    <a
+      ref={ref}
+      href={href}
+      data-router-link=""
+      onClick={(event) => {
+        event.preventDefault();
+        onClick?.(event);
+      }}
+      {...props}
+    />
+  );
+}
+
+export const LinkItems: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`DropdownMenuLinkItem` navigates with the product router, through `DesignSystemProvider linkComponent`. The menu closes after the click. `aria-current="page"` marks the current page.',
+      },
+    },
+  },
+  render: (args) => (
+    <DesignSystemProvider linkComponent={StoryLink}>
+      <DropdownMenu {...args}>
+        <DropdownMenuTrigger render={<Button variant="outline" />}>Settings</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Settings</DropdownMenuLabel>
+            <DropdownMenuLinkItem href="#members" aria-current="page">
+              <UserIcon />
+              Members
+            </DropdownMenuLinkItem>
+            <DropdownMenuLinkItem href="#preferences">
+              <GearIcon />
+              Preferences
+            </DropdownMenuLinkItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </DesignSystemProvider>
+  ),
+  play: async ({ args, canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Settings' }));
+    const menu = await screen.findByRole('menu');
+    const members = within(menu).getByRole('menuitem', { name: 'Members' });
+    await expect(members).toHaveAttribute('href', '#members');
+    await expect(members).toHaveAttribute('data-router-link');
+    await expect(members).toHaveAttribute('aria-current', 'page');
+    await userEvent.click(within(menu).getByRole('menuitem', { name: 'Preferences' }));
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+    await expect(args.onOpenChange).toHaveBeenLastCalledWith(false, expect.anything());
   },
 };

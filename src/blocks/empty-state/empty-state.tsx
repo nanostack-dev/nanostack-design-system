@@ -28,11 +28,7 @@ export function EmptyState({
   return (
     <Empty data-slot="empty-state" {...props}>
       <EmptyHeader>
-        {StateIcon ? (
-          <EmptyMedia variant="icon">
-            <StateIcon aria-hidden="true" />
-          </EmptyMedia>
-        ) : null}
+        {StateIcon ? <EmptyMedia icon={StateIcon} /> : null}
         <EmptyTitle>{title}</EmptyTitle>
         {description ? <EmptyDescription>{description}</EmptyDescription> : null}
       </EmptyHeader>

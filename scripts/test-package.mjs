@@ -33,9 +33,14 @@ const componentNames = (await readdir(join(projectRoot, 'src/components'), { wit
 const blockNames = (await readdir(join(projectRoot, 'src/blocks'), { withFileTypes: true }))
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
+const layoutNames = (await readdir(join(projectRoot, 'src/layout'), { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
 const publicSubpaths = [
   ...componentNames.map((name) => `components/${name}`),
   ...blockNames.map((name) => `blocks/${name}`),
+  ...layoutNames.map((name) => `layout/${name}`),
+  'provider',
   'utils',
 ];
 
@@ -185,7 +190,7 @@ const output = renderToString(
   h(library.TooltipProvider, null,
     h('main', null,
       h(library.Button, { variant: 'outline' }, 'Tested button'),
-      h(library.Badge, { variant: 'success' }, 'Healthy'),
+      h(library.Badge, { tone: 'success' }, 'Healthy'),
       h(library.Card, null, h(library.CardHeader, null, h(library.CardTitle, null, 'Card title'))),
       h(library.Field, null, h(library.FieldLabel, { htmlFor: 'name' }, 'Name'), h(library.Input, { id: 'name' })))));
 for (const text of ['Tested button', 'Healthy', 'Card title', 'Name']) {
@@ -206,18 +211,39 @@ import { Button as SubpathButton } from '@nanostackorg/design-system/components/
 import { cn as subpathCn } from '@nanostackorg/design-system/utils';
 const ref = createRef<HTMLButtonElement>();
 export const valid = (
-  <Card className={cn('w-full', subpathCn('max-w-sm'))}>
+  <div className={cn('w-full', subpathCn('max-w-sm'))}>
+  <Card variant="outline" size="sm">
     <CardContent>
       <Button ref={ref} variant="ghost" size="sm" type="submit">Save</Button>
-      <SubpathButton variant="destructive">Delete</SubpathButton>
-      <Badge variant="warning">Degraded</Badge>
+      <SubpathButton variant="soft" tone="critical">Delete</SubpathButton>
+      <Badge tone="warning">Degraded</Badge>
     </CardContent>
   </Card>
+  </div>
 );
 // @ts-expect-error Variants are closed unions.
 export const invalidVariant = <Button variant="custom" />;
-// @ts-expect-error Badge status variants are closed unions too.
-export const invalidBadge = <Badge variant="danger" />;
+// @ts-expect-error Components do not accept className.
+export const invalidClassName = <Button className="rounded-full">Save</Button>;
+// @ts-expect-error Badge tones are closed unions too.
+export const invalidBadge = <Badge tone="danger" />;
+// @ts-expect-error Card parts do not accept className.
+export const invalidCard = <Card className="p-2" />;
+`,
+  );
+  const openComponents = ['Box'];
+  const builtLibrary = await import(join(projectRoot, 'dist/index.js'));
+  const componentExports = Object.entries(builtLibrary)
+    .filter(([name, value]) => /^[A-Z]/.test(name) && typeof value === 'function')
+    .map(([name]) => name)
+    .filter((name) => !openComponents.includes(name));
+  await writeFile(
+    join(scratch, 'closed-api.ts'),
+    `import * as library from '@nanostackorg/design-system';
+type AcceptsStyling<Component> = Component extends (props: infer Props) => unknown
+  ? 'className' extends keyof Props ? true : 'style' extends keyof Props ? true : false
+  : false;
+${componentExports.map((name) => `export const closed${name}: AcceptsStyling<typeof library.${name}> = false;`).join('\n')}
 `,
   );
   await writeFile(
@@ -239,7 +265,7 @@ import '@nanostackorg/design-system/components/ui/button';
         skipLibCheck: true,
         lib: ['ES2022', 'DOM', 'DOM.Iterable'],
       },
-      include: ['consumer.tsx', 'private-ui.ts'],
+      include: ['consumer.tsx', 'private-ui.ts', 'closed-api.ts'],
     }),
   );
   run(process.execPath, ['node_modules/typescript/bin/tsc'], scratch);

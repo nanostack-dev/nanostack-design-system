@@ -1,26 +1,25 @@
 import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon } from '@phosphor-icons/react';
-import type { ReactNode } from 'react';
+import type { ComponentPropsWithRef, ReactNode } from 'react';
 
-import { Badge, type BadgeProps, type BadgeVariant } from '@/components/badge';
+import { Badge, type BadgeProps, type BadgeTone } from '@/components/badge';
 import {
   Card,
   CardAction,
   CardDescription,
   CardHeader,
-  CardTitle,
   type CardDescriptionProps,
   type CardProps,
-  type CardTitleProps,
 } from '@/components/card';
-import { cn } from '@/lib/utils';
+import { Box } from '@/layout/box';
+import type { ClosedProps } from '@/lib/closed-props';
 
 export type StatCardProps = CardProps;
 export type StatCardLabelProps = CardDescriptionProps;
-export type StatCardValueProps = CardTitleProps;
-export type StatCardDescriptionProps = CardDescriptionProps;
+export type StatCardValueProps = ClosedProps<ComponentPropsWithRef<'div'>>;
+export type StatCardDescriptionProps = ClosedProps<ComponentPropsWithRef<'div'>>;
 export type StatCardTrendDirection = 'up' | 'down' | 'flat';
 export type StatCardTrendTone = 'positive' | 'negative' | 'neutral';
-export type StatCardTrendProps = Omit<BadgeProps, 'variant' | 'children'> & {
+export type StatCardTrendProps = Omit<BadgeProps, 'variant' | 'tone' | 'icon' | 'children'> & {
   direction: StatCardTrendDirection;
   tone?: StatCardTrendTone;
   directionLabel?: string;
@@ -33,10 +32,10 @@ const defaultToneByDirection: Record<StatCardTrendDirection, StatCardTrendTone> 
   flat: 'neutral',
 };
 
-const badgeVariantByTone: Record<StatCardTrendTone, BadgeVariant> = {
+const badgeToneByTrendTone: Record<StatCardTrendTone, BadgeTone> = {
   positive: 'success',
-  negative: 'destructive',
-  neutral: 'secondary',
+  negative: 'critical',
+  neutral: 'neutral',
 };
 
 const iconByDirection = {
@@ -54,7 +53,7 @@ const defaultDirectionLabel: Record<StatCardTrendDirection, string> = {
 export function StatCard({ children, ...props }: StatCardProps) {
   return (
     <Card data-slot="stat-card" {...props}>
-      <CardHeader className="gap-2">{children}</CardHeader>
+      <CardHeader>{children}</CardHeader>
     </Card>
   );
 }
@@ -63,11 +62,11 @@ export function StatCardLabel(props: StatCardLabelProps) {
   return <CardDescription data-slot="stat-card-label" {...props} />;
 }
 
-export function StatCardValue({ className, ...props }: StatCardValueProps) {
+export function StatCardValue(props: StatCardValueProps) {
   return (
-    <CardTitle
+    <Box
       data-slot="stat-card-value"
-      className={cn('font-heading text-3xl font-semibold tabular-nums wrap-anywhere', className)}
+      className="font-heading text-3xl font-semibold tabular-nums wrap-anywhere"
       {...props}
     />
   );
@@ -80,17 +79,16 @@ export function StatCardTrend({
   children,
   ...props
 }: StatCardTrendProps) {
-  const TrendIcon = iconByDirection[direction];
   return (
     <CardAction>
       <Badge
         data-slot="stat-card-trend"
         data-direction={direction}
         data-tone={tone}
-        variant={badgeVariantByTone[tone]}
+        tone={badgeToneByTrendTone[tone]}
+        icon={iconByDirection[direction]}
         {...props}
       >
-        <TrendIcon data-icon="inline-start" aria-hidden="true" />
         <span className="sr-only">{`${directionLabel} `}</span>
         {children}
       </Badge>
@@ -98,11 +96,11 @@ export function StatCardTrend({
   );
 }
 
-export function StatCardDescription({ className, ...props }: StatCardDescriptionProps) {
+export function StatCardDescription(props: StatCardDescriptionProps) {
   return (
-    <CardDescription
+    <Box
       data-slot="stat-card-description"
-      className={cn('col-span-full', className)}
+      className="col-span-full text-sm text-muted-foreground"
       {...props}
     />
   );

@@ -1,7 +1,7 @@
 {
   "name": "@nanostackorg/design-system",
-  "version": "0.1.0",
-  "description": "Nanostack design system: shadcn/ui wrappers, blocks and design tokens for Tailwind CSS v4",
+  "version": "0.2.0",
+  "description": "Nanostack design system: owned shadcn/ui components with a closed, typed API, layout blocks and design tokens for Tailwind CSS v4",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/nanostack-dev/nanostack-design-system#readme",
@@ -46,6 +46,16 @@
       "import": "./dist/blocks/*/index.js",
       "default": "./dist/blocks/*/index.js"
     },
+    "./layout/*": {
+      "types": "./dist/layout/*/index.d.ts",
+      "import": "./dist/layout/*/index.js",
+      "default": "./dist/layout/*/index.js"
+    },
+    "./provider": {
+      "types": "./dist/provider/index.d.ts",
+      "import": "./dist/provider/index.js",
+      "default": "./dist/provider/index.js"
+    },
     "./utils": {
       "types": "./dist/lib/utils.d.ts",
       "import": "./dist/lib/utils.js",
@@ -65,7 +75,8 @@
     "format": "prettier --write .",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "ui:add": "shadcn add",
-    "prepack": "pnpm build"
+    "prepack": "pnpm build",
+    "shadcn:update": "node scripts/shadcn-update.mjs"
   },
   "peerDependencies": {
     "react": "^19.2.0",

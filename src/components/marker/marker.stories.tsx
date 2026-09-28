@@ -2,29 +2,45 @@ import { SignInIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 
-import { Marker, MarkerContent, MarkerIcon, type MarkerVariant } from './marker';
+import { Marker, MarkerContent, type MarkerDivider } from '@/components/marker';
+import { Stack } from '@/layout/stack';
 
-const variants: MarkerVariant[] = ['default', 'separator', 'border'];
+const dividers: MarkerDivider[] = ['none', 'sides', 'below'];
+
+const usage = `
+A small line of muted text between messages. Use it for an event in a conversation, such as "Sarah joined", or for a date. For a line with no text, use \`Separator\`. For a status that needs attention, use \`Alert\`.
+
+The props are the whole API. No part accepts \`className\` or \`style\`.
+
+## divider: how the marker separates the messages
+
+| Value | Use it for |
+| --- | --- |
+| \`none\` | The default. An event in the flow of messages: a join, a rename, a moved thread. |
+| \`sides\` | A date or a time gap. The text sits in the centre, with a line on each side. |
+| \`below\` | The start of a new section, such as "New messages". |
+
+## Other props
+
+- \`icon\`: a Phosphor icon before the text, hidden from screen readers.
+- A date goes in a \`<time dateTime>\` inside \`MarkerContent\`.
+- A link in \`MarkerContent\` is underlined.
+
+## Do not
+
+- Do not use a marker for a message from a person. Use \`Message\` and \`Bubble\`.
+- Do not put a button in a marker. Use a link, or put the action in the message.
+`;
 
 const meta = {
   title: 'Components/Marker',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A small line of text for a system note or a divider in a conversation. Use it for events such as "Joined the channel" or a date.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Marker,
-  args: { variant: 'default' },
-  argTypes: { variant: { control: 'select', options: variants } },
+  args: { divider: 'none' },
+  argTypes: { divider: { control: 'select', options: dividers } },
   render: (args) => (
     <div className="w-md">
-      <Marker {...args}>
-        <MarkerIcon>
-          <SignInIcon />
-        </MarkerIcon>
+      <Marker {...args} icon={SignInIcon}>
         <MarkerContent>Sarah joined the conversation</MarkerContent>
       </Marker>
     </div>
@@ -44,35 +60,44 @@ export const Default: Story = {
   },
 };
 
-export const Variants: Story = {
+export const Dividers: Story = {
   render: (args) => (
-    <div className="flex w-md flex-col gap-6">
-      {variants.map((variant) => (
-        <Marker key={variant} {...args} variant={variant}>
-          <MarkerContent>{variant}</MarkerContent>
-        </Marker>
-      ))}
+    <div className="w-md">
+      <Stack space="xl">
+        {dividers.map((divider) => (
+          <Marker key={divider} {...args} divider={divider}>
+            <MarkerContent>{divider}</MarkerContent>
+          </Marker>
+        ))}
+      </Stack>
     </div>
   ),
   play: async ({ canvas }) => {
-    const separator = canvas.getByText('separator');
-    const row = separator.closest('[data-slot="marker"]')!;
+    const sides = canvas.getByText('sides');
+    const row = sides.closest('[data-slot="marker"]')!;
     const rowBox = row.getBoundingClientRect();
-    const labelBox = separator.getBoundingClientRect();
+    const labelBox = sides.getBoundingClientRect();
     const leftGap = labelBox.left - rowBox.left;
     const rightGap = rowBox.right - labelBox.right;
     await expect(Math.abs(leftGap - rightGap)).toBeLessThan(2);
-    const border = canvas.getByText('border').closest('[data-slot="marker"]')!;
-    await expect(getComputedStyle(border).borderBottomWidth).toBe('1px');
+    const below = canvas.getByText('below').closest('[data-slot="marker"]')!;
+    await expect(getComputedStyle(below).borderBottomWidth).toBe('1px');
   },
 };
 
 export const DateDivider: Story = {
-  args: { variant: 'separator' },
+  args: { divider: 'sides' },
+  parameters: {
+    docs: {
+      description: { story: 'A date divider puts a `<time>` inside `MarkerContent`.' },
+    },
+  },
   render: (args) => (
     <div className="w-md">
-      <Marker {...args} render={<time dateTime="2026-09-27" />}>
-        <MarkerContent>Today</MarkerContent>
+      <Marker {...args}>
+        <MarkerContent>
+          <time dateTime="2026-09-27">Today</time>
+        </MarkerContent>
       </Marker>
     </div>
   ),
@@ -96,6 +121,8 @@ export const WithLink: Story = {
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.tab();
-    await expect(canvas.getByRole('link', { name: 'incident 42' })).toHaveFocus();
+    const link = canvas.getByRole('link', { name: 'incident 42' });
+    await expect(link).toHaveFocus();
+    await expect(getComputedStyle(link).textDecorationLine).toBe('underline');
   },
 };

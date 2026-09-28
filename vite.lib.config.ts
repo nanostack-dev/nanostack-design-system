@@ -8,7 +8,7 @@ import manifest from './package.json' with { type: 'json' };
 
 const sourceRoot = fileURLToPath(new URL('./src', import.meta.url));
 
-function publicEntries(folder: 'components' | 'blocks') {
+function publicEntries(folder: 'components' | 'blocks' | 'layout') {
   const directory = `${sourceRoot}/${folder}`;
   if (!existsSync(directory)) return {};
   return Object.fromEntries(
@@ -42,6 +42,8 @@ export default defineConfig({
         'lib/utils': `${sourceRoot}/lib/utils.ts`,
         ...publicEntries('components'),
         ...publicEntries('blocks'),
+        ...publicEntries('layout'),
+        'provider/index': `${sourceRoot}/provider/index.ts`,
       },
     },
     rollupOptions: {
