@@ -95,7 +95,7 @@ export const Destructive: Story = {
     const trigger = canvas.getByRole('button', { name: 'Delete project' });
     const dialog = await openDialog(trigger, userEvent, 'Delete this project?');
     const confirm = within(dialog).getByRole('button', { name: 'Delete' });
-    await expect(confirm).toHaveClass('text-destructive-on-tint');
+    await expect(confirm).toHaveClass('bg-destructive', 'text-destructive-foreground');
     await userEvent.click(confirm);
     await expect(args.onConfirm).toHaveBeenCalledOnce();
     await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
@@ -123,10 +123,10 @@ export const AsyncPending: Story = {
     await expect(args.onConfirm).toHaveBeenCalledOnce();
     await waitFor(() => expect(confirm).toHaveAttribute('aria-busy', 'true'));
     await expect(confirm).toHaveAttribute('aria-disabled', 'true');
-    await expect(confirm.querySelector('[data-slot="spinner"]')).toBeInTheDocument();
+    await expect(confirm.querySelector('svg.animate-spin')).toBeInTheDocument();
     await expect(cancel).toBeDisabled();
 
-    await userEvent.click(confirm);
+    confirm.click();
     await expect(args.onConfirm).toHaveBeenCalledOnce();
     await userEvent.keyboard('{Escape}');
     await expect(screen.getByRole('alertdialog')).toBeVisible();

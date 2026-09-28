@@ -1,1 +1,20 @@
-export * from './sheet';
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  type SheetCloseProps,
+  type SheetContentProps,
+  type SheetDescriptionProps,
+  type SheetFooterProps,
+  type SheetHeaderProps,
+  type SheetProps,
+  type SheetSide,
+  type SheetSize,
+  type SheetTitleProps,
+  type SheetTriggerProps,
+} from './sheet';

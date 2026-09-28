@@ -1,35 +1,60 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, screen, waitFor } from 'storybook/test';
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from './hover-card';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/hover-card';
+import { Text } from '@/components/text';
+import { TextLink } from '@/components/text-link';
+import { Stack } from '@/layout/stack';
+
+const usage = `
+A card that opens when the pointer rests on a link or a token. Use it for a preview: a person, a page, the value of a variable. For a short label, use \`Tooltip\`. For content the user must act on, use \`Popover\`.
+
+The parts are closed. \`HoverCardContent\` does not accept \`className\` or \`style\`. It is 288 px wide.
+
+## side: where the card opens
+
+| Value | Use it for |
+| --- | --- |
+| \`bottom\` | The default. A link in running text. |
+| \`top\` | A link near the bottom of the screen. |
+| \`right\` or \`left\` | A link in a list or a table column, so the card does not cover the next rows. |
+
+## align: which edge lines up with the trigger
+
+| Value | Use it for |
+| --- | --- |
+| \`center\` | The default. |
+| \`start\` or \`end\` | A trigger near the edge of its container. |
+
+## Other props
+
+- \`HoverCardTrigger\` renders a link. Pass \`render\` to use another element, such as \`TextLink\` or a highlighted token.
+- \`delay\` and \`closeDelay\` on \`HoverCardTrigger\`: how long the pointer must stay before the card opens and after it leaves.
+
+## Do not
+
+- Do not put the only copy of important content in a hover card. Touch screens and many keyboard users do not see it.
+- Do not put buttons or form fields in it. Use \`Popover\`.
+- Do not set a width, a border or a radius on the content.
+`;
 
 const meta = {
   title: 'Components/Hover Card',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A card that opens when the pointer stays on a link. Use it to show a preview of a person or a page. Do not put the only copy of important content in it.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: HoverCard,
   args: { onOpenChange: fn() },
   render: (args) => (
     <HoverCard {...args}>
       <HoverCardTrigger
-        href="#profile"
         delay={0}
         closeDelay={0}
-        className="text-sm font-medium underline underline-offset-4"
-      >
-        Ada Lovelace
-      </HoverCardTrigger>
+        render={<TextLink href="#profile">Ada Lovelace</TextLink>}
+      />
       <HoverCardContent>
-        <div className="flex flex-col gap-1">
-          <p className="font-medium">Ada Lovelace</p>
-          <p className="text-muted-foreground">Maintains the billing service. Joined in 2021.</p>
-        </div>
+        <Stack space="xs">
+          <Text weight="medium">Ada Lovelace</Text>
+          <Text tone="muted">Maintains the billing service. Joined in 2021.</Text>
+        </Stack>
       </HoverCardContent>
     </HoverCard>
   ),
@@ -65,14 +90,19 @@ export const Keyboard: Story = {
 };
 
 export const Placement: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: '`side="right"` and `align="start"`: the card opens beside a link in a list.',
+      },
+    },
+  },
   args: { defaultOpen: true },
   render: (args) => (
     <HoverCard {...args}>
-      <HoverCardTrigger href="#team" className="text-sm font-medium underline">
-        Platform team
-      </HoverCardTrigger>
+      <HoverCardTrigger render={<TextLink href="#team">Platform team</TextLink>} />
       <HoverCardContent side="right" align="start">
-        <p>Six people who own the deploy pipeline.</p>
+        <Text>Six people who own the deploy pipeline.</Text>
       </HoverCardContent>
     </HoverCard>
   ),
