@@ -46,7 +46,7 @@ export type AttachmentContentProps = DivProps;
 export type AttachmentTitleProps = SpanProps;
 export type AttachmentDescriptionProps = SpanProps;
 export type AttachmentActionsProps = DivProps;
-export type AttachmentActionProps = Omit<IconButtonProps, 'variant' | 'tone' | 'size'>;
+export type AttachmentActionProps = Omit<IconButtonProps, 'variant' | 'tone' | 'size' | 'pressed'>;
 export type AttachmentTriggerProps = ClosedProps<useRender.ComponentProps<'button'>>;
 
 export function Attachment({

@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 import { useMemo, type ComponentProps, type ReactNode } from 'react';
 
-import { labelClasses } from '@/components/label/label';
+import { labelStyles, type LabelSize, type LabelTone } from '@/components/label/label';
 import { Separator as SeparatorPrimitive } from '@base-ui/react/separator';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -93,14 +93,23 @@ export function FieldContent(props: FieldContentProps) {
   );
 }
 
-export type FieldLabelProps = ClosedProps<ComponentProps<'label'>>;
+export type FieldLabelSize = LabelSize;
+export type FieldLabelTone = LabelTone;
 
-export function FieldLabel(props: FieldLabelProps) {
+export type FieldLabelProps = ClosedProps<ComponentProps<'label'>> & {
+  size?: FieldLabelSize;
+  tone?: FieldLabelTone;
+};
+
+export function FieldLabel({ size = 'md', tone = 'default', ...props }: FieldLabelProps) {
   return (
     <label
       data-slot="field-label"
+      data-size={size}
+      data-tone={tone}
       className={cn(
-        labelClasses,
+        labelStyles({ size, tone }),
+        'group-data-[invalid=true]/field:text-destructive',
         'group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:text-muted-foreground has-data-checked:bg-input/30 has-[>[data-slot=field]]:rounded-2xl has-[>[data-slot=field]]:border has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-input/40 has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-3 has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50 *:data-[slot=field]:p-4',
         'has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col',
         'group-has-[>[role=checkbox]]/field:font-normal group-has-[>[role=radio]]/field:font-normal',

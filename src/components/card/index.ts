@@ -14,5 +14,6 @@ export {
   type CardProps,
   type CardSize,
   type CardTitleProps,
+  type CardTitleSize,
   type CardVariant,
 } from './card';

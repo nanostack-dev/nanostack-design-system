@@ -61,7 +61,10 @@ export type SidebarProps = DivProps & {
   collapsible?: SidebarCollapsible;
   material?: SidebarMaterial;
 };
-export type SidebarTriggerProps = Omit<IconButtonProps, 'icon' | 'label' | 'tooltip'> & {
+export type SidebarTriggerProps = Omit<
+  IconButtonProps,
+  'icon' | 'label' | 'tooltip' | 'pressed'
+> & {
   label?: string;
 };
 export type SidebarRailProps = ClosedProps<

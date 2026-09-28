@@ -13,7 +13,7 @@ const heightClass: Record<SkeletonHeight, string> = {
   lg: 'h-10 rounded-xl',
   xl: 'h-24 rounded-2xl',
   xxl: 'h-64 rounded-2xl',
-  fill: 'h-full min-h-24 rounded-2xl',
+  fill: 'h-full rounded-2xl',
 };
 
 const widthClass: Record<SkeletonWidth, string> = {

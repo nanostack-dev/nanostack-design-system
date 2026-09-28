@@ -45,6 +45,7 @@ export * from './components/questionnaire';
 export * from './components/radio-group';
 export * from './components/resizable';
 export * from './components/scroll-area';
+export * from './components/search-button';
 export * from './components/select';
 export * from './components/separator';
 export * from './components/sheet';

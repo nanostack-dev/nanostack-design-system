@@ -50,6 +50,17 @@ The props are the whole API. The parts do not accept \`className\` or \`style\`.
 - \`invalid\` colours the label and the error. Also set \`aria-invalid\` on the control, so the control shows its error border and assistive technology announces it.
 - \`disabled\` dims the label. Also set \`disabled\` on the control.
 
+## FieldLabel size and tone
+
+\`FieldLabel\` takes the same \`size\` and \`tone\` as \`Label\`.
+
+| Value | Use it for |
+| --- | --- |
+| \`size="md"\` | The default. A field in a page, a dialog or a settings form. |
+| \`size="sm"\` | A field in a dense tool form, next to \`size="sm"\` controls. |
+| \`tone="default"\` | The default. A label that the user reads first. |
+| \`tone="muted"\` | A label that the value outranks, in a dense tool form. \`invalid\` still colours it. |
+
 ## FieldLegend size
 
 | Value | Use it for |
@@ -285,6 +296,52 @@ export const Disabled: Story = {
     await expect(canvas.getByRole('textbox', { name: 'Region' })).toBeDisabled();
     await expect(canvas.getByText('Region')).toHaveClass(
       'group-data-[disabled=true]/field:text-muted-foreground',
+    );
+  },
+};
+
+export const DenseLabels: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`FieldLabel size="sm" tone="muted"` in a dense tool form. An invalid field still colours its label.',
+      },
+    },
+  },
+  render: () => (
+    <div className="w-72">
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="header-name" size="sm" tone="muted">
+            Header
+          </FieldLabel>
+          <Input id="header-name" size="sm" font="mono" defaultValue="Authorization" />
+        </Field>
+        <Field invalid>
+          <FieldLabel htmlFor="header-value" size="sm" tone="muted">
+            Value
+          </FieldLabel>
+          <Input
+            id="header-value"
+            size="sm"
+            font="mono"
+            aria-invalid
+            aria-describedby="header-value-error"
+          />
+          <FieldError id="header-value-error">Enter a value.</FieldError>
+        </Field>
+      </FieldGroup>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const header = canvas.getByText('Header');
+    await expect(getComputedStyle(header).fontSize).toBe('12px');
+    await expect(header).toHaveClass('text-muted-foreground');
+    const value = getComputedStyle(canvas.getByText('Value')).color;
+    await expect(value).toBe(getComputedStyle(canvas.getByRole('alert')).color);
+    await expect(canvas.getByRole('textbox', { name: 'Value' })).toHaveAccessibleDescription(
+      'Enter a value.',
     );
   },
 };

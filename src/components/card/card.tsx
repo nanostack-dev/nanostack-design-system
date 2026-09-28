@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 
 export type CardVariant = 'solid' | 'outline' | 'soft';
 export type CardSize = 'sm' | 'md';
+export type CardTitleSize = 'sm' | 'md' | 'lg';
 
 const cardClasses = cva(
   'group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-4xl py-(--card-spacing) text-sm text-card-foreground has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-4xl *:[img:last-child]:rounded-b-4xl',
@@ -33,7 +34,7 @@ export type CardProps = DivProps & {
   size?: CardSize;
 };
 export type CardHeaderProps = DivProps;
-export type CardTitleProps = DivProps & { icon?: Icon };
+export type CardTitleProps = DivProps & { icon?: Icon; size?: CardTitleSize };
 export type CardDescriptionProps = DivProps;
 export type CardActionProps = DivProps;
 export type CardContentProps = DivProps;
@@ -61,11 +62,26 @@ export function CardHeader(props: CardHeaderProps) {
   );
 }
 
-export function CardTitle({ icon: IconComponent, children, ...props }: CardTitleProps) {
+const cardTitleSizeClass: Record<CardTitleSize, string> = {
+  sm: 'text-sm [&>svg]:size-4',
+  md: 'text-base [&>svg]:size-4',
+  lg: 'text-xl [&>svg]:size-5',
+};
+
+export function CardTitle({
+  icon: IconComponent,
+  size = 'md',
+  children,
+  ...props
+}: CardTitleProps) {
   return (
     <div
       data-slot="card-title"
-      className="flex min-w-0 items-center gap-2 font-heading text-base font-medium [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-muted-foreground"
+      data-size={size}
+      className={cn(
+        'flex min-w-0 items-center gap-2 font-heading font-medium [&>svg]:shrink-0 [&>svg]:text-muted-foreground',
+        cardTitleSizeClass[size],
+      )}
       {...props}
     >
       {IconComponent ? <IconComponent aria-hidden /> : null}

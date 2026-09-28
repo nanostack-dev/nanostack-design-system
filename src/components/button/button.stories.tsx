@@ -1,4 +1,14 @@
-import { ArrowRightIcon, DotsThreeIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
+import {
+  ArrowRightIcon,
+  CopyIcon,
+  DotsThreeIcon,
+  FolderOpenIcon,
+  InfoIcon,
+  PlusIcon,
+  TrashIcon,
+  TreeStructureIcon,
+} from '@phosphor-icons/react';
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, waitFor, screen } from 'storybook/test';
 
@@ -50,8 +60,16 @@ The props are the whole API. \`Button\` does not accept \`className\` or \`style
 - \`width="fill"\`: the button fills its container, for example in a narrow form or a mobile sheet.
 - \`bleed\`: for a \`ghost\` button, the text lines up with the content edge instead of the padding edge. Use it for a table header or a row of text links.
 
+## IconButton
+
+\`IconButton\` takes \`variant\`, \`tone\` and \`size\` like \`Button\`, and a \`label\` that is its accessible name and its tooltip.
+
+- A \`ghost neutral\` icon button, the default, shows a muted icon. The icon turns to the text colour on hover, on keyboard focus, and while its menu is open. Use it in a panel header, a row menu, or next to a value to copy.
+- \`pressed\`: for an icon button that shows or hides a panel, such as a button on a canvas rail. It sets \`aria-pressed\` and the selected look. Leave it out for a button that only runs an action.
+
 ## Do not
 
+- Do not use \`Toggle\` for an icon button with a tooltip. Use \`IconButton pressed\`.
 - Do not put two \`solid brand\` buttons on one surface.
 - Do not use \`critical\` for Cancel or Close.
 - Do not put a \`Button\` in a paragraph as a link. Use \`TextLink\`.
@@ -259,6 +277,94 @@ export const IconButtons: Story = {
         screen.getByText('Add step', { selector: '[data-slot=tooltip-content]' }),
       ).toBeVisible(),
     );
+  },
+};
+
+export const QuietGhostIcon: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A `ghost neutral` icon button shows a muted icon, so a header or a row stays quiet. The icon turns to the text colour on hover and on keyboard focus. A `Button` with text keeps the text colour.',
+      },
+    },
+  },
+  render: () => (
+    <Inline space="sm" alignY="center">
+      <span className="text-sm text-foreground" data-testid="reference">
+        Assistant
+      </span>
+      <IconButton icon={CopyIcon} label="Copy value" size="sm" />
+      <IconButton icon={DotsThreeIcon} label="Row actions" size="sm" />
+      <Button variant="ghost" size="sm">
+        Rename
+      </Button>
+    </Inline>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const foreground = getComputedStyle(canvas.getByTestId('reference')).color;
+    const copy = canvas.getByRole('button', { name: 'Copy value' });
+    await expect(copy).toHaveClass('text-muted-foreground');
+    await expect(copy).not.toHaveAttribute('aria-pressed');
+    await expect(getComputedStyle(copy).color).not.toBe(foreground);
+    await expect(canvas.getByRole('button', { name: 'Rename' })).not.toHaveClass(
+      'text-muted-foreground',
+    );
+    await expect(copy).toHaveClass('hover:text-foreground', 'aria-expanded:text-foreground');
+    await userEvent.tab();
+    await expect(copy).toHaveFocus();
+    await waitFor(() => expect(getComputedStyle(copy).color).toBe(foreground));
+  },
+};
+
+const railPanels = [
+  { id: 'collections', label: 'Collections', icon: FolderOpenIcon },
+  { id: 'environment', label: 'Environment', icon: TreeStructureIcon },
+  { id: 'info', label: 'Info', icon: InfoIcon },
+] as const;
+
+function CanvasRail() {
+  const [open, setOpen] = useState<string | null>('collections');
+  return (
+    <nav aria-label="Canvas panels">
+      <Stack space="xxs">
+        {railPanels.map((panel) => (
+          <IconButton
+            key={panel.id}
+            icon={panel.icon}
+            label={panel.label}
+            size="sm"
+            pressed={open === panel.id}
+            onClick={() => setOpen((current) => (current === panel.id ? null : panel.id))}
+          />
+        ))}
+      </Stack>
+    </nav>
+  );
+}
+
+export const Pressed: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A canvas rail. Each button shows or hides a panel. `pressed` sets `aria-pressed` and the selected look, the same as an open menu trigger. Press a button again to close its panel.',
+      },
+    },
+  },
+  render: () => <CanvasRail />,
+  play: async ({ canvas, userEvent }) => {
+    const collections = canvas.getByRole('button', { name: 'Collections' });
+    const environment = canvas.getByRole('button', { name: 'Environment' });
+    await expect(collections).toHaveAttribute('aria-pressed', 'true');
+    await expect(collections).toHaveClass('bg-accent', 'text-accent-foreground');
+    await expect(environment).toHaveAttribute('aria-pressed', 'false');
+    await expect(environment).not.toHaveClass('bg-accent');
+    await userEvent.click(environment);
+    await expect(environment).toHaveAttribute('aria-pressed', 'true');
+    await expect(collections).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.click(environment);
+    await expect(environment).toHaveAttribute('aria-pressed', 'false');
   },
 };
 

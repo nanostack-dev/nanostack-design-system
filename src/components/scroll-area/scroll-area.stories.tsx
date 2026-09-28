@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { expect, waitFor } from 'storybook/test';
 
 import { ScrollArea } from '@/components/scroll-area';
@@ -40,8 +41,19 @@ The element that scrolls is the viewport, \`[data-slot=scroll-area-viewport]\`. 
 | \`horizontal\` | A row of cards or open tabs wider than its container. |
 | \`both\` | A wide table or a code block that scrolls both ways. |
 
+## A floating header over the area
+
+A header that floats over the top of the area, such as a frosted title bar, needs its measured height as an inset. A prop cannot carry a measured value, so \`ScrollArea\` has none for it. Use one CSS variable instead:
+
+1. Measure the floating header with a \`ResizeObserver\`, and set its height as a CSS variable, such as \`--header-inset\`, on the element that holds the header and the area.
+2. Put the padding on the content inside the area: \`pt-(--header-inset)\`. The first row then starts under the header, and rows still scroll under it.
+3. Give a sticky child the same variable as its \`top\`: \`sticky top-(--header-inset)\`. It then sticks just under the floating header, with no gap for rows to show through.
+
+Measure the header. Do not assume its height: a few pixels short leaves a gap between the two headers.
+
 ## Do not
 
+- Do not pad the area itself, or its viewport, for a floating header. Pad the content inside it.
 - Do not put \`className\` on the area or reach into \`[data-slot=scroll-area-viewport]\`. Pick \`height\`, \`maxHeight\` and \`overscroll\`.
 - Do not cap the height on a wrapper around the area. The viewport scrolls, so the cap goes on the area with \`maxHeight\`.
 - Do not nest two areas that scroll the same way.
@@ -184,5 +196,89 @@ export const Horizontal: Story = {
     ).toHaveAttribute('data-orientation', 'horizontal');
     viewport.scrollLeft = 200;
     await waitFor(() => expect(viewport.scrollLeft).toBeGreaterThan(0));
+  },
+};
+
+function useMeasuredHeight<Element extends HTMLElement>() {
+  const ref = useRef<Element>(null);
+  const [height, setHeight] = useState(0);
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const observer = new ResizeObserver(() => setHeight(element.offsetHeight));
+    observer.observe(element);
+    setHeight(element.offsetHeight);
+    return () => observer.disconnect();
+  }, []);
+  return { ref, height };
+}
+
+const runSteps = Array.from({ length: 24 }, (_, index) => `Step ${index + 1}`);
+
+function RunHistoryPane() {
+  const { ref, height } = useMeasuredHeight<HTMLDivElement>();
+  return (
+    <section
+      aria-label="Run history"
+      className="relative flex h-80 w-80 flex-col overflow-hidden rounded-md border bg-card"
+      style={{ '--header-inset': `${height}px` } as CSSProperties}
+    >
+      <div
+        ref={ref}
+        data-testid="floating-header"
+        className="absolute inset-x-0 top-0 z-20 border-b bg-card/90 px-4 py-3 backdrop-blur"
+      >
+        <h3 className="text-sm font-semibold">Run history</h3>
+      </div>
+      <ScrollArea height="fill">
+        <div className="pt-(--header-inset)">
+          <h4
+            data-testid="sticky-header"
+            className="sticky top-(--header-inset) z-10 border-b bg-card px-4 py-2 text-sm font-medium"
+          >
+            Run 482 failed
+          </h4>
+          {runSteps.map((step) => (
+            <div key={step} className="border-b px-4 py-2 text-sm">
+              {step}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    </section>
+  );
+}
+
+export const FloatingHeader: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A floating header over the area. The pane measures the header and sets `--header-inset`. The content inside the area has `pt-(--header-inset)`, and the report header inside it has `sticky top-(--header-inset)`. After a scroll, the report header stays just under the floating header.',
+      },
+    },
+  },
+  render: () => <RunHistoryPane />,
+  play: async ({ canvas, canvasElement }) => {
+    const floating = canvas.getByTestId('floating-header');
+    const sticky = canvas.getByTestId('sticky-header');
+    await waitFor(() =>
+      expect(sticky.getBoundingClientRect().top).toBeCloseTo(
+        floating.getBoundingClientRect().bottom,
+        0,
+      ),
+    );
+    const viewport = viewportOf(canvasElement);
+    viewport.scrollTop = 240;
+    await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(200));
+    await waitFor(() =>
+      expect(sticky.getBoundingClientRect().top).toBeCloseTo(
+        floating.getBoundingClientRect().bottom,
+        0,
+      ),
+    );
+    await expect(canvas.getByText('Step 1').getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      floating.getBoundingClientRect().bottom,
+    );
   },
 };

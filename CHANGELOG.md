@@ -2,7 +2,16 @@
 
 ## 0.2.1
 
+- Sheet: `size="lg"` (512 px) for a version history and `size="xl"` (65% of the screen, from 832 px to 1344 px) for a run report, on left and right sheets.
+- Label and FieldLabel: `size` (`sm`, `md`) and `tone` (`default`, `muted`). `size="sm"` is 12 px text for dense tool forms. An invalid field still colours a muted `FieldLabel`.
+- CardTitle: `size` (`sm`, `md`, `lg`). `lg` is 20 px text with a 20 px icon.
+- IconButton: a `ghost neutral` icon button now shows a muted icon that turns to the text colour on hover, focus and while its menu is open. New `pressed` prop sets `aria-pressed` and the selected look (`bg-accent`). Upgrade: replace a `Toggle` used as a rail icon button with `IconButton pressed`.
+- Skeleton: `height="fill"` has no minimum height any more, so it fits a 28 px row or a fixed-height box. Upgrade: a `fill` skeleton needs a container with a height.
+- ScrollArea: the usage docs show how to put a floating header over the area with one measured CSS variable, with a story that tests it.
+- New `SearchButton` (`@nanostackorg/design-system/components/search-button`): a button that looks like a search field, with a `label`, an optional `shortcut` shown with `Kbd` and set in `aria-keyshortcuts`, `size` (`sm`, `md`) and `width` (`auto`, `fill`).
 - New `Autocomplete` (`@nanostackorg/design-system/components/autocomplete`): a text field that suggests values while the typed text stays free, built on the Base UI Autocomplete. Parts: `Autocomplete`, `AutocompleteInput` (`size` `sm` | `md`, `font` `sans` | `mono`, `width` `auto` | `fill`, `icon`), `AutocompleteContent`, `AutocompleteList`, `AutocompleteItem`, `AutocompleteEmpty`, `AutocompleteGroup`, `AutocompleteGroupLabel`, `AutocompleteCollection`. It shares the Combobox field, list and item look. Upgrade: replace a `Combobox` that copies the typed text into its value, or a `Command` with a positioned `CommandList`, with `Autocomplete value={text} onValueChange={setText}`.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.1`. Nothing is removed. A `Skeleton height="fill"` now needs a parent with a height, and a `ghost neutral` `IconButton` now shows a muted icon.
 
 ## 0.2.0
 
