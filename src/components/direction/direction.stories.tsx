@@ -1,24 +1,34 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 
+import { DirectionProvider, useDirection } from '@/components/direction';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
-
-import { DirectionProvider, useDirection } from './direction';
 
 function DirectionLabel() {
   return <p className="text-sm text-muted-foreground">Direction: {useDirection()}</p>;
 }
 
+const usage = `
+A provider that sets the reading direction for the components inside it: arrow keys, menus and sliders follow it. Use it once near the root of a product that supports a right-to-left language. \`useDirection()\` reads the current direction.
+
+The provider does not set the \`dir\` attribute. Set \`dir\` on the \`html\` element (or on the same subtree) too, so the text and the layout flip.
+
+## direction
+
+| Value | Use it for |
+| --- | --- |
+| \`ltr\` | The default. Left-to-right languages, such as English and French. |
+| \`rtl\` | Right-to-left languages, such as Arabic and Hebrew. |
+
+## Do not
+
+- Do not set \`rtl\` without the \`dir\` attribute. The keys flip, and the layout does not.
+- Do not nest providers for one word in another language. Use \`dir\` on that element.
+`;
+
 const meta = {
   title: 'Components/Direction',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A provider that sets left-to-right or right-to-left layout for the components inside it. Use it for right-to-left languages.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: DirectionProvider,
   args: { direction: 'rtl' },
   render: (args) => (

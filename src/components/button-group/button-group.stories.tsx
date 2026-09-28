@@ -3,19 +3,38 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn } from 'storybook/test';
 
 import { Button, IconButton } from '@/components/button';
+import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from '@/components/button-group';
 
-import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-group';
+const usage = `
+A row or a column of related buttons with shared borders. Use it for a split button, for a segmented set of actions on the same object, or for a prefix before a button. To choose one value from a set, use \`ToggleGroup\`. For unrelated actions in a toolbar, use \`Inline\`.
+
+\`ButtonGroup\` composes \`Button\` and \`IconButton\`. Give every button in a group the same \`variant\`, \`tone\` and \`size\`. The group joins their borders and rounds only the outer corners.
+
+## orientation
+
+| Value | Use it for |
+| --- | --- |
+| \`horizontal\` | The default. A split button or a segmented action row. |
+| \`vertical\` | A column of tool actions, such as zoom in and zoom out on a canvas. |
+
+## Parts
+
+| Part | Use it for |
+| --- | --- |
+| \`ButtonGroupText\` | A fixed label joined to the buttons, such as \`https://\`. |
+| \`ButtonGroupSeparator\` | A line between two \`solid\` or \`soft\` buttons, which have no border. |
+| A nested \`ButtonGroup\` | Two groups side by side with a gap, such as pages and a Next button. |
+
+## Do not
+
+- Do not mix variants or sizes in one group.
+- Do not give a group an accessible name that repeats the button labels. Name what the group is for, with \`aria-label\`.
+- Do not use a group for a single button.
+`;
 
 const meta = {
   title: 'Components/Button Group',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A row or a column of related buttons with shared borders. Use it for a split button or for a small set of actions on the same object.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: ButtonGroup,
   args: { 'aria-label': 'Message actions' },
   render: (args) => (
@@ -76,6 +95,14 @@ export const WithText: Story = {
 };
 
 export const SplitButton: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A main action with a menu of related actions. The separator draws the line that a solid button lacks.',
+      },
+    },
+  },
   args: { 'aria-label': 'Publish' },
   render: (args) => (
     <ButtonGroup {...args}>
