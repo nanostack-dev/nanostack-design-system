@@ -5,6 +5,7 @@ import { createElement, type AnchorHTMLAttributes, type ReactNode, type Ref } fr
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip';
 import type { ClosedProps } from '@/lib/closed-props';
+import { cn } from '@/lib/utils';
 import { useLinkComponent, type LinkComponentProps } from '@/provider/design-system-provider';
 
 export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost';
@@ -13,7 +14,7 @@ export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 export type ButtonWidth = 'auto' | 'fill';
 export type ButtonIconPosition = 'start' | 'end';
 
-export const buttonStyles = cva(
+const buttonClasses = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-4xl border border-transparent bg-clip-padding font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
@@ -54,7 +55,8 @@ export const buttonStyles = cva(
       {
         variant: 'soft',
         tone: 'brand',
-        class: 'bg-accent text-accent-foreground hover:bg-accent/70 aria-expanded:bg-accent/70',
+        class:
+          'bg-primary/10 text-primary hover:bg-primary/15 aria-expanded:bg-primary/15 dark:bg-primary/15 dark:hover:bg-primary/20',
       },
       {
         variant: 'soft',
@@ -114,6 +116,10 @@ export const buttonStyles = cva(
     },
   },
 );
+
+export function buttonStyles(options: Parameters<typeof buttonClasses>[0]) {
+  return cn(buttonClasses(options));
+}
 
 type ButtonAppearance = {
   variant?: ButtonVariant;
