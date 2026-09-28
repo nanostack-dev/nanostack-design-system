@@ -2,19 +2,29 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn } from 'storybook/test';
 
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/field';
+import { Slider } from '@/components/slider';
 
-import { Slider } from './slider';
+const usage = `
+A handle on a track that sets a value or a range. Use it when an approximate value is enough, such as a volume or a sample rate. For an exact number, use \`Input type="number"\`.
+
+The props are the whole API. \`Slider\` does not accept \`className\` or \`style\`, and it has no variants. A horizontal slider fills its container. A vertical slider fills the height of its container.
+
+## Other props
+
+- \`value\`, \`defaultValue\` and \`onValueChange\`: a number gives one handle and a number back. An array gives one handle per value and an array back.
+- \`min\`, \`max\` and \`step\`: the scale. The default is 0 to 100.
+- \`orientation="vertical"\`: a vertical track, 160 px high at least.
+- Name the slider with \`aria-labelledby\` and the id of its \`FieldLabel\`.
+
+## Do not
+
+- Do not use a slider for an exact value. Use \`Input type="number"\`.
+- Do not show a slider without its current value when the value matters. Show the value in the label or next to the slider.
+`;
 
 const meta = {
   title: 'Components/Slider',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A handle on a track to select a value or a range. Use it when an approximate value is enough.\n\n**Nanostack addition:** `value` and `defaultValue` accept a number as well as an array, and `onValueChange` then gives back a number.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Slider,
   args: { defaultValue: 50, max: 100, step: 1, onValueChange: fn(), 'aria-labelledby': 'volume' },
   render: (args) => (
@@ -54,6 +64,11 @@ export const Keyboard: Story = {
 };
 
 export const Range: Story = {
+  parameters: {
+    docs: {
+      description: { story: 'An array value gives one handle per value, for a range.' },
+    },
+  },
   args: { defaultValue: [20, 80], 'aria-labelledby': 'price' },
   render: (args) => (
     <div className="w-72">
@@ -100,7 +115,7 @@ export const Disabled: Story = {
   parameters: { a11y: { test: 'todo' } },
   render: (args) => (
     <div className="w-72">
-      <Field data-disabled>
+      <Field disabled>
         <FieldLabel id="volume">Volume</FieldLabel>
         <Slider {...args} />
       </Field>
@@ -119,7 +134,7 @@ export const Invalid: Story = {
   args: { defaultValue: 95, 'aria-invalid': true },
   render: (args) => (
     <div className="w-72">
-      <Field data-invalid>
+      <Field invalid>
         <FieldLabel id="volume">Volume</FieldLabel>
         <Slider {...args} />
         <FieldError>Volume above 90 can damage hearing.</FieldError>

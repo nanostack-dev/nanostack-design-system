@@ -1,8 +1,29 @@
-import type { ComponentProps } from 'react';
+import { Radio as RadioPrimitive } from '@base-ui/react/radio';
+import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
 
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import type { ClosedProps } from '@/lib/closed-props';
 
-export type RadioGroupProps = ComponentProps<typeof RadioGroup>;
-export type RadioGroupItemProps = ComponentProps<typeof RadioGroupItem>;
+export type RadioGroupProps = ClosedProps<Omit<RadioGroupPrimitive.Props, 'render'>>;
 
-export { RadioGroup, RadioGroupItem };
+export function RadioGroup(props: RadioGroupProps) {
+  return <RadioGroupPrimitive data-slot="radio-group" className="grid w-full gap-3" {...props} />;
+}
+
+export type RadioGroupItemProps = ClosedProps<Omit<RadioPrimitive.Root.Props, 'render'>>;
+
+export function RadioGroupItem(props: RadioGroupItemProps) {
+  return (
+    <RadioPrimitive.Root
+      data-slot="radio-group-item"
+      className="group/radio-group-item peer relative flex aspect-square size-4 shrink-0 rounded-full border border-transparent bg-input/90 outline-none group-has-[:focus-visible]/field-label:border-transparent group-has-[:focus-visible]/field-label:ring-0 after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary"
+      {...props}
+    >
+      <RadioPrimitive.Indicator
+        data-slot="radio-group-indicator"
+        className="flex size-4 items-center justify-center"
+      >
+        <span className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-foreground dark:size-2.5" />
+      </RadioPrimitive.Indicator>
+    </RadioPrimitive.Root>
+  );
+}
