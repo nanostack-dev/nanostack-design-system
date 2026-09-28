@@ -5,7 +5,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent as DropdownMenuContentPrimitive,
   DropdownMenuGroup,
-  DropdownMenuItem,
+  DropdownMenuItem as DropdownMenuItemPrimitive,
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
@@ -23,7 +23,7 @@ export type DropdownMenuProps = ComponentProps<typeof DropdownMenu>;
 export type DropdownMenuCheckboxItemProps = ComponentProps<typeof DropdownMenuCheckboxItem>;
 export type DropdownMenuContentProps = ComponentProps<typeof DropdownMenuContentPrimitive>;
 export type DropdownMenuGroupProps = ComponentProps<typeof DropdownMenuGroup>;
-export type DropdownMenuItemProps = ComponentProps<typeof DropdownMenuItem>;
+export type DropdownMenuItemProps = ComponentProps<typeof DropdownMenuItemPrimitive>;
 export type DropdownMenuItemVariant = NonNullable<DropdownMenuItemProps['variant']>;
 export type DropdownMenuLabelProps = ComponentProps<typeof DropdownMenuLabel>;
 export type DropdownMenuPortalProps = ComponentProps<typeof DropdownMenuPortal>;
@@ -48,11 +48,22 @@ export function DropdownMenuContent({ className, ...props }: DropdownMenuContent
   );
 }
 
+export function DropdownMenuItem({ className, ...props }: DropdownMenuItemProps) {
+  return (
+    <DropdownMenuItemPrimitive
+      className={cn(
+        'data-[variant=destructive]:text-destructive-on-tint data-[variant=destructive]:focus:text-destructive-on-tint data-[variant=destructive]:*:[svg]:text-destructive-on-tint',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuRadioGroup,

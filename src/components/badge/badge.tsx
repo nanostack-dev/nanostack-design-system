@@ -36,7 +36,13 @@ export function Badge({ variant = 'default', className, ...props }: BadgeProps) 
       />
     );
   }
-  return <BadgePrimitive variant={variant} className={className} {...props} />;
+  return (
+    <BadgePrimitive
+      variant={variant}
+      className={cn(variant === 'destructive' && 'text-destructive-on-tint', className)}
+      {...props}
+    />
+  );
 }
 
 export { statusBadgeVariants };

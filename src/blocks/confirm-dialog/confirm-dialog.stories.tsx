@@ -91,7 +91,7 @@ export const Destructive: Story = {
     const trigger = canvas.getByRole('button', { name: 'Delete project' });
     const dialog = await openDialog(trigger, userEvent, 'Delete this project?');
     const confirm = within(dialog).getByRole('button', { name: 'Delete' });
-    await expect(confirm).toHaveClass('text-destructive');
+    await expect(confirm).toHaveClass('text-destructive-on-tint');
     await userEvent.click(confirm);
     await expect(args.onConfirm).toHaveBeenCalledOnce();
     await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
