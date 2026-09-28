@@ -1,8 +1,7 @@
-import type { Separator as SeparatorPrimitive } from '@base-ui/react/separator';
+import { Separator as SeparatorPrimitive } from '@base-ui/react/separator';
 import { cva } from 'class-variance-authority';
 import type { ComponentPropsWithRef } from 'react';
 
-import { Separator } from '@/components/ui/separator';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type ButtonGroupOrientation = 'horizontal' | 'vertical';
@@ -55,10 +54,10 @@ export function ButtonGroupSeparator({
   ...props
 }: ButtonGroupSeparatorProps) {
   return (
-    <Separator
+    <SeparatorPrimitive
       data-slot="button-group-separator"
       orientation={orientation}
-      className="relative self-stretch bg-input data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto"
+      className="relative shrink-0 self-stretch bg-input data-horizontal:mx-px data-horizontal:h-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto data-vertical:w-px"
       {...props}
     />
   );

@@ -15,6 +15,8 @@ export type DialogContentProps = ClosedProps<Omit<DialogPrimitive.Popup.Props, '
   size?: DialogSize;
   showCloseButton?: boolean;
 };
+type DialogPaletteContentProps = ClosedProps<DialogPrimitive.Popup.Props>;
+
 export type DialogHeaderProps = ClosedProps<ComponentProps<'div'>> & {
   visuallyHidden?: boolean;
 };
@@ -138,6 +140,21 @@ function DialogContent({
             <XIcon aria-hidden />
           </DialogPrimitive.Close>
         )}
+      </DialogPrimitive.Popup>
+    </DialogPortal>
+  );
+}
+
+export function DialogPaletteContent({ children, ...props }: DialogPaletteContentProps) {
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Popup
+        data-slot="dialog-content"
+        className="fixed top-1/3 left-1/2 z-50 w-full max-w-[calc(100%-2rem)] -translate-x-1/2 overflow-hidden rounded-4xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none sm:max-w-md dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+        {...props}
+      >
+        {children}
       </DialogPrimitive.Popup>
     </DialogPortal>
   );

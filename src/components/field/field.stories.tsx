@@ -283,6 +283,8 @@ export const Disabled: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('group')).toHaveAttribute('data-disabled', 'true');
     await expect(canvas.getByRole('textbox', { name: 'Region' })).toBeDisabled();
-    await expect(getComputedStyle(canvas.getByText('Region')).opacity).toBe('0.5');
+    await expect(canvas.getByText('Region')).toHaveClass(
+      'group-data-[disabled=true]/field:text-muted-foreground',
+    );
   },
 };
