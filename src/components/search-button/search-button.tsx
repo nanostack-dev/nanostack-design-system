@@ -6,7 +6,7 @@ import { Kbd, KbdGroup } from '@/components/kbd/kbd';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
-export type SearchButtonSize = 'sm' | 'md';
+export type SearchButtonSize = 'sm' | 'md' | 'lg';
 export type SearchButtonWidth = 'auto' | 'fill';
 
 const searchButtonClasses = cva(
@@ -16,6 +16,7 @@ const searchButtonClasses = cva(
       size: {
         sm: 'h-8 px-3',
         md: 'h-9 px-3.5',
+        lg: 'h-10 px-4',
       },
       width: {
         auto: 'w-auto',
