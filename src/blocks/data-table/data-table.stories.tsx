@@ -91,7 +91,7 @@ const columnsWithActions: ColumnDef<Person>[] = [
           <DropdownMenuItem onClick={() => onCopyEmail(row.original.email)}>
             Copy email
           </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onClick={() => onRemove(row.original.id)}>
+          <DropdownMenuItem tone="critical" onClick={() => onRemove(row.original.id)}>
             Remove
           </DropdownMenuItem>
         </DropdownMenuContent>
