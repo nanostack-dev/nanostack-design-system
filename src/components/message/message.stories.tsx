@@ -3,7 +3,6 @@ import { expect } from 'storybook/test';
 
 import { Avatar, AvatarFallback } from '@/components/avatar';
 import { Bubble, BubbleContent } from '@/components/bubble';
-
 import {
   Message,
   MessageAvatar,
@@ -11,18 +10,36 @@ import {
   MessageFooter,
   MessageGroup,
   MessageHeader,
-} from './message';
+} from '@/components/message';
+
+const usage = `
+One row of a conversation: an avatar, a name, the content and a time. Use it with \`Bubble\` for the content and \`MessageScroller\` for the list. For a note between messages, use \`Marker\`.
+
+The props are the whole API. No part accepts \`className\` or \`style\`.
+
+## align: who wrote the message
+
+| Value | Use it for |
+| --- | --- |
+| \`start\` | The default. Messages from other people or from an assistant. |
+| \`end\` | Messages from the person who reads the screen. Set \`align="end"\` on the \`Bubble\` too. |
+
+## Parts
+
+- \`MessageAvatar\`: holds an \`Avatar\`. It stays at the bottom of the row, next to the last bubble.
+- \`MessageHeader\`: the author name, above the content.
+- \`MessageFooter\`: the time or the delivery state, below the content.
+- \`MessageGroup\`: several messages from one author in a row, with a small gap.
+
+## Do not
+
+- Do not repeat the avatar and the name on every message of a group. Show them once.
+- Do not put actions in \`MessageHeader\`. Put them in the footer or in a menu.
+`;
 
 const meta = {
   title: 'Components/Message',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'One row of a conversation with an avatar, a name and content. Use it with `Bubble` and `MessageScroller` for chat.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Message,
   args: { align: 'start' },
   argTypes: { align: { control: 'inline-radio', options: ['start', 'end'] } },
@@ -36,7 +53,7 @@ const meta = {
         </MessageAvatar>
         <MessageContent>
           <MessageHeader>Ada Lovelace</MessageHeader>
-          <Bubble variant="secondary" align={args.align}>
+          <Bubble align={args.align}>
             <BubbleContent>The build finished on the second try.</BubbleContent>
           </Bubble>
           <MessageFooter>09:42</MessageFooter>
@@ -58,6 +75,14 @@ export const Default: Story = {
 };
 
 export const Conversation: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Other people use `align="start"` and a `soft` bubble. Your own messages use `align="end"` and a `solid brand` bubble.',
+      },
+    },
+  },
   render: () => (
     <div className="flex w-md flex-col gap-6">
       <MessageGroup>
@@ -69,7 +94,7 @@ export const Conversation: Story = {
           </MessageAvatar>
           <MessageContent>
             <MessageHeader>Ada Lovelace</MessageHeader>
-            <Bubble variant="secondary">
+            <Bubble>
               <BubbleContent>Can you check the staging deploy?</BubbleContent>
             </Bubble>
           </MessageContent>
@@ -81,7 +106,7 @@ export const Conversation: Story = {
             </Avatar>
           </MessageAvatar>
           <MessageContent>
-            <Bubble variant="secondary">
+            <Bubble>
               <BubbleContent>It failed twice this morning.</BubbleContent>
             </Bubble>
             <MessageFooter>09:40</MessageFooter>
@@ -90,7 +115,7 @@ export const Conversation: Story = {
       </MessageGroup>
       <Message align="end">
         <MessageContent>
-          <Bubble align="end">
+          <Bubble variant="solid" tone="brand" align="end">
             <BubbleContent>On it. The cache key changed, so I cleared it.</BubbleContent>
           </Bubble>
           <MessageFooter>09:41</MessageFooter>
@@ -110,13 +135,45 @@ export const Conversation: Story = {
   },
 };
 
+export const GhostAnswer: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With a `ghost` bubble, the header and the footer drop their inset, so the text lines up.',
+      },
+    },
+  },
+  render: () => (
+    <div className="w-md">
+      <Message>
+        <MessageContent>
+          <MessageHeader>Assistant</MessageHeader>
+          <Bubble variant="ghost">
+            <BubbleContent>
+              The deploy failed because the cache key used the old build hash. Clear the cache and
+              run the pipeline again.
+            </BubbleContent>
+          </Bubble>
+          <MessageFooter>09:43</MessageFooter>
+        </MessageContent>
+      </Message>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const header = canvas.getByText('Assistant').getBoundingClientRect();
+    const text = canvas.getByText(/The deploy failed/).getBoundingClientRect();
+    await expect(Math.abs(header.left - text.left)).toBeLessThan(1);
+  },
+};
+
 export const LongContent: Story = {
   render: (args) => (
     <div className="w-80">
       <Message {...args}>
         <MessageContent>
           <MessageHeader>Build bot</MessageHeader>
-          <Bubble variant="muted">
+          <Bubble>
             <BubbleContent>
               https://ci.example.com/pipelines/1234567890/jobs/0987654321/artifacts/download/report-with-a-very-long-name.json
             </BubbleContent>
