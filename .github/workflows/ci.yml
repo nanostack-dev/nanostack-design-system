@@ -20,18 +20,14 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
+      - run: pnpm lint
+      - run: pnpm typecheck
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:browser
+      - run: pnpm test
+      - run: pnpm build
       - run: pnpm test:package
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: failure()
-        with:
-          name: browser-evidence
-          path: |
-            test-results/
-            playwright-report/
+      - run: pnpm build-storybook
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: design-system-playground
+          name: design-system-storybook
           path: site/
