@@ -24,7 +24,7 @@ The props are the whole API. \`Skeleton\` does not accept \`className\` or \`sty
 | \`lg\` | 40 px | A control, a field, or a row in a side list. |
 | \`xl\` | 96 px | A list item with two lines, or a small tile. |
 | \`xxl\` | 256 px | A card, a chart, or a panel. |
-| \`fill\` | Its container | A column or a panel in a layout that already sets the height. |
+| \`fill\` | Its container | A column, a panel, a fixed-height box or a 28 px row: any place whose layout already sets the height. It has no minimum, so its container must have a height. |
 
 ## width
 
@@ -38,6 +38,7 @@ The props are the whole API. \`Skeleton\` does not accept \`className\` or \`sty
 ## Do not
 
 - Do not size a skeleton with classes. Choose \`height\` and \`width\`.
+- Do not use \`height="fill"\` in a container with no height. It then has no height either.
 - Do not give each skeleton its own label. Put the group in an element with \`role="status"\` and an \`aria-label\`, such as "Loading runs". The skeletons are hidden from assistive technology.
 - Do not animate a skeleton for more than a few seconds. Show an error or an empty state instead.
 `;
@@ -157,5 +158,35 @@ export const FillsItsColumn: Story = {
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getByTestId('rail').getBoundingClientRect().height).toBe(200);
+  },
+};
+
+export const FillsARow: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`height="fill"` has no minimum height, so it fits a 28 px table row or a fixed-height box as well as a column.',
+      },
+    },
+  },
+  render: () => (
+    <div className="w-80" role="status" aria-label="Loading runs">
+      <Stack space="sm">
+        <div className="h-7">
+          <Skeleton height="fill" data-testid="row" />
+        </div>
+        <div className="h-7">
+          <Skeleton height="fill" width="3/4" />
+        </div>
+        <div className="h-16">
+          <Skeleton height="fill" data-testid="box" />
+        </div>
+      </Stack>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByTestId('row').getBoundingClientRect().height).toBe(28);
+    await expect(canvas.getByTestId('box').getBoundingClientRect().height).toBe(64);
   },
 };
