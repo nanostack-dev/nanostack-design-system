@@ -1,1 +1,17 @@
-export * from './navigation-menu';
+export {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  type NavigationMenuAlign,
+  type NavigationMenuContentProps,
+  type NavigationMenuIndicatorProps,
+  type NavigationMenuItemProps,
+  type NavigationMenuLinkProps,
+  type NavigationMenuListProps,
+  type NavigationMenuProps,
+  type NavigationMenuTriggerProps,
+} from './navigation-menu';
