@@ -113,18 +113,20 @@ export function DataTable<TData extends RowData, TValue = unknown>({
       {hasToolbarRow ? (
         <div className="flex flex-wrap items-center gap-2">
           {searchLabel ? (
-            <InputGroup className="max-w-sm">
-              <InputGroupInput
-                type="search"
-                aria-label={searchLabel}
-                placeholder={searchPlaceholder}
-                value={globalFilter}
-                onChange={(event) => table.setGlobalFilter(event.target.value)}
-              />
-              <InputGroupAddon>
-                <MagnifyingGlassIcon aria-hidden="true" />
-              </InputGroupAddon>
-            </InputGroup>
+            <div className="w-full max-w-sm">
+              <InputGroup>
+                <InputGroupInput
+                  type="search"
+                  aria-label={searchLabel}
+                  placeholder={searchPlaceholder}
+                  value={globalFilter}
+                  onChange={(event) => table.setGlobalFilter(event.target.value)}
+                />
+                <InputGroupAddon>
+                  <MagnifyingGlassIcon aria-hidden="true" />
+                </InputGroupAddon>
+              </InputGroup>
+            </div>
           ) : null}
           {toolbar ? <div className="ml-auto flex items-center gap-2">{toolbar}</div> : null}
         </div>

@@ -14,7 +14,7 @@ import {
   MenubarSeparator,
   MenubarShortcut,
   MenubarTrigger,
-} from './menubar';
+} from '@/components/menubar';
 
 const onNewFile = fn();
 const onOpenFile = fn();
@@ -22,13 +22,39 @@ const onUndo = fn();
 const onWordWrapChange = fn();
 const onZoomChange = fn();
 
+const usage = `
+A horizontal bar of menus, as in a desktop application: File, Edit, View. Use it for an editor or a tool with many commands.
+
+For the actions of one item use \`DropdownMenu\`. For site navigation use \`NavigationMenu\`. For a toolbar of buttons use \`Inline\` with \`Button\`.
+
+The parts do not accept \`className\` or \`style\`. \`MenubarContent\` fits its labels. It is at least as wide as its trigger and 192 px, and it stops at the edge of the viewport.
+
+## MenubarItem tone
+
+| Value | Use it for |
+| --- | --- |
+| \`neutral\` | The default. Any command. |
+| \`critical\` | A command that deletes or discards work, such as "Close without saving". Put it last, after a \`MenubarSeparator\`. |
+
+## Other props
+
+- \`inset\` on \`MenubarItem\`, \`MenubarLabel\` and \`MenubarSubTrigger\`: lines up an item without an icon with the items that have one.
+- \`MenubarCheckboxItem\` and \`MenubarRadioItem\`: a setting, such as "Word wrap" or the zoom level. The check mark is on the left, as in a desktop menu.
+- \`MenubarShortcut\`: the keyboard shortcut of the command. Show it only when the shortcut really works.
+
+## Do not
+
+- Do not use \`variant="destructive"\`. It is \`tone="critical"\` now.
+- Do not put a menubar on a page that has fewer than three menus. Use buttons or a \`DropdownMenu\`.
+- Do not use a menubar for navigation between pages.
+`;
+
 const meta = {
   title: 'Components/Menubar',
   parameters: {
     docs: {
       description: {
-        component:
-          'A horizontal bar of menus, as in a desktop application. Use it for editors and tools with many commands.\n\n**Nanostack addition:** `MenubarContent` is at least as wide as its trigger (minimum 12rem) and grows to fit long labels up to the available width.',
+        component: usage,
       },
     },
   },
@@ -53,9 +79,7 @@ const meta = {
           </MenubarGroup>
           <MenubarSeparator />
           <MenubarGroup>
-            <MenubarItem variant="destructive">
-              Close all editors and discard unsaved changes
-            </MenubarItem>
+            <MenubarItem tone="critical">Close all editors and discard unsaved changes</MenubarItem>
           </MenubarGroup>
         </MenubarContent>
       </MenubarMenu>
@@ -179,5 +203,26 @@ export const LongLabel: Story = {
     );
     await expect(item.scrollWidth).toBeLessThanOrEqual(item.clientWidth);
     await expect(menu.getBoundingClientRect().width).toBeLessThanOrEqual(window.innerWidth);
+  },
+};
+
+export const CriticalItem: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: '`tone="critical"` marks a command that discards work.',
+      },
+    },
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('menuitem', { name: 'File' }));
+    const menu = await screen.findByRole('menu');
+    const discard = within(menu).getByRole('menuitem', { name: longLabel });
+    await expect(discard).toHaveAttribute('data-tone', 'critical');
+    await expect(discard).toHaveClass('text-destructive-on-tint');
+    await expect(within(menu).getByRole('menuitem', { name: 'Open file' })).toHaveAttribute(
+      'data-tone',
+      'neutral',
+    );
   },
 };

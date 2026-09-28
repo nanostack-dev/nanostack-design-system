@@ -11,37 +11,47 @@ import {
   FieldSet,
   FieldTitle,
 } from '@/components/field';
-
-import { RadioGroup, RadioGroupItem } from './radio-group';
+import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 
 const plans = ['Starter', 'Team', 'Enterprise'];
 
+const usage = `
+A set of options where the person selects exactly one. Use it for two to seven choices that the person must see together. For more choices, or when space is short, use \`Select\`. For two states of one setting, use \`Switch\`.
+
+The props are the whole API. \`RadioGroup\` and \`RadioGroupItem\` do not accept \`className\` or \`style\`, and they have no variants. \`RadioGroup\` stacks its items and fills its container.
+
+## Parts
+
+- \`RadioGroup\`: the group. It takes \`value\`, \`defaultValue\`, \`onValueChange\` and \`disabled\`. Name it with a \`FieldLegend\` in a \`FieldSet\`.
+- \`RadioGroupItem\`: one option. Put it in a \`Field orientation="horizontal"\` with a \`FieldLabel\`.
+- For an option with a title and a description, wrap the \`Field\` in a \`FieldLabel\` (see Choice cards).
+
+## Do not
+
+- Do not use a radio group for one option. Use \`Checkbox\`.
+- Do not use a radio group for more than seven options. Use \`Select\`.
+- Do not start with no option selected unless the person must make a choice on purpose.
+`;
+
 const meta = {
   title: 'Components/Radio Group',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A set of options where the user selects exactly one. Use it for two to seven choices that the user must see together.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: RadioGroup,
   args: { defaultValue: 'Team', onValueChange: fn() },
   render: (args) => (
-    <FieldSet className="w-64">
-      <FieldLegend variant="label">Plan</FieldLegend>
-      <RadioGroup {...args}>
-        {plans.map((plan) => (
-          <Field key={plan} orientation="horizontal">
-            <RadioGroupItem value={plan} id={`plan-${plan}`} />
-            <FieldLabel htmlFor={`plan-${plan}`} className="font-normal">
-              {plan}
-            </FieldLabel>
-          </Field>
-        ))}
-      </RadioGroup>
-    </FieldSet>
+    <div className="w-64">
+      <FieldSet>
+        <FieldLegend size="sm">Plan</FieldLegend>
+        <RadioGroup {...args}>
+          {plans.map((plan) => (
+            <Field key={plan} orientation="horizontal">
+              <RadioGroupItem value={plan} id={`plan-${plan}`} />
+              <FieldLabel htmlFor={`plan-${plan}`}>{plan}</FieldLabel>
+            </Field>
+          ))}
+        </RadioGroup>
+      </FieldSet>
+    </div>
   ),
 } satisfies Meta<typeof RadioGroup>;
 
@@ -81,19 +91,19 @@ export const Disabled: Story = {
 
 export const DisabledItem: Story = {
   render: (args) => (
-    <FieldSet className="w-64">
-      <FieldLegend variant="label">Plan</FieldLegend>
-      <RadioGroup {...args}>
-        {plans.map((plan) => (
-          <Field key={plan} orientation="horizontal" data-disabled={plan === 'Enterprise'}>
-            <RadioGroupItem value={plan} id={`plan-${plan}`} disabled={plan === 'Enterprise'} />
-            <FieldLabel htmlFor={`plan-${plan}`} className="font-normal">
-              {plan}
-            </FieldLabel>
-          </Field>
-        ))}
-      </RadioGroup>
-    </FieldSet>
+    <div className="w-64">
+      <FieldSet>
+        <FieldLegend size="sm">Plan</FieldLegend>
+        <RadioGroup {...args}>
+          {plans.map((plan) => (
+            <Field key={plan} orientation="horizontal" disabled={plan === 'Enterprise'}>
+              <RadioGroupItem value={plan} id={`plan-${plan}`} disabled={plan === 'Enterprise'} />
+              <FieldLabel htmlFor={`plan-${plan}`}>{plan}</FieldLabel>
+            </Field>
+          ))}
+        </RadioGroup>
+      </FieldSet>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.tab();
@@ -106,20 +116,20 @@ export const DisabledItem: Story = {
 export const Invalid: Story = {
   args: { defaultValue: undefined, 'aria-describedby': 'plan-error' },
   render: (args) => (
-    <FieldSet className="w-64" data-invalid>
-      <FieldLegend variant="label">Plan</FieldLegend>
-      <RadioGroup {...args}>
-        {plans.map((plan) => (
-          <Field key={plan} orientation="horizontal" data-invalid>
-            <RadioGroupItem value={plan} id={`plan-${plan}`} aria-invalid />
-            <FieldLabel htmlFor={`plan-${plan}`} className="font-normal">
-              {plan}
-            </FieldLabel>
-          </Field>
-        ))}
-      </RadioGroup>
-      <FieldError id="plan-error">Choose a plan.</FieldError>
-    </FieldSet>
+    <div className="w-64">
+      <FieldSet>
+        <FieldLegend size="sm">Plan</FieldLegend>
+        <RadioGroup {...args}>
+          {plans.map((plan) => (
+            <Field key={plan} orientation="horizontal" invalid>
+              <RadioGroupItem value={plan} id={`plan-${plan}`} aria-invalid />
+              <FieldLabel htmlFor={`plan-${plan}`}>{plan}</FieldLabel>
+            </Field>
+          ))}
+        </RadioGroup>
+        <FieldError id="plan-error">Choose a plan.</FieldError>
+      </FieldSet>
+    </div>
   ),
   play: async ({ canvas }) => {
     for (const plan of plans) {
@@ -131,30 +141,40 @@ export const Invalid: Story = {
 };
 
 export const ChoiceCards: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Wrap each `Field` in a `FieldLabel` to make the whole card select the option. Use it when each option needs a description.',
+      },
+    },
+  },
   render: (args) => (
-    <FieldSet className="w-96">
-      <FieldLegend variant="label">Compute</FieldLegend>
-      <RadioGroup {...args} defaultValue="shared">
-        {[
-          { value: 'shared', title: 'Shared', description: 'Burstable CPU for small services.' },
-          {
-            value: 'dedicated',
-            title: 'Dedicated',
-            description: 'Reserved cores for steady load.',
-          },
-        ].map((option) => (
-          <FieldLabel key={option.value} htmlFor={`compute-${option.value}`}>
-            <Field orientation="horizontal">
-              <FieldContent>
-                <FieldTitle>{option.title}</FieldTitle>
-                <FieldDescription>{option.description}</FieldDescription>
-              </FieldContent>
-              <RadioGroupItem value={option.value} id={`compute-${option.value}`} />
-            </Field>
-          </FieldLabel>
-        ))}
-      </RadioGroup>
-    </FieldSet>
+    <div className="w-96">
+      <FieldSet>
+        <FieldLegend size="sm">Compute</FieldLegend>
+        <RadioGroup {...args} defaultValue="shared">
+          {[
+            { value: 'shared', title: 'Shared', description: 'Burstable CPU for small services.' },
+            {
+              value: 'dedicated',
+              title: 'Dedicated',
+              description: 'Reserved cores for steady load.',
+            },
+          ].map((option) => (
+            <FieldLabel key={option.value} htmlFor={`compute-${option.value}`}>
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldTitle>{option.title}</FieldTitle>
+                  <FieldDescription>{option.description}</FieldDescription>
+                </FieldContent>
+                <RadioGroupItem value={option.value} id={`compute-${option.value}`} />
+              </Field>
+            </FieldLabel>
+          ))}
+        </RadioGroup>
+      </FieldSet>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByText('Dedicated'));

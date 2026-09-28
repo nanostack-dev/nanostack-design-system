@@ -2,20 +2,59 @@ import { TextAlignCenterIcon, TextAlignLeftIcon, TextAlignRightIcon } from '@pho
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn } from 'storybook/test';
 
-import { ToggleGroup, ToggleGroupItem } from './toggle-group';
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+  type ToggleGroupSize,
+  type ToggleGroupVariant,
+} from '@/components/toggle-group';
+import { Stack } from '@/layout/stack';
+
+const variants: ToggleGroupVariant[] = ['ghost', 'outline'];
+const sizes: ToggleGroupSize[] = ['sm', 'md', 'lg'];
+
+const usage = `
+A set of toggle buttons for one or many choices. Use it for two to seven short options that people switch often, such as a view mode, a time range, or text alignment. For a choice in a form, use \`RadioGroup\`. For one option that is on or off, use \`Toggle\`.
+
+The props are the whole API. The parts do not accept \`className\` or \`style\`. The group sets \`variant\` and \`size\` for every item, so the items always match. The names are the ones of \`Button\` and \`Toggle\`.
+
+## variant
+
+| Value | Use it for |
+| --- | --- |
+| \`ghost\` | The default. Separate items with a gap, in a toolbar next to \`ghost\` buttons. |
+| \`outline\` | A segmented control: the items touch and share one border. Use it for a view mode or a time range above a list or a chart. |
+
+## size
+
+| Value | Height | Use it for |
+| --- | --- | --- |
+| \`sm\` | 32 px | A dense toolbar or a panel header. It lines up with a \`sm\` button. |
+| \`md\` | 36 px | The default. It lines up with a \`md\` button. |
+| \`lg\` | 40 px | Next to \`lg\` buttons. |
+
+## Other props
+
+- \`value\`, \`defaultValue\` and \`onValueChange\` use an array of item values. Set \`multiple\` to let people press more than one item.
+- \`orientation="vertical"\` stacks the items. The arrow keys follow the orientation.
+- Name the group with \`aria-label\`. An icon-only item needs an \`aria-label\` too.
+
+## Do not
+
+- Do not use a toggle group for more than seven options. Use \`Select\`.
+- Do not use a toggle group to start actions. Use \`Button\` in a \`ButtonGroup\`.
+- Do not mix sizes or variants in one group. The group sets them.
+`;
 
 const meta = {
   title: 'Components/Toggle Group',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A set of toggle buttons for one or many choices. Use it for two to seven options, such as a view mode.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: ToggleGroup,
   args: { 'aria-label': 'Frequency', defaultValue: ['daily'], onValueChange: fn() },
+  argTypes: {
+    variant: { control: 'select', options: variants },
+    size: { control: 'select', options: sizes },
+  },
   render: (args) => (
     <ToggleGroup {...args}>
       <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
@@ -72,7 +111,14 @@ export const Multiple: Story = {
 };
 
 export const Outline: Story = {
-  args: { variant: 'outline', spacing: 0 },
+  parameters: {
+    docs: {
+      description: {
+        story: '`outline` makes a segmented control: the items touch and share one border.',
+      },
+    },
+  },
+  args: { variant: 'outline' },
   play: async ({ canvas }) => {
     const items = ['Daily', 'Weekly', 'Monthly'].map((name) =>
       canvas.getByRole('button', { name }),
@@ -82,6 +128,29 @@ export const Outline: Story = {
       const previous = items[index - 1].getBoundingClientRect();
       await expect(item.getBoundingClientRect().left).toBeCloseTo(previous.right, 0);
     }
+  },
+};
+
+export const Sizes: Story = {
+  render: (args) => (
+    <Stack space="sm" align="start">
+      {sizes.map((size) => (
+        <ToggleGroup key={size} {...args} aria-label={`Frequency ${size}`} size={size}>
+          <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
+          <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
+        </ToggleGroup>
+      ))}
+    </Stack>
+  ),
+  play: async ({ canvas }) => {
+    const heights = sizes.map(
+      (size) =>
+        canvas
+          .getByRole('group', { name: `Frequency ${size}` })
+          .querySelector('button')
+          ?.getBoundingClientRect().height,
+    );
+    await expect(heights).toEqual([32, 36, 40]);
   },
 };
 

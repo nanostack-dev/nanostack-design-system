@@ -18,7 +18,7 @@ import {
   ComboboxSeparator,
   ComboboxValue,
   useComboboxAnchor,
-} from './combobox';
+} from '@/components/combobox';
 
 const frameworks = ['Next.js', 'SvelteKit', 'Nuxt.js', 'Remix', 'Astro'];
 
@@ -29,17 +29,52 @@ const timezones = [
 
 const body = within(document.body);
 
+const usage = `
+A text field with a filtered list of options. Use it to choose a value in a form when the list is long and the user knows what to type: an environment, a member, a tag.
+
+Use \`Select\` for a short list the user reads. Use \`Command\` for a list of commands. Do not build an autocomplete from \`Command\`.
+
+The parts do not accept \`className\` or \`style\`. \`ComboboxInput\` and \`ComboboxChips\` fill the width of their container, like \`Input\`. Put them in a \`Field\` or a layout block to set the width.
+
+## Parts
+
+| Part | Use it for |
+| --- | --- |
+| \`ComboboxInput\` | One value. It shows a button that opens the list, and a clear button with \`showClear\`. |
+| \`ComboboxChips\` with \`ComboboxChip\` and \`ComboboxChipsInput\` | Several values (\`multiple\`). Pass the chips element to \`ComboboxContent anchor\` with \`useComboboxAnchor\`. |
+| \`ComboboxGroup\`, \`ComboboxLabel\`, \`ComboboxCollection\` | Options in named groups, such as time zones by region. |
+| \`ComboboxEmpty\` | The text shown when no option matches. Always add it. |
+
+## Other props
+
+- \`showTrigger\` (default \`true\`) and \`showClear\` on \`ComboboxInput\`. The clear button replaces the trigger while there is a value.
+- \`triggerLabel\`, \`clearLabel\` and \`removeLabel\`: the accessible names of the icon buttons. Translate them with the rest of the product. \`removeLabel\` defaults to "Remove" and the chip text.
+- \`side\` and \`align\` on \`ComboboxContent\`: where the list opens. The default is below the field, aligned to its start. The list is at least as wide as the text field.
+
+## Do not
+
+- Do not use \`Command\` with a positioned \`CommandList\` as a form autocomplete. Use \`Combobox\`.
+- Do not set the width of \`ComboboxInput\` with \`className\`. Its container sets it.
+- Do not leave \`ComboboxInput\` without a name. Give it \`aria-label\` or put it in a \`Field\` with a \`FieldLabel\`.
+`;
+
 const meta = {
   title: 'Components/Combobox',
   parameters: {
     docs: {
       description: {
-        component:
-          'A text field with a filtered list of options. Use it when the list is long and the user knows what to type.\n\n**Nanostack addition:** the trigger, clear and chip remove buttons have accessible names that you can change with `triggerLabel`, `clearLabel` and `removeLabel`.',
+        component: usage,
       },
     },
   },
   component: Combobox,
+  decorators: [
+    (Story) => (
+      <div className="w-72">
+        <Story />
+      </div>
+    ),
+  ],
   args: { items: frameworks, onValueChange: fn() },
   render: (args) => (
     <Combobox {...args}>
@@ -260,7 +295,7 @@ function MultipleCombobox({ onValueChange }: MultipleComboboxProps) {
       defaultValue={['Next.js']}
       onValueChange={(value, eventDetails) => onValueChange?.(value, eventDetails)}
     >
-      <ComboboxChips ref={anchor} className="w-80">
+      <ComboboxChips ref={anchor}>
         <ComboboxValue>
           {(values: string[]) => (
             <Fragment>
@@ -314,5 +349,31 @@ export const Trigger: Story = {
     await expect(trigger).toHaveAttribute('aria-expanded', 'true');
     await userEvent.click(await body.findByRole('option', { name: 'Astro' }));
     await expect(canvas.getByRole('combobox', { name: 'Framework' })).toHaveValue('Astro');
+  },
+};
+
+export const FillsContainer: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`ComboboxInput` fills its container, like `Input`. Here the container is 288 px wide. The list opens at least as wide as the text field.',
+      },
+    },
+  },
+  play: async ({ canvas, userEvent }) => {
+    const input = canvas.getByRole('combobox', { name: 'Framework' });
+    const field = input.closest<HTMLElement>('[data-slot=input-group]');
+    if (!field) throw new Error('The input group is missing.');
+    await expect(field.getBoundingClientRect().width).toBe(288);
+    await userEvent.click(input);
+    const listbox = await body.findByRole('listbox');
+    await waitFor(() =>
+      expect(listbox.getBoundingClientRect().width).toBeGreaterThanOrEqual(
+        input.getBoundingClientRect().width,
+      ),
+    );
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(body.queryByRole('listbox')).not.toBeInTheDocument());
   },
 };
