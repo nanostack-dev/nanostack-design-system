@@ -1,4 +1,4 @@
-import { WarningCircleIcon } from '@phosphor-icons/react';
+import { WarningCircleIcon, WarningIcon } from '@phosphor-icons/react';
 import { useState, type ReactElement, type ReactNode } from 'react';
 
 import { Alert, AlertDescription } from '@/components/alert';
@@ -10,14 +10,15 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/alert-dialog';
 
-export type ConfirmDialogTone = 'default' | 'destructive';
+export type ConfirmDialogTone = 'neutral' | 'critical';
 
 export type ConfirmDialogProps = {
-  trigger: ReactElement;
+  trigger?: ReactElement;
   title: ReactNode;
   description?: ReactNode;
   confirmLabel?: ReactNode;
@@ -42,7 +43,7 @@ export function ConfirmDialog({
   description,
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
-  tone = 'default',
+  tone = 'neutral',
   onConfirm,
   open,
   onOpenChange,
@@ -76,9 +77,14 @@ export function ConfirmDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={changeOpen}>
-      <AlertDialogTrigger render={trigger} />
-      <AlertDialogContent>
+      {trigger ? <AlertDialogTrigger render={trigger} /> : null}
+      <AlertDialogContent data-tone={tone}>
         <AlertDialogHeader>
+          {tone === 'critical' ? (
+            <AlertDialogMedia>
+              <WarningIcon aria-hidden className="text-destructive-on-tint" />
+            </AlertDialogMedia>
+          ) : null}
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
         </AlertDialogHeader>
@@ -90,7 +96,7 @@ export function ConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction
-            tone={tone === 'destructive' ? 'critical' : 'brand'}
+            tone={tone === 'critical' ? 'critical' : 'brand'}
             onClick={confirm}
             loading={pending}
             aria-busy={pending}

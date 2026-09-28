@@ -21,18 +21,40 @@ import {
   PageHeaderTitle,
 } from './page-header';
 
+const usage = `
+The top of a page: breadcrumb, title, description and actions. Use it once at the top of each page, inside \`AppShellMain\`. For the title of a card, use \`CardTitle\`.
+
+The parts are closed. They do not accept \`className\` or \`style\`. The title and description sizes, the gaps and the wrap on a narrow screen come from the block.
+
+## PageHeaderTitle level
+
+| Value | Use it for |
+| --- | --- |
+| \`1\` | The default. The title of the page. Use one per page. |
+| \`2\` | The title of a section below the page title, when the section has its own actions. |
+
+## Other parts
+
+- \`PageHeaderBreadcrumb\`: a full-width row above the title for a \`Breadcrumb\`.
+- \`PageHeaderActions\`: the buttons of the page. They move under the title when the page is narrow.
+
+## Do not
+
+- Do not put two level 1 titles on a page.
+- Do not put more than one \`solid brand\` button in \`PageHeaderActions\`.
+- Do not use the description for help text longer than two lines. Put it in the page.
+`;
+
 const onCreate = fn();
 const onExport = fn();
 
 function Actions() {
   return (
     <PageHeaderActions>
-      <Button variant="outline" onClick={onExport}>
-        <DownloadSimpleIcon data-icon="inline-start" aria-hidden />
+      <Button variant="outline" icon={DownloadSimpleIcon} onClick={onExport}>
         Export
       </Button>
-      <Button variant="solid" tone="brand" onClick={onCreate}>
-        <PlusIcon data-icon="inline-start" aria-hidden />
+      <Button variant="solid" tone="brand" icon={PlusIcon} onClick={onCreate}>
         New project
       </Button>
     </PageHeaderActions>
@@ -48,12 +70,7 @@ const meta = {
   component: PageHeader,
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          'The top of a page: breadcrumb, title, description and actions. Use it once at the top of each page, inside `AppShellMain`.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   beforeEach: () => {
     onCreate.mockClear();
@@ -139,6 +156,11 @@ export const WithBreadcrumb: Story = {
 };
 
 export const SectionHeading: Story = {
+  parameters: {
+    docs: {
+      description: { story: '`level={2}` gives a section heading with the same layout.' },
+    },
+  },
   render: () => (
     <div className="w-full max-w-4xl">
       <PageHeader>
