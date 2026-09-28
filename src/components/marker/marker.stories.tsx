@@ -8,6 +8,14 @@ const variants: MarkerVariant[] = ['default', 'separator', 'border'];
 
 const meta = {
   title: 'Components/Marker',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A small line of text for a system note or a divider in a conversation. Use it for events such as "Joined the channel" or a date.',
+      },
+    },
+  },
   component: Marker,
   args: { variant: 'default' },
   argTypes: { variant: { control: 'select', options: variants } },

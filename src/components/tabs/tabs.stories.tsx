@@ -41,6 +41,14 @@ async function expectPanel(canvasElement: HTMLElement, text: string) {
 
 const meta = {
   title: 'Components/Tabs',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A row of tabs that show one panel at a time. Use it for views of the same object, such as Overview and Settings.',
+      },
+    },
+  },
   component: Tabs,
   args: { defaultValue: 'account', onValueChange: fn() },
   render: (args) => <AccountTabs {...args} />,

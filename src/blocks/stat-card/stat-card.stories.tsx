@@ -78,7 +78,15 @@ function trendOf(card: HTMLElement) {
 const meta = {
   title: 'Blocks/Stat Card',
   component: StatCard,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'A card with one key number, its label and a trend badge. Use it in a row at the top of a dashboard.',
+      },
+    },
+  },
   render: () => <StatGrid />,
 } satisfies Meta<typeof StatCard>;
 

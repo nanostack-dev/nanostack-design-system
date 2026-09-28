@@ -52,7 +52,15 @@ function ControlledPagination(props: PaginationProps) {
 const meta = {
   title: 'Components/Pagination',
   component: Pagination,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'Links to the previous, next and numbered pages of a list. Use it under a long list or a table.\n\n**Nanostack addition:** `PaginationLink`, `PaginationPrevious` and `PaginationNext` have the `link` role by default, so assistive technology announces them as links.',
+      },
+    },
+  },
   render: (args) => <ControlledPagination {...args} />,
 } satisfies Meta<typeof Pagination>;
 

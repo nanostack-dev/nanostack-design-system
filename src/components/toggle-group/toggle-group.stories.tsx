@@ -6,6 +6,14 @@ import { ToggleGroup, ToggleGroupItem } from './toggle-group';
 
 const meta = {
   title: 'Components/Toggle Group',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A set of toggle buttons for one or many choices. Use it for two to seven options, such as a view mode.',
+      },
+    },
+  },
   component: ToggleGroup,
   args: { 'aria-label': 'Frequency', defaultValue: ['daily'], onValueChange: fn() },
   render: (args) => (

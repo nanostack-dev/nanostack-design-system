@@ -15,6 +15,14 @@ import {
 
 const meta = {
   title: 'Components/Input Group',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A text field with icons, text or buttons attached inside its border. Use it for search fields, units and copy buttons.',
+      },
+    },
+  },
   component: InputGroup,
   render: (args) => (
     <Field className="w-80">

@@ -24,6 +24,14 @@ const onZoomChange = fn();
 
 const meta = {
   title: 'Components/Menubar',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A horizontal bar of menus, as in a desktop application. Use it for editors and tools with many commands.\n\n**Nanostack addition:** `MenubarContent` is at least as wide as its trigger (minimum 12rem) and grows to fit long labels up to the available width.',
+      },
+    },
+  },
   component: Menubar,
   beforeEach: () => {
     for (const callback of [onNewFile, onOpenFile, onUndo, onWordWrapChange, onZoomChange]) {
@@ -150,6 +158,13 @@ export const CheckboxAndRadio: Story = {
 const longLabel = 'Close all editors and discard unsaved changes';
 
 export const LongLabel: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Nanostack fix: the menu grows past the trigger width to show a long label in full.',
+      },
+    },
+  },
   play: async ({ canvas, userEvent }) => {
     const file = canvas.getByRole('menuitem', { name: 'File' });
     await userEvent.click(file);

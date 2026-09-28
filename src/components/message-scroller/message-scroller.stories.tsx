@@ -64,6 +64,14 @@ function Transcript({ messages }: { messages: ChatMessage[] }) {
 
 const meta = {
   title: 'Components/Message Scroller',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The scroll container of a conversation. It follows new messages and shows a button to go back to the latest one. Use it for chat and for streaming output.',
+      },
+    },
+  },
   component: MessageScrollerProvider,
   args: { children: null },
   render: (args) => (

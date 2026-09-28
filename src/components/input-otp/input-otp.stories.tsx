@@ -8,6 +8,14 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from './inpu
 
 const meta = {
   title: 'Components/Input OTP',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A row of one-character slots for a one-time code. Use it for two-factor and email verification codes.',
+      },
+    },
+  },
   component: InputOTP,
   args: {
     id: 'code',

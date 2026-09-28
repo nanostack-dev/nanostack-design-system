@@ -58,6 +58,14 @@ async function openThemeMenu(
 
 const meta = {
   title: 'Blocks/Theme',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          '`ThemeProvider` stores the light, dark or system choice and sets the `dark` class on `<html>`. `ThemeToggle` is the menu that changes it. Put the provider at the root of the application.',
+      },
+    },
+  },
   component: ThemeProvider,
   args: { defaultTheme: 'light', storageKey, children: null },
   beforeEach: () => {

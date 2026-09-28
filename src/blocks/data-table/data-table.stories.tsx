@@ -113,7 +113,15 @@ function firstCellTexts(canvasElement: HTMLElement) {
 const meta = {
   title: 'Blocks/Data Table',
   component: DataTable<Person, unknown>,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'A table with sort, search, pages, a loading state and an empty state, built on TanStack Table. Use it for lists of records that the user searches and sorts.',
+      },
+    },
+  },
   args: {
     columns,
     data: people,

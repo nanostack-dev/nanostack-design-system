@@ -31,6 +31,14 @@ const body = within(document.body);
 
 const meta = {
   title: 'Components/Combobox',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A text field with a filtered list of options. Use it when the list is long and the user knows what to type.\n\n**Nanostack addition:** the trigger, clear and chip remove buttons have accessible names that you can change with `triggerLabel`, `clearLabel` and `removeLabel`.',
+      },
+    },
+  },
   component: Combobox,
   args: { items: frameworks, onValueChange: fn() },
   render: (args) => (

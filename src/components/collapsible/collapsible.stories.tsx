@@ -8,6 +8,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsib
 
 const meta = {
   title: 'Components/Collapsible',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A section that shows or hides its content. Use it for optional details that most users do not need.',
+      },
+    },
+  },
   component: Collapsible,
   args: { onOpenChange: fn() },
   render: (args) => (

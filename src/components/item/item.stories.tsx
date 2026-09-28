@@ -22,6 +22,14 @@ const sizes: ItemSize[] = ['default', 'sm', 'xs'];
 
 const meta = {
   title: 'Components/Item',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A row with media, a title, a description and actions. Use it for lists of people, files or settings.',
+      },
+    },
+  },
   component: Item,
   args: { variant: 'outline', size: 'default' },
   argTypes: {

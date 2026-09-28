@@ -8,6 +8,14 @@ import { Progress, ProgressLabel, ProgressValue } from './progress';
 
 const meta = {
   title: 'Components/Progress',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A bar that shows how much of a task is done. Use it when you know the total. Use `Spinner` when you do not.',
+      },
+    },
+  },
   component: Progress,
   args: { value: 40 },
   render: (args) => (

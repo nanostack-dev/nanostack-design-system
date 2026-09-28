@@ -21,6 +21,14 @@ import {
 
 const meta = {
   title: 'Components/Field',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The layout of one form control with its label, description and error. Use `FieldGroup`, `FieldSet` and `Field` for every form.',
+      },
+    },
+  },
   component: Field,
   render: (args) => (
     <Field {...args} className="w-80">

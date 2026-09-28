@@ -16,6 +16,14 @@ const sizes: ButtonSize[] = ['xs', 'sm', 'default', 'lg'];
 
 const meta = {
   title: 'Components/Button',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The main control that starts an action. Use one `default` button for the main action of a surface and `outline`, `ghost` or `secondary` for the others.',
+      },
+    },
+  },
   component: Button,
   args: { children: 'Save changes', onClick: fn() },
   argTypes: {

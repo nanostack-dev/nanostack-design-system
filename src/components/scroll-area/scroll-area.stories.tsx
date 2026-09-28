@@ -8,6 +8,14 @@ const artworks = ['Harbor', 'Glacier', 'Canyon', 'Meadow', 'Dune', 'Summit'];
 
 const meta = {
   title: 'Components/Scroll Area',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A scroll container with a thin scrollbar that follows the theme. Use it for lists inside a fixed-height surface.',
+      },
+    },
+  },
   component: ScrollArea,
 } satisfies Meta<typeof ScrollArea>;
 

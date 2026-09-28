@@ -9,6 +9,14 @@ const sizes: ToggleSize[] = ['sm', 'default', 'lg'];
 
 const meta = {
   title: 'Components/Toggle',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A button that stays pressed or not pressed. Use it for a single formatting option, such as bold.',
+      },
+    },
+  },
   component: Toggle,
   args: { children: 'Bookmark', onPressedChange: fn() },
   argTypes: {

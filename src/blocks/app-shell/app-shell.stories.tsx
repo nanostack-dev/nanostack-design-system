@@ -142,7 +142,15 @@ const meta = {
   title: 'Blocks/App Shell',
   component: AppShell,
   args: { defaultOpen: true, children: null },
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          'The frame of an application: a collapsible sidebar with navigation, a top bar and the main content area. Use it once at the root of every signed-in screen.',
+      },
+    },
+  },
   render: ({ defaultOpen, open, onOpenChange }) => (
     <Workspace defaultOpen={defaultOpen} open={open} onOpenChange={onOpenChange} />
   ),

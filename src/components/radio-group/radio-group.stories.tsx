@@ -18,6 +18,14 @@ const plans = ['Starter', 'Team', 'Enterprise'];
 
 const meta = {
   title: 'Components/Radio Group',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A set of options where the user selects exactly one. Use it for two to seven choices that the user must see together.',
+      },
+    },
+  },
   component: RadioGroup,
   args: { defaultValue: 'Team', onValueChange: fn() },
   render: (args) => (

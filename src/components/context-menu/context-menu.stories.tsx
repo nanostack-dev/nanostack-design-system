@@ -24,6 +24,14 @@ const onExport = fn();
 
 const meta = {
   title: 'Components/Context Menu',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A menu that opens on a right click or a long press. Use it for secondary actions on an item. Always give the same actions another way to open.',
+      },
+    },
+  },
   component: ContextMenu,
   args: { onOpenChange: fn() },
   beforeEach: () => {

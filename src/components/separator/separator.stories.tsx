@@ -5,6 +5,14 @@ import { Separator } from './separator';
 
 const meta = {
   title: 'Components/Separator',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A horizontal or vertical line between groups of content. Use it instead of a border on a `div`.',
+      },
+    },
+  },
   component: Separator,
 } satisfies Meta<typeof Separator>;
 

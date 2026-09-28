@@ -20,6 +20,14 @@ const onApply = fn();
 
 const meta = {
   title: 'Components/Sheet',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A side panel over the page for a secondary task. Use it for filters, details and edit forms that keep the page in view.',
+      },
+    },
+  },
   component: Sheet,
   args: { onOpenChange: fn() },
   beforeEach: () => {

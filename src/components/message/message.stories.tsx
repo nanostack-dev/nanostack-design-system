@@ -15,6 +15,14 @@ import {
 
 const meta = {
   title: 'Components/Message',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'One row of a conversation with an avatar, a name and content. Use it with `Bubble` and `MessageScroller` for chat.',
+      },
+    },
+  },
   component: Message,
   args: { align: 'start' },
   argTypes: { align: { control: 'inline-radio', options: ['start', 'end'] } },

@@ -7,6 +7,14 @@ import { ConfirmDialog } from './confirm-dialog';
 
 const meta = {
   title: 'Blocks/Confirm Dialog',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A confirm step for an action, with a pending state while the action runs and an error message when it fails. Use it for delete, archive and other actions that you cannot undo.',
+      },
+    },
+  },
   component: ConfirmDialog,
   args: {
     trigger: <Button variant="outline">Archive project</Button>,

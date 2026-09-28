@@ -25,6 +25,14 @@ const onOpen = fn();
 
 const meta = {
   title: 'Components/Attachment',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A file chip that shows a name, a type, a progress state and actions. Use it for uploads in a form or in a message.\n\n**Nanostack addition:** the description of an attachment in the `error` state uses `--destructive-on-tint`, so the text passes WCAG AA contrast.',
+      },
+    },
+  },
   component: Attachment,
   args: { state: 'done', size: 'default', orientation: 'horizontal' },
   argTypes: {

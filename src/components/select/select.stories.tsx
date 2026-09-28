@@ -26,6 +26,14 @@ const sizes: SelectTriggerSize[] = ['sm', 'default'];
 
 const meta = {
   title: 'Components/Select',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A button that opens a list of options for one value. Use it for five or more options in a form.\n\n**Nanostack addition:** `SelectContent` is at least as wide as its trigger (minimum 9rem) and grows to fit long labels up to the available width, instead of the trigger width.',
+      },
+    },
+  },
   component: Select,
   args: { items: regions, onValueChange: fn() },
   render: (args) => (
@@ -166,6 +174,14 @@ export const Sizes: Story = {
 };
 
 export const LongOption: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Nanostack fix: the list grows past the trigger width to show a long option in full.',
+      },
+    },
+  },
   args: {
     items: [
       { label: 'Small', value: 'small' },

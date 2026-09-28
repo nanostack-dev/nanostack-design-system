@@ -57,6 +57,14 @@ function DeleteProjectDialog({ size }: { size?: AlertDialogContentProps['size'] 
 
 const meta = {
   title: 'Components/Alert Dialog',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A modal that asks the user to confirm an action before it runs. Use it for a destructive or permanent action. For the full confirm flow with a pending state and an error message, use the `ConfirmDialog` block.',
+      },
+    },
+  },
   component: AlertDialog,
   beforeEach: () => {
     onConfirm.mockClear();

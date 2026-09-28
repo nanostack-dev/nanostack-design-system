@@ -16,6 +16,14 @@ const onCopy = fn();
 
 const meta = {
   title: 'Components/Popover',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A floating panel that opens from a trigger and holds interactive content. Use it for small forms, filters and pickers.',
+      },
+    },
+  },
   component: Popover,
   args: { onOpenChange: fn() },
   beforeEach: () => {

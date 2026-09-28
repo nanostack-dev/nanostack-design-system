@@ -49,6 +49,14 @@ function CommandItems({ separated = false }: { separated?: boolean }) {
 
 const meta = {
   title: 'Components/Command',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A searchable list of commands with keyboard navigation. Use it for a command palette or for a quick search in a menu.',
+      },
+    },
+  },
   component: Command,
   args: { label: 'Command menu' },
   beforeEach: () => {

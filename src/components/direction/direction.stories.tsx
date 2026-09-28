@@ -11,6 +11,14 @@ function DirectionLabel() {
 
 const meta = {
   title: 'Components/Direction',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A provider that sets left-to-right or right-to-left layout for the components inside it. Use it for right-to-left languages.',
+      },
+    },
+  },
   component: DirectionProvider,
   args: { direction: 'rtl' },
   render: (args) => (

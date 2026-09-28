@@ -7,6 +7,14 @@ import { Spinner } from './spinner';
 
 const meta = {
   title: 'Components/Spinner',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'An animated icon for an action in progress. Use it inside a button or next to text while the result is not known.',
+      },
+    },
+  },
   component: Spinner,
 } satisfies Meta<typeof Spinner>;
 

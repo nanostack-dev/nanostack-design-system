@@ -18,6 +18,14 @@ const onSave = fn();
 
 const meta = {
   title: 'Components/Dialog',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A modal window for a task that needs the full attention of the user. Use it for short forms and details. For a confirm step, use `AlertDialog` or the `ConfirmDialog` block.',
+      },
+    },
+  },
   component: Dialog,
   args: { onOpenChange: fn() },
   beforeEach: () => {

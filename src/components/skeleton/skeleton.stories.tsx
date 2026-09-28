@@ -5,6 +5,14 @@ import { Skeleton } from './skeleton';
 
 const meta = {
   title: 'Components/Skeleton',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A placeholder shape while content loads. Use it in the shape of the content that comes next.',
+      },
+    },
+  },
   component: Skeleton,
   args: { className: 'h-4 w-48' },
 } satisfies Meta<typeof Skeleton>;

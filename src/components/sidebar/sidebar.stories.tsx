@@ -190,7 +190,15 @@ const meta = {
     variant: { control: 'select', options: ['sidebar', 'floating', 'inset'] },
     collapsible: { control: 'select', options: ['offcanvas', 'icon', 'none'] },
   },
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          'The parts of a collapsible application sidebar. Use the `AppShell` block for a full application frame. Use these parts only for a custom layout.',
+      },
+    },
+  },
   render: (args) => <Shell {...args} />,
 } satisfies Meta<typeof Sidebar>;
 

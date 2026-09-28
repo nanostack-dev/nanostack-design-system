@@ -43,7 +43,8 @@ export { Separator };
 
 ## 3. Write the story
 
-- `title: 'Components/<Title Case Name>'` (blocks: `'Blocks/<Name>'`), `component`, `args`, `satisfies Meta<typeof X>`. Import `expect`, `fn`, `screen`, `waitFor`, `within` from `storybook/test`. Use `canvas` and `userEvent` from the play context.
+- `title: 'Components/<Title Case Name>'` (blocks: `'Blocks/<Name>'`), `component`, `args`, `satisfies Meta<typeof X>`.
+- Give the meta `parameters.docs.description.component`: one sentence on what the part is for and when to use it. Add `**Nanostack addition:**` and the variant or fix when the wrapper changes shadcn, and a `docs.description.story` on the story that shows it. Import `expect`, `fn`, `screen`, `waitFor`, `within` from `storybook/test`. Use `canvas` and `userEvent` from the play context.
 - One story per variant group (`Variants`, `Sizes`) and per state that applies: disabled, invalid, loading, empty, long content, keyboard.
 - Every story with behavior has a `play` test of what a person observes: role and name, open and close, keyboard (Tab, Enter, Space, Escape, arrows), focus return to the trigger, callbacks called with `fn()`.
 - Overlay content renders in a portal. Query it with `screen` or `within(document.body)` and `findBy*` or `waitFor`.

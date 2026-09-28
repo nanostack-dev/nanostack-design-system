@@ -18,6 +18,14 @@ const variants: BadgeVariant[] = [
 
 const meta = {
   title: 'Components/Badge',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A short label for a status, a count or a category. Use it next to the item that it describes.\n\n**Nanostack addition:** the `success`, `warning` and `info` variants, with a tinted background and `-on-tint` text that passes WCAG AA in light and dark.',
+      },
+    },
+  },
   component: Badge,
   args: { children: 'Active' },
   argTypes: { variant: { control: 'select', options: variants } },
@@ -33,6 +41,14 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`default` to `destructive` come from shadcn. `success`, `warning` and `info` are Nanostack additions.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-2">
       {variants.map((variant) => (

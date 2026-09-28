@@ -9,6 +9,14 @@ const sizes: SwitchSize[] = ['sm', 'default'];
 
 const meta = {
   title: 'Components/Switch',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A toggle that turns a setting on or off at once. Use it for settings that apply without a save button.',
+      },
+    },
+  },
   component: Switch,
   args: { id: 'airplane', onCheckedChange: fn() },
   argTypes: { size: { control: 'select', options: sizes } },
