@@ -37,23 +37,25 @@ const meta = {
   component: Select,
   args: { items: regions, onValueChange: fn() },
   render: (args) => (
-    <Field className="w-64">
-      <FieldLabel htmlFor="region">Region</FieldLabel>
-      <Select {...args}>
-        <SelectTrigger id="region" className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {regions.map((region) => (
-              <SelectItem key={region.label} value={region.value}>
-                {region.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </Field>
+    <div className="w-64">
+      <Field>
+        <FieldLabel htmlFor="region">Region</FieldLabel>
+        <Select {...args}>
+          <SelectTrigger id="region" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {regions.map((region) => (
+                <SelectItem key={region.label} value={region.value}>
+                  {region.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </Field>
+    </div>
   ),
 } satisfies Meta<typeof Select>;
 
@@ -106,26 +108,28 @@ export const Escape: Story = {
 export const Groups: Story = {
   args: { items: undefined, defaultValue: 'postgres' },
   render: (args) => (
-    <Field className="w-64">
-      <FieldLabel htmlFor="engine">Engine</FieldLabel>
-      <Select {...args}>
-        <SelectTrigger id="engine" className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Relational</SelectLabel>
-            <SelectItem value="postgres">PostgreSQL</SelectItem>
-            <SelectItem value="mysql">MySQL</SelectItem>
-          </SelectGroup>
-          <SelectSeparator />
-          <SelectGroup>
-            <SelectLabel>Key-value</SelectLabel>
-            <SelectItem value="redis">Redis</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </Field>
+    <div className="w-64">
+      <Field>
+        <FieldLabel htmlFor="engine">Engine</FieldLabel>
+        <Select {...args}>
+          <SelectTrigger id="engine" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Relational</SelectLabel>
+              <SelectItem value="postgres">PostgreSQL</SelectItem>
+              <SelectItem value="mysql">MySQL</SelectItem>
+            </SelectGroup>
+            <SelectSeparator />
+            <SelectGroup>
+              <SelectLabel>Key-value</SelectLabel>
+              <SelectItem value="redis">Redis</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('combobox', { name: 'Engine' }));
@@ -144,23 +148,25 @@ export const Sizes: Story = {
   render: (args) => (
     <div className="flex flex-col gap-4">
       {sizes.map((size) => (
-        <Field key={size} className="w-64">
-          <FieldLabel htmlFor={`region-${size}`}>{size}</FieldLabel>
-          <Select {...args}>
-            <SelectTrigger id={`region-${size}`} size={size}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {regions.map((region) => (
-                  <SelectItem key={region.label} value={region.value}>
-                    {region.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Field>
+        <div key={size} className="w-64">
+          <Field>
+            <FieldLabel htmlFor={`region-${size}`}>{size}</FieldLabel>
+            <Select {...args}>
+              <SelectTrigger id={`region-${size}`} size={size}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {regions.map((region) => (
+                    <SelectItem key={region.label} value={region.value}>
+                      {region.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
       ))}
     </div>
   ),
@@ -190,20 +196,22 @@ export const LongOption: Story = {
     defaultValue: 'small',
   },
   render: (args) => (
-    <Field className="w-28">
-      <FieldLabel htmlFor="machine">Machine</FieldLabel>
-      <Select {...args}>
-        <SelectTrigger id="machine" className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="small">Small</SelectItem>
-            <SelectItem value="xl">Dedicated compute with 64 vCPU and 256 GB memory</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </Field>
+    <div className="w-28">
+      <Field>
+        <FieldLabel htmlFor="machine">Machine</FieldLabel>
+        <Select {...args}>
+          <SelectTrigger id="machine" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="small">Small</SelectItem>
+              <SelectItem value="xl">Dedicated compute with 64 vCPU and 256 GB memory</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     const trigger = canvas.getByRole('combobox', { name: 'Machine' });
@@ -227,23 +235,25 @@ export const LongOption: Story = {
 export const Disabled: Story = {
   args: { disabled: true },
   render: (args) => (
-    <Field className="w-64" data-disabled>
-      <FieldLabel htmlFor="region">Region</FieldLabel>
-      <Select {...args}>
-        <SelectTrigger id="region" className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {regions.map((region) => (
-              <SelectItem key={region.label} value={region.value}>
-                {region.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </Field>
+    <div className="w-64">
+      <Field data-disabled>
+        <FieldLabel htmlFor="region">Region</FieldLabel>
+        <Select {...args}>
+          <SelectTrigger id="region" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {regions.map((region) => (
+                <SelectItem key={region.label} value={region.value}>
+                  {region.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     const trigger = canvas.getByRole('combobox', { name: 'Region' });
@@ -255,24 +265,31 @@ export const Disabled: Story = {
 
 export const Invalid: Story = {
   render: (args) => (
-    <Field className="w-64" data-invalid>
-      <FieldLabel htmlFor="region">Region</FieldLabel>
-      <Select {...args}>
-        <SelectTrigger id="region" className="w-full" aria-invalid aria-describedby="region-error">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {regions.map((region) => (
-              <SelectItem key={region.label} value={region.value}>
-                {region.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <FieldError id="region-error">Choose a region.</FieldError>
-    </Field>
+    <div className="w-64">
+      <Field data-invalid>
+        <FieldLabel htmlFor="region">Region</FieldLabel>
+        <Select {...args}>
+          <SelectTrigger
+            id="region"
+            className="w-full"
+            aria-invalid
+            aria-describedby="region-error"
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {regions.map((region) => (
+                <SelectItem key={region.label} value={region.value}>
+                  {region.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <FieldError id="region-error">Choose a region.</FieldError>
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     const trigger = canvas.getByRole('combobox', { name: 'Region' });

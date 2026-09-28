@@ -3,7 +3,8 @@ import { XIcon } from '@phosphor-icons/react';
 import type { ComponentProps, ReactNode } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
-import { InputGroupAddon, InputGroupButton } from '@/components/input-group';
+import { InputGroupAddon } from '@/components/input-group';
+import { InputGroupButtonPrimitive } from '@/components/input-group/input-group';
 import {
   Combobox,
   ComboboxChip as ComboboxChipPrimitive,
@@ -68,8 +69,9 @@ export function ComboboxInput({
       {(showTrigger || showClear) && (
         <InputGroupAddon align="inline-end">
           {showTrigger && (
-            <InputGroupButton
-              size="icon-xs"
+            <InputGroupButtonPrimitive
+              size="xs"
+              iconOnly
               variant="ghost"
               render={<ComboboxTrigger />}
               aria-label={triggerLabel}
@@ -82,7 +84,7 @@ export function ComboboxInput({
           {showClear && (
             <ComboboxPrimitive.Clear
               data-slot="combobox-clear"
-              render={<InputGroupButton variant="ghost" size="icon-xs" />}
+              render={<InputGroupButtonPrimitive variant="ghost" size="xs" iconOnly />}
               aria-label={clearLabel}
               disabled={disabled}
             >

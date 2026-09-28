@@ -114,15 +114,13 @@ export const Invalid: Story = {
 export const Group: Story = {
   render: () => (
     <FieldSet>
-      <FieldLegend variant="label">Notify me about</FieldLegend>
+      <FieldLegend size="sm">Notify me about</FieldLegend>
       <FieldDescription>Select all that apply.</FieldDescription>
-      <FieldGroup className="gap-3">
+      <FieldGroup data-slot="checkbox-group">
         {['Deployments', 'Incidents', 'Billing'].map((topic) => (
           <Field key={topic} orientation="horizontal">
             <Checkbox id={`topic-${topic}`} defaultChecked={topic === 'Incidents'} />
-            <FieldLabel htmlFor={`topic-${topic}`} className="font-normal">
-              {topic}
-            </FieldLabel>
+            <FieldLabel htmlFor={`topic-${topic}`}>{topic}</FieldLabel>
           </Field>
         ))}
       </FieldGroup>

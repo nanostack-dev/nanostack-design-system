@@ -21,10 +21,12 @@ const meta = {
   args: { id: 'airplane', onCheckedChange: fn() },
   argTypes: { size: { control: 'select', options: sizes } },
   render: (args) => (
-    <Field orientation="horizontal" className="w-64">
-      <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
-      <Switch {...args} />
-    </Field>
+    <div className="w-64">
+      <Field orientation="horizontal">
+        <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
+        <Switch {...args} />
+      </Field>
+    </div>
   ),
 } satisfies Meta<typeof Switch>;
 
@@ -57,10 +59,12 @@ export const Sizes: Story = {
   render: (args) => (
     <div className="flex flex-col gap-4">
       {sizes.map((size) => (
-        <Field key={size} orientation="horizontal" className="w-64">
-          <FieldLabel htmlFor={`switch-${size}`}>{size}</FieldLabel>
-          <Switch {...args} id={`switch-${size}`} size={size} />
-        </Field>
+        <div key={size} className="w-64">
+          <Field orientation="horizontal">
+            <FieldLabel htmlFor={`switch-${size}`}>{size}</FieldLabel>
+            <Switch {...args} id={`switch-${size}`} size={size} />
+          </Field>
+        </div>
       ))}
     </div>
   ),
@@ -75,10 +79,12 @@ export const Sizes: Story = {
 export const Disabled: Story = {
   args: { disabled: true },
   render: (args) => (
-    <Field orientation="horizontal" className="w-64" data-disabled>
-      <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
-      <Switch {...args} />
-    </Field>
+    <div className="w-64">
+      <Field orientation="horizontal" data-disabled>
+        <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
+        <Switch {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ args, canvas, userEvent }) => {
     const toggle = canvas.getByRole('switch', { name: 'Airplane mode' });
@@ -91,13 +97,15 @@ export const Disabled: Story = {
 export const Invalid: Story = {
   args: { 'aria-invalid': true, 'aria-describedby': 'airplane-error' },
   render: (args) => (
-    <Field orientation="horizontal" className="w-80" data-invalid>
-      <FieldContent>
-        <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
-        <FieldError id="airplane-error">Turn this on before boarding.</FieldError>
-      </FieldContent>
-      <Switch {...args} />
-    </Field>
+    <div className="w-80">
+      <Field orientation="horizontal" data-invalid>
+        <FieldContent>
+          <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
+          <FieldError id="airplane-error">Turn this on before boarding.</FieldError>
+        </FieldContent>
+        <Switch {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     const toggle = canvas.getByRole('switch', { name: 'Airplane mode' });
@@ -109,13 +117,15 @@ export const Invalid: Story = {
 export const WithDescription: Story = {
   args: { defaultChecked: true, 'aria-describedby': 'airplane-description' },
   render: (args) => (
-    <Field orientation="horizontal" className="w-80">
-      <FieldContent>
-        <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
-        <FieldDescription id="airplane-description">Turns off every radio.</FieldDescription>
-      </FieldContent>
-      <Switch {...args} />
-    </Field>
+    <div className="w-80">
+      <Field orientation="horizontal">
+        <FieldContent>
+          <FieldLabel htmlFor={args.id}>Airplane mode</FieldLabel>
+          <FieldDescription id="airplane-description">Turns off every radio.</FieldDescription>
+        </FieldContent>
+        <Switch {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     const toggle = canvas.getByRole('switch', { name: 'Airplane mode' });

@@ -18,10 +18,12 @@ const meta = {
   component: Slider,
   args: { defaultValue: 50, max: 100, step: 1, onValueChange: fn(), 'aria-labelledby': 'volume' },
   render: (args) => (
-    <Field className="w-72">
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="w-72">
+      <Field>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
 } satisfies Meta<typeof Slider>;
 
@@ -54,10 +56,12 @@ export const Keyboard: Story = {
 export const Range: Story = {
   args: { defaultValue: [20, 80], 'aria-labelledby': 'price' },
   render: (args) => (
-    <Field className="w-72">
-      <FieldLabel id="price">Price range</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="w-72">
+      <Field>
+        <FieldLabel id="price">Price range</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     const [lower, upper] = canvas.getAllByRole('slider', { name: 'Price range' });
@@ -75,10 +79,12 @@ export const Range: Story = {
 export const Vertical: Story = {
   args: { orientation: 'vertical' },
   render: (args) => (
-    <Field className="h-48 w-auto items-center">
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="flex h-48 w-fit">
+      <Field>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ canvas, userEvent }) => {
     const thumb = canvas.getByRole('slider', { name: 'Volume' });
@@ -93,10 +99,12 @@ export const Disabled: Story = {
   args: { disabled: true },
   parameters: { a11y: { test: 'todo' } },
   render: (args) => (
-    <Field className="w-72" data-disabled>
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-    </Field>
+    <div className="w-72">
+      <Field data-disabled>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+      </Field>
+    </div>
   ),
   play: async ({ args, canvas, userEvent }) => {
     const thumb = canvas.getByRole('slider', { name: 'Volume' });
@@ -110,11 +118,13 @@ export const Disabled: Story = {
 export const Invalid: Story = {
   args: { defaultValue: 95, 'aria-invalid': true },
   render: (args) => (
-    <Field className="w-72" data-invalid>
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-      <FieldError>Volume above 90 can damage hearing.</FieldError>
-    </Field>
+    <div className="w-72">
+      <Field data-invalid>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+        <FieldError>Volume above 90 can damage hearing.</FieldError>
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     const field = canvas.getByRole('slider', { name: 'Volume' }).closest('[data-slot=field]');
@@ -128,11 +138,13 @@ export const Invalid: Story = {
 export const WithDescription: Story = {
   args: { 'aria-describedby': 'volume-description' },
   render: (args) => (
-    <Field className="w-72">
-      <FieldLabel id="volume">Volume</FieldLabel>
-      <Slider {...args} />
-      <FieldDescription id="volume-description">Applies to every speaker.</FieldDescription>
-    </Field>
+    <div className="w-72">
+      <Field>
+        <FieldLabel id="volume">Volume</FieldLabel>
+        <Slider {...args} />
+        <FieldDescription id="volume-description">Applies to every speaker.</FieldDescription>
+      </Field>
+    </div>
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('slider', { name: 'Volume' })).toBeVisible();

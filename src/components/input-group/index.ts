@@ -1,1 +1,17 @@
-export * from './input-group';
+export {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+  type InputGroupAddonAlign,
+  type InputGroupAddonProps,
+  type InputGroupButtonProps,
+  type InputGroupButtonSize,
+  type InputGroupInputProps,
+  type InputGroupProps,
+  type InputGroupSize,
+  type InputGroupTextareaProps,
+  type InputGroupTextProps,
+} from './input-group';
