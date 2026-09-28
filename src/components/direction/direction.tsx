@@ -1,8 +1,18 @@
-import type { ComponentProps } from 'react';
+import {
+  DirectionProvider as DirectionProviderPrimitive,
+  useDirection as useDirectionPrimitive,
+} from '@base-ui/react/direction-provider';
 
-import { DirectionProvider, useDirection } from '@/components/ui/direction';
+export type TextDirection = 'ltr' | 'rtl';
 
-export type DirectionProviderProps = ComponentProps<typeof DirectionProvider>;
-export type TextDirection = ReturnType<typeof useDirection>;
+export type DirectionProviderProps = DirectionProviderPrimitive.Props & {
+  direction?: TextDirection;
+};
 
-export { DirectionProvider, useDirection };
+export function DirectionProvider(props: DirectionProviderProps) {
+  return <DirectionProviderPrimitive {...props} />;
+}
+
+export function useDirection(): TextDirection {
+  return useDirectionPrimitive();
+}

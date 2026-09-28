@@ -1,1 +1,18 @@
-export * from './carousel';
+export {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  useCarousel,
+  type CarouselApi,
+  type CarouselContentProps,
+  type CarouselControlProps,
+  type CarouselItemProps,
+  type CarouselNextProps,
+  type CarouselOptions,
+  type CarouselOrientation,
+  type CarouselPlugin,
+  type CarouselPreviousProps,
+  type CarouselProps,
+} from './carousel';
