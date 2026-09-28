@@ -1,12 +1,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "dist",
     "outDir": "dist",
     "rootDir": "src",
-    "declaration": true,
-    "sourceMap": true,
-    "inlineSources": true
+    "types": ["vite/client"]
   },
   "include": ["src"],
-  "exclude": ["**/*.test.*", "**/*.stories.*"]
+  "exclude": ["src/**/*.stories.tsx", "src/**/*.test.ts", "src/**/*.test.tsx", "src/stories"]
 }

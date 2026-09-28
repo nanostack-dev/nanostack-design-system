@@ -7,3 +7,6 @@ test-results/
 .ui-craft/
 worktrees/
 *.tgz
+storybook-static/
+debug-storybook.log
+*storybook.log

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.0
+
+Breaking: a new library built on shadcn/ui. Nothing from 0.0.x keeps its API.
+
+- Every shadcn/ui component (style `base-luma`, Base UI primitives, Phosphor icons) comes from the shadcn CLI into a private `src/components/ui/` folder. The package exports only typed wrappers, one per component, under `@nanostackorg/design-system/components/<name>` and the root barrel. `components/ui/*` is not exported.
+- Wrappers keep the shadcn API and the `className` prop for layout. `Badge` and `Alert` add the `success`, `warning` and `info` variants. `SelectContent` and `DropdownMenuContent` fit long labels instead of the trigger width.
+- Blocks built only from the wrappers: `AppShell`, `PageHeader`, `EmptyState`, `DataTable`, `StatCard`, `ConfirmDialog`, `ThemeProvider` and `ThemeToggle`, under `@nanostackorg/design-system/blocks/<name>`.
+- Theme: the shadcn token names (`--background`, `--primary`, `--sidebar-*`, `--chart-1..5`, `--radius`) with Echopoint's light blue and dark lime-on-navy values, plus `--success`, `--warning`, `--info`, their `-foreground` and `-on-tint` text, `--border-strong`, `--surface-subtle` and `--surface-elevated`. Dark `--destructive` is lighter (`hsl(0 84% 70%)`) so error text passes WCAG AA. Dark mode is the `.dark` class. Fonts are the `--font-sans`, `--font-heading` and `--font-mono` tokens.
+- `DataTable` uses TanStack Table v9 and exports its own `ColumnDef` type.
+- Tailwind CSS v4 is a peer dependency. The consumer generates the utilities from the package output.
+- Removed: `Theme`, `brand`, density, the `ns-` classes and `--ns-*` tokens, the closed `safeProps` contract, the Clerk adapter, the code editor, and the shadcn registry output.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.1.0 tailwindcss @tailwindcss/vite @fontsource-variable/plus-jakarta-sans @fontsource-variable/outfit @fontsource-variable/geist-mono`. In the main CSS file, write `@import "tailwindcss"; @import "@nanostackorg/design-system/styles.css"; @source "../node_modules/@nanostackorg/design-system/dist";` and import the three fonts in the entry point. Replace `<Theme>` with `<ThemeProvider>`, and replace each 0.0.x component with the wrapper of the same shadcn name, for example `<Button variant="secondary">` from `@nanostackorg/design-system/components/button`.
+
 ## 0.0.6
 
 - Let the desktop sidebar collapse to an icon rail. `AppShell collapsibleSidebar` adds a rail on the sidebar edge and the Ctrl/⌘ B shortcut, `AppShellSidebarToggle` gives the top bar a button, and `useAppShellSidebar()` reports the state. The application can keep the choice with `defaultSidebarCollapsed`, or with `sidebarCollapsed` and `onSidebarCollapsedChange`. A collapsed nav link shows only its icon and keeps its accessible name.
