@@ -16,14 +16,13 @@ src/components/<name>/<name>.stories.tsx  usage docs and play tests
 upstream/ui/<name>.tsx                    the untouched CLI output, merge base only
 ```
 
-`src/components/<name>/.open-api` marks a folder whose parts still accept `className`. Delete it when the folder is closed. `pnpm test:package` then checks every export of the folder.
+`pnpm test:package` checks that every export rejects `className` and `style`.
 
 ## 1. Start from the upstream code
 
-1. Copy `src/components/ui/<name>.tsx` over `src/components/<name>/<name>.tsx` and merge in what the old wrapper added (extra variants, fixes, defaults).
+1. A new component: `pnpm shadcn:update --add <name>`. It writes the CLI output to `upstream/ui/<name>.tsx`, records it in `upstream/lock.json`, and copies it to `src/components/<name>/<name>.tsx` as the starting point.
 2. Match the repo style: single quotes, semicolons, trailing commas, width 100, `cn` from `@/lib/utils`. Drop `"use client"`.
-3. Import other design-system parts by their owned file (`@/components/button/button`), never through `@/components/ui/*`.
-4. Do not delete `src/components/ui/<name>.tsx` while another `src/components/ui/*` file imports it. The last group removes the folder.
+3. Import other design-system parts by their owned file (`@/components/button/button`). The CLI output imports `@/components/ui/*`, which does not exist: rewrite those imports.
 
 ## 2. Close every exported part
 
@@ -74,7 +73,7 @@ Search `src/` for the component. Update stories, blocks and other owned files th
 
 1. `pnpm lint && pnpm typecheck`
 2. `pnpm exec vitest run src/components/<name>`
-3. `pnpm build && pnpm test:package`: the closed-API check covers the folder once `.open-api` is gone.
+3. `pnpm build && pnpm test:package`: the closed-API check covers every export.
 
 ## Update from upstream
 

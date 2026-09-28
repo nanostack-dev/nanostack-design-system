@@ -78,11 +78,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: { timeout: 0 },
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Save changes' }));
     const notification = await screen.findByRole('dialog', { name: 'Changes saved' });
     await waitFor(() => expect(notification).toBeVisible());
-    await expect(within(notification).getByText('Your profile is up to date.')).toBeVisible();
+    await waitFor(() =>
+      expect(within(notification).getByText('Your profile is up to date.')).toBeVisible(),
+    );
     await userEvent.hover(notification);
     const close = await within(notification).findByRole('button', { name: 'Close toast' });
     await userEvent.click(close);
