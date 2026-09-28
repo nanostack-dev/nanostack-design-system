@@ -18,7 +18,7 @@ import {
   QuestionnaireSkip,
   QuestionnaireSubmit,
   QuestionnaireTitle,
-} from './questionnaire';
+} from '@/components/questionnaire';
 
 const items = [
   {
@@ -50,63 +50,87 @@ function Navigation() {
   );
 }
 
+const usage = `
+A step-by-step list of questions with choices. Use it for onboarding and for short surveys, or when an assistant waits for an answer. For a single question in a form, use \`RadioGroup\` or \`Checkbox\` in a \`Field\`.
+
+The props are the whole API. No part accepts \`className\` or \`style\`. The questionnaire fills the width of its container.
+
+## Structure
+
+- \`Questionnaire\` is a form. Pass \`items\` (the order and the rules) and \`onSubmit\`.
+- \`QuestionnaireItem\` is one question. \`multiple\` makes its choices checkboxes, \`required\` blocks Next until an answer is set.
+- \`QuestionnaireChoice\` is one answer. When it has a \`QuestionnaireChoiceDescription\`, the first line becomes the title in medium weight.
+- \`QuestionnaireInput\` in \`QuestionnaireChoices\` adds a free answer.
+- \`QuestionnaireActions\` holds the navigation. \`Previous\` and \`Skip\` are outline buttons. \`Next\` and \`Submit\` are the solid brand action, and only one of them shows at a time.
+
+## shortcuts
+
+| Value | Use it for |
+| --- | --- |
+| none | The default. Choices take a click or the arrow keys. |
+| \`letters\` | A keyboard-first flow, such as a questionnaire in a chat. Each choice shows its letter. |
+| \`numbers\` | The same, for a scale or a ranked list, where a number reads better than a letter. |
+
+## Do not
+
+- Do not put more than one question on a step. Use a form instead.
+- Do not add a \`Button\` for navigation. The action parts know the step and the validation.
+- Do not use a questionnaire for settings that people change later.
+`;
+
 const meta = {
   title: 'Components/Questionnaire',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A step-by-step list of questions with choices. Use it for onboarding and for short surveys.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Questionnaire,
   args: { defaultItem: 'direction', items, onSubmit: handleSubmit },
   beforeEach: () => {
     submitted.mockClear();
   },
   render: (args) => (
-    <Questionnaire {...args} className="w-lg">
-      <QuestionnaireProgress />
-      <QuestionnaireItem name="direction" required>
-        <QuestionnaireTitle>What should we prototype next?</QuestionnaireTitle>
-        <QuestionnaireDescription>
-          Choose one direction or write another answer.
-        </QuestionnaireDescription>
-        <QuestionnaireChoices>
-          <QuestionnaireChoice value="delegation">
-            <span className="font-medium">Sub-agent delegation</span>
-            <QuestionnaireChoiceDescription>
-              Show when work is delegated and what comes back.
-            </QuestionnaireChoiceDescription>
-          </QuestionnaireChoice>
-          <QuestionnaireChoice value="questions">
-            <span className="font-medium">Question prompts</span>
-            <QuestionnaireChoiceDescription>
-              Show choices while the agent waits for input.
-            </QuestionnaireChoiceDescription>
-          </QuestionnaireChoice>
-          <QuestionnaireChoice value="both">
-            <span className="font-medium">Both together</span>
-          </QuestionnaireChoice>
-          <QuestionnaireInput aria-label="Another direction" placeholder="Type another direction" />
-        </QuestionnaireChoices>
-        <QuestionnaireError />
-      </QuestionnaireItem>
-      <QuestionnaireItem name="signals" multiple>
-        <QuestionnaireTitle>What should every update include?</QuestionnaireTitle>
-        <QuestionnaireDescription>
-          Select all that apply, or skip this question.
-        </QuestionnaireDescription>
-        <QuestionnaireChoices>
-          <QuestionnaireChoice value="progress">Progress</QuestionnaireChoice>
-          <QuestionnaireChoice value="decisions">Decisions</QuestionnaireChoice>
-          <QuestionnaireChoice value="risks">Risks</QuestionnaireChoice>
-        </QuestionnaireChoices>
-        <QuestionnaireError />
-      </QuestionnaireItem>
-      <Navigation />
-    </Questionnaire>
+    <div className="w-lg">
+      <Questionnaire {...args}>
+        <QuestionnaireProgress />
+        <QuestionnaireItem name="direction" required>
+          <QuestionnaireTitle>What should we prototype next?</QuestionnaireTitle>
+          <QuestionnaireDescription>
+            Choose one direction or write another answer.
+          </QuestionnaireDescription>
+          <QuestionnaireChoices>
+            <QuestionnaireChoice value="delegation">
+              Sub-agent delegation
+              <QuestionnaireChoiceDescription>
+                Show when work is delegated and what comes back.
+              </QuestionnaireChoiceDescription>
+            </QuestionnaireChoice>
+            <QuestionnaireChoice value="questions">
+              Question prompts
+              <QuestionnaireChoiceDescription>
+                Show choices while the agent waits for input.
+              </QuestionnaireChoiceDescription>
+            </QuestionnaireChoice>
+            <QuestionnaireChoice value="both">Both together</QuestionnaireChoice>
+            <QuestionnaireInput
+              aria-label="Another direction"
+              placeholder="Type another direction"
+            />
+          </QuestionnaireChoices>
+          <QuestionnaireError />
+        </QuestionnaireItem>
+        <QuestionnaireItem name="signals" multiple>
+          <QuestionnaireTitle>What should every update include?</QuestionnaireTitle>
+          <QuestionnaireDescription>
+            Select all that apply, or skip this question.
+          </QuestionnaireDescription>
+          <QuestionnaireChoices>
+            <QuestionnaireChoice value="progress">Progress</QuestionnaireChoice>
+            <QuestionnaireChoice value="decisions">Decisions</QuestionnaireChoice>
+            <QuestionnaireChoice value="risks">Risks</QuestionnaireChoice>
+          </QuestionnaireChoices>
+          <QuestionnaireError />
+        </QuestionnaireItem>
+        <Navigation />
+      </Questionnaire>
+    </div>
   ),
 } satisfies Meta<typeof Questionnaire>;
 
@@ -120,6 +144,10 @@ export const Default: Story = {
     ).toBeVisible();
     await expect(canvas.getAllByRole('radio')).toHaveLength(3);
     await expect(canvas.getByRole('button', { name: 'Next' })).toBeVisible();
+    const label = canvas.getByText('Sub-agent delegation');
+    const description = canvas.getByText('Show when work is delegated and what comes back.');
+    await expect(getComputedStyle(label).fontWeight).toBe('500');
+    await expect(getComputedStyle(description).fontWeight).toBe('400');
   },
 };
 

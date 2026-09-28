@@ -1,58 +1,87 @@
 import { CaretRightIcon, FileTextIcon, ShieldCheckIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { MouseEvent } from 'react';
 import { expect, fn } from 'storybook/test';
 
+import { Avatar, AvatarFallback } from '@/components/avatar';
 import { Button } from '@/components/button';
-
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
+  ItemLink,
   ItemMedia,
   ItemSeparator,
   ItemTitle,
   type ItemSize,
   type ItemVariant,
-} from './item';
+} from '@/components/item';
 
-const variants: ItemVariant[] = ['default', 'outline', 'muted'];
-const sizes: ItemSize[] = ['default', 'sm', 'xs'];
+const variants: ItemVariant[] = ['ghost', 'outline', 'soft'];
+const sizes: ItemSize[] = ['md', 'sm', 'xs'];
+
+const usage = `
+A row with media, a title, a description and actions. Use it for a list of people, files, keys or settings. For a surface with its own header and body, use \`Card\`. For rows with columns, use \`Table\`.
+
+The props are the whole API. The parts do not accept \`className\` or \`style\`. \`Item\` fills the width of its container.
+
+## variant: how the row stands out
+
+| Value | Use it for |
+| --- | --- |
+| \`ghost\` | The default. Rows in a list that already sits on a surface, such as a card or a menu. |
+| \`outline\` | A row that stands alone on the page, or a grid of links. |
+| \`soft\` | A row to set apart from its neighbours, such as the current plan or a pinned item. |
+
+## size
+
+| Value | Use it for |
+| --- | --- |
+| \`md\` | The default. A row with a title and a description. |
+| \`sm\` | A dense list, or a list in a side panel. |
+| \`xs\` | A row with one line of text, such as a result in a menu or a command palette. |
+
+## Parts
+
+- \`ItemLink\` is an \`Item\` that navigates. It takes \`href\` and uses the router link from \`DesignSystemProvider\`.
+- \`ItemGroup\` is a list of items, with the space between rows set by \`size\`. Give each item \`role="listitem"\`.
+- \`ItemMedia\`: pass \`icon\` for a Phosphor icon. Pass an \`Avatar\` as children. Set \`image\` when the children are an \`img\`, to frame and crop it.
+- \`ItemContent\` holds \`ItemTitle\` and \`ItemDescription\`. \`ItemActions\` holds buttons or a caret.
+- \`ItemSeparator\` is a line between two items.
+
+## Do not
+
+- Do not put a \`Button\` inside an \`ItemLink\`. A link cannot hold another control.
+- Do not use \`Item\` with an \`onClick\` to navigate. Use \`ItemLink\`.
+- Do not put more than two actions in \`ItemActions\`. Use a menu.
+`;
 
 const meta = {
   title: 'Components/Item',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A row with media, a title, a description and actions. Use it for lists of people, files or settings.',
-      },
-    },
-  },
   component: Item,
-  args: { variant: 'outline', size: 'default' },
+  parameters: { docs: { description: { component: usage } } },
+  args: { variant: 'outline', size: 'md' },
   argTypes: {
     variant: { control: 'select', options: variants },
     size: { control: 'select', options: sizes },
   },
   render: (args) => (
-    <ItemGroup className="w-96">
-      <Item {...args} role="listitem">
-        <ItemMedia variant="icon">
-          <ShieldCheckIcon />
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>Two-factor authentication</ItemTitle>
-          <ItemDescription>Protect the account with a second step.</ItemDescription>
-        </ItemContent>
-        <ItemActions>
-          <Button size="sm" variant="outline">
-            Enable
-          </Button>
-        </ItemActions>
-      </Item>
-    </ItemGroup>
+    <div className="w-96">
+      <ItemGroup>
+        <Item {...args} role="listitem">
+          <ItemMedia icon={ShieldCheckIcon} />
+          <ItemContent>
+            <ItemTitle>Two-factor authentication</ItemTitle>
+            <ItemDescription>Protect the account with a second step.</ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <Button size="sm">Enable</Button>
+          </ItemActions>
+        </Item>
+      </ItemGroup>
+    </div>
   ),
 } satisfies Meta<typeof Item>;
 
@@ -70,70 +99,110 @@ export const Default: Story = {
 
 export const Variants: Story = {
   render: (args) => (
-    <ItemGroup className="w-96">
-      {variants.map((variant) => (
-        <Item key={variant} {...args} variant={variant} role="listitem">
-          <ItemContent>
-            <ItemTitle>{variant}</ItemTitle>
-          </ItemContent>
-        </Item>
-      ))}
-    </ItemGroup>
+    <div className="w-96">
+      <ItemGroup>
+        {variants.map((variant) => (
+          <Item key={variant} {...args} variant={variant} role="listitem" data-testid={variant}>
+            <ItemContent>
+              <ItemTitle>{variant}</ItemTitle>
+            </ItemContent>
+          </Item>
+        ))}
+      </ItemGroup>
+    </div>
   ),
   play: async ({ canvas }) => {
     await expect(canvas.getAllByRole('listitem')).toHaveLength(variants.length);
+    const border = (variant: ItemVariant) =>
+      getComputedStyle(canvas.getByTestId(variant)).borderTopColor;
+    await expect(border('outline')).not.toBe(border('ghost'));
+    await expect(getComputedStyle(canvas.getByTestId('soft')).backgroundColor).not.toBe(
+      getComputedStyle(canvas.getByTestId('ghost')).backgroundColor,
+    );
   },
 };
 
 export const Sizes: Story = {
   render: (args) => (
-    <ItemGroup className="w-96">
-      {sizes.map((size) => (
-        <Item key={size} {...args} size={size} role="listitem">
-          <ItemContent>
-            <ItemTitle>{size}</ItemTitle>
-          </ItemContent>
-        </Item>
-      ))}
-    </ItemGroup>
+    <div className="w-96">
+      <ItemGroup>
+        {sizes.map((size) => (
+          <Item key={size} {...args} size={size} role="listitem">
+            <ItemContent>
+              <ItemTitle>{size}</ItemTitle>
+            </ItemContent>
+          </Item>
+        ))}
+      </ItemGroup>
+    </div>
   ),
   play: async ({ canvas }) => {
     const heights = canvas
       .getAllByRole('listitem')
       .map((item) => item.getBoundingClientRect().height);
     await expect([...heights].sort((a, b) => b - a)).toEqual(heights);
+    await expect(new Set(heights).size).toBe(sizes.length);
+  },
+};
+
+export const WithAvatar: Story = {
+  render: (args) => (
+    <div className="w-96">
+      <Item {...args}>
+        <ItemMedia>
+          <Avatar>
+            <AvatarFallback>AL</AvatarFallback>
+          </Avatar>
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle>Ada Lovelace</ItemTitle>
+          <ItemDescription>ada@example.com</ItemDescription>
+        </ItemContent>
+      </Item>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText('AL')).toBeVisible();
   },
 };
 
 export const AsLink: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`ItemLink` renders the router link from `DesignSystemProvider`, here a plain anchor.',
+      },
+    },
+  },
   render: (args) => {
-    const onNavigate = fn((event: React.MouseEvent) => event.preventDefault());
+    const onNavigate = fn((event: MouseEvent) => event.preventDefault());
     return (
-      <nav aria-label="Documents" className="flex w-96 flex-col">
-        <Item {...args} render={<a href="#report" onClick={onNavigate} />}>
-          <ItemMedia variant="icon">
-            <FileTextIcon />
-          </ItemMedia>
+      <nav aria-label="Documents" className="w-96">
+        <ItemLink variant={args.variant} size={args.size} href="#report" onClick={onNavigate}>
+          <ItemMedia icon={FileTextIcon} />
           <ItemContent>
             <ItemTitle>Quarterly report</ItemTitle>
             <ItemDescription>Updated two hours ago.</ItemDescription>
           </ItemContent>
           <ItemActions>
-            <CaretRightIcon />
+            <CaretRightIcon aria-hidden />
           </ItemActions>
-        </Item>
+        </ItemLink>
         <ItemSeparator />
-        <Item {...args} render={<a href="#notes" onClick={onNavigate} />}>
+        <ItemLink variant={args.variant} size={args.size} href="#notes" onClick={onNavigate}>
           <ItemContent>
             <ItemTitle>Release notes</ItemTitle>
           </ItemContent>
-        </Item>
+        </ItemLink>
       </nav>
     );
   },
   play: async ({ canvas, userEvent }) => {
     await userEvent.tab();
-    await expect(canvas.getByRole('link', { name: /Quarterly report/ })).toHaveFocus();
+    const report = canvas.getByRole('link', { name: /Quarterly report/ });
+    await expect(report).toHaveFocus();
+    await expect(report).toHaveAttribute('href', '#report');
     await userEvent.tab();
     await expect(canvas.getByRole('link', { name: /Release notes/ })).toHaveFocus();
   },

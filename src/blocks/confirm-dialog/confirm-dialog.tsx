@@ -84,8 +84,7 @@ export function ConfirmDialog({
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
         </AlertDialogHeader>
         {errorMessage ? (
-          <Alert variant="destructive">
-            <WarningCircleIcon aria-hidden="true" />
+          <Alert tone="critical" icon={WarningCircleIcon}>
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         ) : null}

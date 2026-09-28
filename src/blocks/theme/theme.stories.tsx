@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, screen, waitFor, within } from 'storybook/test';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
+import { Spread } from '@/layout/spread';
 
 import { ThemeProvider, type ThemeProviderProps, ThemeToggle, useTheme } from './theme';
 
@@ -30,16 +31,20 @@ function ThemeStatus() {
 function ThemeDemo(props: Omit<ThemeProviderProps, 'children'>) {
   return (
     <ThemeProvider storageKey={storageKey} {...props}>
-      <Card className="w-72">
-        <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>Pick a light, dark or system theme.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-start justify-between gap-4">
-          <ThemeStatus />
-          <ThemeToggle />
-        </CardContent>
-      </Card>
+      <div className="w-72">
+        <Card>
+          <CardHeader>
+            <CardTitle>Appearance</CardTitle>
+            <CardDescription>Pick a light, dark or system theme.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Spread space="lg" alignY="start">
+              <ThemeStatus />
+              <ThemeToggle />
+            </Spread>
+          </CardContent>
+        </Card>
+      </div>
     </ThemeProvider>
   );
 }

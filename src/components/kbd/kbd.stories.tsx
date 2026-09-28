@@ -3,19 +3,30 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 
 import { Button } from '@/components/button';
+import { Kbd, KbdGroup } from '@/components/kbd';
+import { Text } from '@/components/text';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip';
 
-import { Kbd, KbdGroup } from './kbd';
+const usage = `
+A keyboard key or a shortcut, such as ⌘ K. Use it in menus, tooltips and help text. It has one look: inside a tooltip it switches to the tooltip colours by itself.
+
+The props are the whole API. \`Kbd\` and \`KbdGroup\` do not accept \`className\` or \`style\`.
+
+## Parts
+
+- \`Kbd\`: one key. For a symbol key, put the icon with \`aria-hidden\` and the key name in a visually hidden span.
+- \`KbdGroup\`: the keys of one shortcut, pressed together.
+
+## Do not
+
+- Do not use \`Kbd\` for code or a value. Use \`Text font="mono"\`.
+- Do not put a whole sentence in \`Kbd\`.
+`;
 
 const meta = {
   title: 'Components/Kbd',
   parameters: {
-    docs: {
-      description: {
-        component:
-          'A keyboard key or a shortcut, such as ⌘ K. Use it in menus, tooltips and help text.',
-      },
-    },
+    docs: { description: { component: usage } },
   },
   component: Kbd,
   args: { children: 'Esc' },
@@ -34,7 +45,7 @@ export const Default: Story = {
 
 export const Group: Story = {
   render: () => (
-    <p className="text-sm">
+    <Text>
       Press{' '}
       <KbdGroup>
         <Kbd>
@@ -44,7 +55,7 @@ export const Group: Story = {
         <Kbd>K</Kbd>
       </KbdGroup>{' '}
       to search.
-    </p>
+    </Text>
   ),
   play: async ({ canvasElement }) => {
     const group = canvasElement.querySelector('[data-slot="kbd-group"]');

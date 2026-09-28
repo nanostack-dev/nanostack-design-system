@@ -12,6 +12,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, fn, waitFor, within } from 'storybook/test';
 
+import { StatCard, StatCardDescription, StatCardLabel, StatCardValue } from '@/blocks/stat-card';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,7 +21,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/breadcrumb';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 
 import {
   AppShell,
@@ -108,15 +108,11 @@ function Workspace(props: Omit<AppShellProps, 'children'>) {
           <ShellState />
           <div className="grid gap-4 md:grid-cols-3">
             {summaries.map((summary) => (
-              <Card key={summary.title}>
-                <CardHeader>
-                  <CardDescription>{summary.title}</CardDescription>
-                  <CardTitle className="text-2xl">{summary.value}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  {summary.description}
-                </CardContent>
-              </Card>
+              <StatCard key={summary.title}>
+                <StatCardLabel>{summary.title}</StatCardLabel>
+                <StatCardValue>{summary.value}</StatCardValue>
+                <StatCardDescription>{summary.description}</StatCardDescription>
+              </StatCard>
             ))}
           </div>
         </AppShellMain>
