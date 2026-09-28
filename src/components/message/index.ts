@@ -1,1 +1,15 @@
-export * from './message';
+export {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter,
+  MessageGroup,
+  MessageHeader,
+  type MessageAlign,
+  type MessageAvatarProps,
+  type MessageContentProps,
+  type MessageFooterProps,
+  type MessageGroupProps,
+  type MessageHeaderProps,
+  type MessageProps,
+} from './message';
