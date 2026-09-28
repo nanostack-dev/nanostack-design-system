@@ -42,6 +42,14 @@ function Faq(props: AccordionProps) {
 
 const meta = {
   title: 'Components/Accordion',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Stacked sections that open one at a time or together. Use it for FAQ lists and long settings that the user reads section by section.',
+      },
+    },
+  },
   component: Accordion,
   args: { onValueChange: fn() },
   render: (args) => <Faq {...args} />,

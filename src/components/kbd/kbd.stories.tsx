@@ -9,6 +9,14 @@ import { Kbd, KbdGroup } from './kbd';
 
 const meta = {
   title: 'Components/Kbd',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A keyboard key or a shortcut, such as ⌘ K. Use it in menus, tooltips and help text.',
+      },
+    },
+  },
   component: Kbd,
   args: { children: 'Esc' },
 } satisfies Meta<typeof Kbd>;

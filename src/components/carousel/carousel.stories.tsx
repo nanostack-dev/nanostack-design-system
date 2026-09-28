@@ -51,7 +51,15 @@ function Slides(props: CarouselProps) {
 const meta = {
   title: 'Components/Carousel',
   component: Carousel,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'A horizontal row of slides with previous and next controls. Use it for media or for cards that do not all fit on the screen.',
+      },
+    },
+  },
   decorators: [
     (Story) => (
       <div className="flex justify-center px-14">

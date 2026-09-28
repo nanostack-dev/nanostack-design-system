@@ -16,6 +16,14 @@ const sizes: AvatarSize[] = ['sm', 'default', 'lg'];
 
 const meta = {
   title: 'Components/Avatar',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A picture of a person or an organization, with initials when the image does not load. Use it in lists, menus and account controls.',
+      },
+    },
+  },
   component: Avatar,
   args: { size: 'default' },
   argTypes: { size: { control: 'select', options: sizes } },

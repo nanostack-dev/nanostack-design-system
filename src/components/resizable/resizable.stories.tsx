@@ -7,7 +7,15 @@ const meta = {
   title: 'Components/Resizable',
   component: ResizablePanelGroup,
   args: { orientation: 'horizontal' },
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'Panels with handles that the user drags to change their size. Use it for editors and split views.',
+      },
+    },
+  },
 } satisfies Meta<typeof ResizablePanelGroup>;
 
 export default meta;

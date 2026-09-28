@@ -2,7 +2,13 @@ import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react-vite';
 
 import { TooltipProvider } from '../src/components/tooltip';
+import { ThemedDocsContainer } from './docs-container';
 import './preview.css';
+
+function defaultTheme() {
+  if (import.meta.env.VITE_STORYBOOK_THEME) return import.meta.env.VITE_STORYBOOK_THEME;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
 const preview: Preview = {
   decorators: [
@@ -20,9 +26,14 @@ const preview: Preview = {
     layout: 'centered',
     a11y: { test: 'error' },
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
-    options: { storySort: { order: ['Foundations', 'Components', 'Blocks'] } },
+    docs: { container: ThemedDocsContainer, toc: { headingSelector: 'h2, h3' } },
+    options: {
+      storySort: {
+        order: ['Welcome', 'Foundations', 'Components', 'Blocks', 'Showcase'],
+      },
+    },
   },
-  initialGlobals: { theme: import.meta.env.VITE_STORYBOOK_THEME ?? 'light' },
+  initialGlobals: { theme: defaultTheme() },
   tags: ['autodocs'],
 };
 

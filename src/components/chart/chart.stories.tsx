@@ -27,6 +27,14 @@ const config = {
 
 const meta = {
   title: 'Components/Chart',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A Recharts wrapper that takes its colors from the `--chart-1` to `--chart-5` tokens. Use it for trends and comparisons on a dashboard.',
+      },
+    },
+  },
   component: ChartContainer,
   args: { config, className: 'h-64 w-md', children: <></> },
   render: (args) => (

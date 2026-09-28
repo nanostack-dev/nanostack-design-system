@@ -17,6 +17,14 @@ const variants: BubbleVariant[] = [
 
 const meta = {
   title: 'Components/Bubble',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A chat bubble for one message, with variants for the author and for reactions. Use it inside `Message` in a conversation.',
+      },
+    },
+  },
   component: Bubble,
   args: { variant: 'default', align: 'start' },
   argTypes: {

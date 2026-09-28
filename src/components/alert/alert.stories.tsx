@@ -23,6 +23,14 @@ const variants: { variant: AlertVariant; icon: ComponentType; title: string }[] 
 
 const meta = {
   title: 'Components/Alert',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A callout inside the page for a status or a message that stays visible. Use it for a notice that does not interrupt the user.\n\n**Nanostack addition:** the `success`, `warning` and `info` variants, with the `--success`, `--warning` and `--info` tokens and their `-on-tint` text colors.',
+      },
+    },
+  },
   component: Alert,
   args: { variant: 'default' },
   argTypes: {
@@ -49,6 +57,14 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`default` and `destructive` come from shadcn. `success`, `warning` and `info` are Nanostack additions.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex w-96 flex-col gap-3">
       {variants.map(({ variant, icon: Icon, title }) => (

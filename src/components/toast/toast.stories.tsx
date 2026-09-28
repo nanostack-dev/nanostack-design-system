@@ -9,6 +9,14 @@ const onUndo = fn();
 
 const meta = {
   title: 'Components/Toast',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A short message at the edge of the screen that closes by itself. Use it to confirm an action or to report a background error.',
+      },
+    },
+  },
   component: Toaster,
   beforeEach: () => {
     onUndo.mockClear();

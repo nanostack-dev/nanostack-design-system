@@ -13,6 +13,14 @@ import {
 
 const meta = {
   title: 'Components/Breadcrumb',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A trail of links from the top of the site to the current page. Use it in a page header when the page is deep in a hierarchy.',
+      },
+    },
+  },
   component: Breadcrumb,
 } satisfies Meta<typeof Breadcrumb>;
 

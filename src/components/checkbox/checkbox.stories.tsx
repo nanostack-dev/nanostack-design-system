@@ -16,6 +16,14 @@ import { Checkbox } from './checkbox';
 
 const meta = {
   title: 'Components/Checkbox',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A box that turns one option on or off. Use it for independent choices and for agreement to terms.',
+      },
+    },
+  },
   component: Checkbox,
   args: { id: 'terms', onCheckedChange: fn() },
   render: (args) => (

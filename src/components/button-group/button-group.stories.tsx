@@ -8,6 +8,14 @@ import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-gro
 
 const meta = {
   title: 'Components/Button Group',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A row or a column of related buttons with shared borders. Use it for a split button or for a small set of actions on the same object.',
+      },
+    },
+  },
   component: ButtonGroup,
   args: { 'aria-label': 'Message actions' },
   render: (args) => (

@@ -5,6 +5,14 @@ import { AspectRatio } from './aspect-ratio';
 
 const meta = {
   title: 'Components/Aspect Ratio',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A box that keeps a fixed width-to-height ratio. Use it for images, videos and maps that must not change shape.',
+      },
+    },
+  },
   component: AspectRatio,
   args: { ratio: 16 / 9 },
   render: (args) => (

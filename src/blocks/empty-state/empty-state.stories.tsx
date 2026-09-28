@@ -12,6 +12,14 @@ const onImport = fn();
 
 const meta = {
   title: 'Blocks/Empty State',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A message for a list or a page with no content, with an optional icon and actions. Use it to tell the user why the area is empty and what to do next.',
+      },
+    },
+  },
   component: EmptyState,
   args: {
     icon: FolderIcon,

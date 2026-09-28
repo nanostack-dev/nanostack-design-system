@@ -5,6 +5,14 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from './hover-card';
 
 const meta = {
   title: 'Components/Hover Card',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A card that opens when the pointer stays on a link. Use it to show a preview of a person or a page. Do not put the only copy of important content in it.',
+      },
+    },
+  },
   component: HoverCard,
   args: { onOpenChange: fn() },
   render: (args) => (

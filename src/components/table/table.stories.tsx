@@ -23,7 +23,15 @@ const invoices = [
 const meta = {
   title: 'Components/Table',
   component: Table,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'The parts of an HTML table with the library style. Use it for static data. Use the `DataTable` block for sort, search and pages.',
+      },
+    },
+  },
 } satisfies Meta<typeof Table>;
 
 export default meta;

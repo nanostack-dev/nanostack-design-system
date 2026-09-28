@@ -7,6 +7,14 @@ import { Slider } from './slider';
 
 const meta = {
   title: 'Components/Slider',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A handle on a track to select a value or a range. Use it when an approximate value is enough.\n\n**Nanostack addition:** `value` and `defaultValue` accept a number as well as an array, and `onValueChange` then gives back a number.',
+      },
+    },
+  },
   component: Slider,
   args: { defaultValue: 50, max: 100, step: 1, onValueChange: fn(), 'aria-labelledby': 'volume' },
   render: (args) => (

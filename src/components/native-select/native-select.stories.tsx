@@ -14,6 +14,14 @@ const sizes: NativeSelectSize[] = ['sm', 'default'];
 
 const meta = {
   title: 'Components/Native Select',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The select element of the browser, with the library style. Use it on mobile forms and when the list is short and simple.',
+      },
+    },
+  },
   component: NativeSelect,
   args: { id: 'region', defaultValue: 'eu-west-1', onChange: fn() },
   argTypes: { size: { control: 'select', options: sizes } },

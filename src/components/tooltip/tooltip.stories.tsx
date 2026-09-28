@@ -8,6 +8,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
 const meta = {
   title: 'Components/Tooltip',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A short label that shows when the pointer or the focus is on a control. Use it to name an icon button. Do not put actions in it.',
+      },
+    },
+  },
   component: Tooltip,
   render: (args) => (
     <Tooltip {...args}>

@@ -18,6 +18,14 @@ const onSubmit = fn();
 
 const meta = {
   title: 'Components/Drawer',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A panel that slides in from the edge of the screen and closes with a swipe. Use it for mobile menus and for short tasks on a phone.',
+      },
+    },
+  },
   component: Drawer,
   args: { onOpenChange: fn() },
   beforeEach: () => {

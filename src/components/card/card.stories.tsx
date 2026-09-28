@@ -41,6 +41,14 @@ function TeamCard(props: CardProps) {
 
 const meta = {
   title: 'Components/Card',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A surface that groups a title, content and actions about one subject. Use it for dashboard panels and for items in a grid.',
+      },
+    },
+  },
   component: Card,
   args: { size: 'default' },
   argTypes: { size: { control: 'select', options: sizes } },

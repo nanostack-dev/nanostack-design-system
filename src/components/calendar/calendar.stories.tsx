@@ -50,6 +50,14 @@ function RangeCalendar({ onSelect }: { onSelect: (range: DateRange | undefined) 
 
 const meta = {
   title: 'Components/Calendar',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A month grid to select a date or a date range. Use it inside a `Popover` for a date field, or alone on a scheduling page.\n\n**Nanostack addition:** keyboard focus moves to the focused day, so the arrow keys work after the grid opens.',
+      },
+    },
+  },
   component: Calendar,
   args: { defaultMonth: january2026, today: fixedToday },
 } satisfies Meta<typeof Calendar>;

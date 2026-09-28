@@ -17,6 +17,14 @@ const onCreate = fn();
 
 const meta = {
   title: 'Components/Empty',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The parts of an empty state: media, title, description and actions. Use it when a list or a page has no content. The `EmptyState` block gives a shorter API for the common case.',
+      },
+    },
+  },
   component: Empty,
   render: (args) => (
     <Empty {...args} className="w-96 border">

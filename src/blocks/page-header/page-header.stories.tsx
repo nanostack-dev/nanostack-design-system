@@ -46,7 +46,15 @@ function hasNoHorizontalOverflow(element: HTMLElement) {
 const meta = {
   title: 'Blocks/Page Header',
   component: PageHeader,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'The top of a page: breadcrumb, title, description and actions. Use it once at the top of each page, inside `AppShellMain`.',
+      },
+    },
+  },
   beforeEach: () => {
     onCreate.mockClear();
     onExport.mockClear();

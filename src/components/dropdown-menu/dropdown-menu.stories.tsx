@@ -27,6 +27,14 @@ const onSignOut = fn();
 
 const meta = {
   title: 'Components/Dropdown Menu',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A menu of actions or options that opens from a button. Use it for actions on an item and for account menus.\n\n**Nanostack addition:** `DropdownMenuContent` is at least as wide as its trigger (minimum 12rem) and grows to fit long labels up to the available width, instead of a fixed width.',
+      },
+    },
+  },
   component: DropdownMenu,
   args: { onOpenChange: fn() },
   beforeEach: () => {
@@ -134,6 +142,13 @@ export const EscapeCloses: Story = {
 const longLabel = 'Transfer ownership to another workspace member';
 
 export const LongLabel: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Nanostack fix: the menu grows past the trigger width to show a long label in full.',
+      },
+    },
+  },
   render: (args) => (
     <DropdownMenu {...args}>
       <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>

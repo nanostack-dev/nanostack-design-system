@@ -9,6 +9,14 @@ const longText = 'This release notes entry keeps going. '.repeat(12).trim();
 
 const meta = {
   title: 'Components/Textarea',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A multi-line text field. Use it inside a `Field` for comments and descriptions.',
+      },
+    },
+  },
   component: Textarea,
   args: { id: 'notes', placeholder: 'Write release notes', onChange: fn() },
   render: (args) => (

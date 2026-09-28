@@ -7,6 +7,11 @@ import { Input } from './input';
 
 const meta = {
   title: 'Components/Input',
+  parameters: {
+    docs: {
+      description: { component: 'A one-line text field. Use it inside a `Field` with a label.' },
+    },
+  },
   component: Input,
   args: { id: 'email', type: 'email', placeholder: 'you@example.com', onChange: fn() },
   render: (args) => (

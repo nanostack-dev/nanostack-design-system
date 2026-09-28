@@ -8,6 +8,14 @@ import { Label } from './label';
 
 const meta = {
   title: 'Components/Label',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'The accessible name of a form control. Use it with every input. Inside a form, use `FieldLabel`.',
+      },
+    },
+  },
   component: Label,
   args: { htmlFor: 'username', children: 'Username' },
   render: (args) => (

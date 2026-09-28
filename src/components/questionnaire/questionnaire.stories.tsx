@@ -52,6 +52,14 @@ function Navigation() {
 
 const meta = {
   title: 'Components/Questionnaire',
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A step-by-step list of questions with choices. Use it for onboarding and for short surveys.',
+      },
+    },
+  },
   component: Questionnaire,
   args: { defaultItem: 'direction', items, onSubmit: handleSubmit },
   beforeEach: () => {

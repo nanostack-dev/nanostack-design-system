@@ -20,7 +20,15 @@ const products = [
 const meta = {
   title: 'Components/Navigation Menu',
   component: NavigationMenu,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component:
+          'Top-level site navigation with menus that open on hover or focus. Use it in a marketing or documentation header.',
+      },
+    },
+  },
   render: (args) => (
     <NavigationMenu aria-label="Main" {...args}>
       <NavigationMenuList>
