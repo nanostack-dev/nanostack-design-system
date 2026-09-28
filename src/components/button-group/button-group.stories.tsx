@@ -2,7 +2,7 @@ import { CaretDownIcon, MinusIcon, PlusIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn } from 'storybook/test';
 
-import { Button } from '@/components/button';
+import { Button, IconButton } from '@/components/button';
 
 import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-group';
 
@@ -48,12 +48,8 @@ export const Vertical: Story = {
   args: { orientation: 'vertical', 'aria-label': 'Zoom' },
   render: (args) => (
     <ButtonGroup {...args}>
-      <Button variant="outline" size="icon" aria-label="Zoom in">
-        <PlusIcon />
-      </Button>
-      <Button variant="outline" size="icon" aria-label="Zoom out">
-        <MinusIcon />
-      </Button>
+      <IconButton variant="outline" icon={PlusIcon} label="Zoom in" tooltip={false} />
+      <IconButton variant="outline" icon={MinusIcon} label="Zoom out" tooltip={false} />
     </ButtonGroup>
   ),
   play: async ({ canvas }) => {
@@ -83,11 +79,17 @@ export const SplitButton: Story = {
   args: { 'aria-label': 'Publish' },
   render: (args) => (
     <ButtonGroup {...args}>
-      <Button onClick={fn()}>Publish</Button>
-      <ButtonGroupSeparator />
-      <Button size="icon" aria-label="More publish options">
-        <CaretDownIcon />
+      <Button variant="solid" tone="brand" onClick={fn()}>
+        Publish
       </Button>
+      <ButtonGroupSeparator />
+      <IconButton
+        variant="solid"
+        tone="brand"
+        icon={CaretDownIcon}
+        label="More publish options"
+        tooltip={false}
+      />
     </ButtonGroup>
   ),
   play: async ({ canvas }) => {

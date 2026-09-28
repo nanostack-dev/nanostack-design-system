@@ -10,6 +10,18 @@ const rawShadcnImport = {
     'Only a wrapper file (src/components/<name>/<name>.tsx) imports the raw shadcn component. Import the wrapper instead.',
 };
 
+const upstreamImport = {
+  group: ['**/upstream/**', 'upstream/*'],
+  message:
+    'upstream/ is the merge base for pnpm shadcn:update. Import the owned component instead.',
+};
+
+const deepComponentImport = {
+  group: ['@/components/*/*'],
+  message:
+    'Blocks, layout and stories use the public barrel (@/components/<name>), the same API a product gets.',
+};
+
 const paletteColor =
   '(^|[\\s:!"\'`])-?(bg|text|border|ring|outline|fill|stroke|from|via|to|shadow|decoration|divide|accent|caret|placeholder)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)(-\\d{2,3})?\\b';
 const arbitraryColor = '-\\[(#|rgb|hsl|oklch|color-mix)';
@@ -25,6 +37,7 @@ export default tseslint.config(
       'coverage',
       'src/components/ui/**',
       'src/hooks/use-mobile.ts',
+      'upstream/**',
     ],
   },
   js.configs.recommended,
@@ -40,7 +53,7 @@ export default tseslint.config(
   {
     files: ['src/**/*.{ts,tsx}'],
     rules: {
-      'no-restricted-imports': ['error', { patterns: [rawShadcnImport] }],
+      'no-restricted-imports': ['error', { patterns: [rawShadcnImport, upstreamImport] }],
       'no-restricted-syntax': [
         'error',
         { selector: `Literal[value=/${paletteColor}/]`, message: tokenOnlyMessage },
@@ -53,6 +66,20 @@ export default tseslint.config(
   {
     files: ['src/components/*/*.tsx'],
     ignores: ['src/components/**/*.stories.tsx'],
-    rules: { 'no-restricted-imports': 'off' },
+    rules: { 'no-restricted-imports': ['error', { patterns: [upstreamImport] }] },
+  },
+  {
+    files: [
+      'src/blocks/**/*.{ts,tsx}',
+      'src/layout/**/*.{ts,tsx}',
+      'src/stories/**/*.{ts,tsx}',
+      'src/**/*.stories.tsx',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: [rawShadcnImport, upstreamImport, deepComponentImport] },
+      ],
+    },
   },
 );

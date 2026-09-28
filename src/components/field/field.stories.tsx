@@ -76,7 +76,9 @@ export const Form: Story = {
             </FieldLabel>
           </Field>
           <Field orientation="horizontal">
-            <Button type="submit">Save</Button>
+            <Button variant="solid" tone="brand" type="submit">
+              Save
+            </Button>
           </Field>
         </FieldGroup>
       </FieldSet>

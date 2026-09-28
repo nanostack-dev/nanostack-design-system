@@ -57,6 +57,7 @@ const colorGroups = [
     name: 'Status',
     tokens: [
       'destructive',
+      'destructive-foreground',
       'destructive-on-tint',
       'success',
       'success-foreground',

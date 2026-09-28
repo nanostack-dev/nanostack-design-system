@@ -48,7 +48,9 @@ const meta = {
         </label>
         <DialogFooter>
           <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
-          <DialogClose render={<Button onClick={onSave} />}>Save</DialogClose>
+          <DialogClose render={<Button variant="solid" tone="brand" onClick={onSave} />}>
+            Save
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

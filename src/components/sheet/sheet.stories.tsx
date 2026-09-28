@@ -51,7 +51,9 @@ const meta = {
           </label>
         </fieldset>
         <SheetFooter>
-          <SheetClose render={<Button onClick={onApply} />}>Apply filters</SheetClose>
+          <SheetClose render={<Button variant="solid" tone="brand" onClick={onApply} />}>
+            Apply filters
+          </SheetClose>
         </SheetFooter>
       </SheetContent>
     </Sheet>

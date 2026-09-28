@@ -81,7 +81,11 @@ export const Escape: Story = {
 
 export const Destructive: Story = {
   args: {
-    trigger: <Button variant="destructive">Delete project</Button>,
+    trigger: (
+      <Button variant="soft" tone="critical">
+        Delete project
+      </Button>
+    ),
     title: 'Delete this project?',
     description: 'This removes the project and its history. You cannot undo this action.',
     confirmLabel: 'Delete',

@@ -36,7 +36,7 @@ const meta = {
         <EmptyDescription>Get started by creating a new project.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={onCreate}>
+        <Button variant="solid" tone="brand" onClick={onCreate}>
           <PlusIcon data-icon="inline-start" />
           Create project
         </Button>

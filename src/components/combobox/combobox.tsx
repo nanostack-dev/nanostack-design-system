@@ -2,7 +2,7 @@ import { Combobox as ComboboxPrimitive } from '@base-ui/react';
 import { XIcon } from '@phosphor-icons/react';
 import type { ComponentProps, ReactNode } from 'react';
 
-import { Button } from '@/components/button';
+import { buttonStyles } from '@/components/button/button';
 import { InputGroupAddon, InputGroupButton } from '@/components/input-group';
 import {
   Combobox,
@@ -111,8 +111,10 @@ export function ComboboxChip({
       {children}
       {showRemove && (
         <ComboboxPrimitive.ChipRemove
-          render={<Button variant="ghost" size="icon-xs" />}
-          className="-ml-1 opacity-50 hover:opacity-100"
+          className={cn(
+            buttonStyles({ variant: 'ghost', size: 'xs', iconOnly: true }),
+            '-ml-1 opacity-50 hover:opacity-100',
+          )}
           data-slot="combobox-chip-remove"
           aria-label={removeLabel}
         >

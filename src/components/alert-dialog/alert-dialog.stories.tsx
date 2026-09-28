@@ -25,7 +25,7 @@ function DeleteProjectDialog({ size }: { size?: AlertDialogContentProps['size'] 
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger render={<Button variant="destructive" />}>
+      <AlertDialogTrigger render={<Button variant="soft" tone="critical" />}>
         Delete project
       </AlertDialogTrigger>
       <AlertDialogContent size={size}>

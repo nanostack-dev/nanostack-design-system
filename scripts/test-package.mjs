@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -33,9 +34,14 @@ const componentNames = (await readdir(join(projectRoot, 'src/components'), { wit
 const blockNames = (await readdir(join(projectRoot, 'src/blocks'), { withFileTypes: true }))
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
+const layoutNames = (await readdir(join(projectRoot, 'src/layout'), { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
 const publicSubpaths = [
   ...componentNames.map((name) => `components/${name}`),
   ...blockNames.map((name) => `blocks/${name}`),
+  ...layoutNames.map((name) => `layout/${name}`),
+  'provider',
   'utils',
 ];
 
@@ -209,15 +215,48 @@ export const valid = (
   <Card className={cn('w-full', subpathCn('max-w-sm'))}>
     <CardContent>
       <Button ref={ref} variant="ghost" size="sm" type="submit">Save</Button>
-      <SubpathButton variant="destructive">Delete</SubpathButton>
+      <SubpathButton variant="soft" tone="critical">Delete</SubpathButton>
       <Badge variant="warning">Degraded</Badge>
     </CardContent>
   </Card>
 );
 // @ts-expect-error Variants are closed unions.
 export const invalidVariant = <Button variant="custom" />;
+// @ts-expect-error Components do not accept className.
+export const invalidClassName = <Button className="rounded-full">Save</Button>;
 // @ts-expect-error Badge status variants are closed unions too.
 export const invalidBadge = <Badge variant="danger" />;
+`,
+  );
+  const openFolders = [];
+  for (const folder of ['components', 'blocks']) {
+    for (const entry of await readdir(join(projectRoot, 'src', folder), { withFileTypes: true })) {
+      if (
+        entry.isDirectory() &&
+        existsSync(join(projectRoot, 'src', folder, entry.name, '.open-api'))
+      ) {
+        openFolders.push(`${folder}/${entry.name}`);
+      }
+    }
+  }
+  const openComponents = ['Box'];
+  for (const folder of openFolders) {
+    openComponents.push(
+      ...Object.keys(await import(join(projectRoot, 'dist', folder, 'index.js'))),
+    );
+  }
+  const builtLibrary = await import(join(projectRoot, 'dist/index.js'));
+  const componentExports = Object.entries(builtLibrary)
+    .filter(([name, value]) => /^[A-Z]/.test(name) && typeof value === 'function')
+    .map(([name]) => name)
+    .filter((name) => !openComponents.includes(name));
+  await writeFile(
+    join(scratch, 'closed-api.ts'),
+    `import * as library from '@nanostackorg/design-system';
+type AcceptsStyling<Component> = Component extends (props: infer Props) => unknown
+  ? 'className' extends keyof Props ? true : 'style' extends keyof Props ? true : false
+  : false;
+${componentExports.map((name) => `export const closed${name}: AcceptsStyling<typeof library.${name}> = false;`).join('\n')}
 `,
   );
   await writeFile(
@@ -239,7 +278,7 @@ import '@nanostackorg/design-system/components/ui/button';
         skipLibCheck: true,
         lib: ['ES2022', 'DOM', 'DOM.Iterable'],
       },
-      include: ['consumer.tsx', 'private-ui.ts'],
+      include: ['consumer.tsx', 'private-ui.ts', 'closed-api.ts'],
     }),
   );
   run(process.execPath, ['node_modules/typescript/bin/tsc'], scratch);

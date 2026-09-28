@@ -52,7 +52,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/breadcrumb';
-import { Button } from '@/components/button';
+import { Button, IconButton } from '@/components/button';
 
 type ProjectStatus = 'Healthy' | 'Degraded' | 'Paused';
 
@@ -136,9 +136,7 @@ function projectColumns(archive: (project: Project) => void): ColumnDef<Project>
         <div className="flex justify-end">
           <ConfirmDialog
             trigger={
-              <Button variant="ghost" size="icon-sm" aria-label={`Archive ${row.original.name}`}>
-                <ArchiveIcon aria-hidden />
-              </Button>
+              <IconButton size="sm" icon={ArchiveIcon} label={`Archive ${row.original.name}`} />
             }
             title={`Archive ${row.original.name}?`}
             description="The project stops and leaves this list. An owner can restore it for 30 days."
@@ -220,7 +218,7 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
                   <DownloadSimpleIcon data-icon="inline-start" aria-hidden />
                   Export
                 </Button>
-                <Button onClick={onCreateProject}>
+                <Button variant="solid" tone="brand" onClick={onCreateProject}>
                   <PlusIcon data-icon="inline-start" aria-hidden />
                   New project
                 </Button>

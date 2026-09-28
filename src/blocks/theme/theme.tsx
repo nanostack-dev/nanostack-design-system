@@ -10,7 +10,7 @@ import {
   useSyncExternalStore,
 } from 'react';
 
-import { Button } from '@/components/button';
+import { IconButton } from '@/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -143,10 +143,14 @@ export function ThemeToggle({ labels }: ThemeToggleProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button variant="ghost" size="icon" aria-label={text.trigger} />}
-      >
-        {resolvedTheme === 'dark' ? <MoonIcon aria-hidden /> : <SunIcon aria-hidden />}
-      </DropdownMenuTrigger>
+        render={
+          <IconButton
+            icon={resolvedTheme === 'dark' ? MoonIcon : SunIcon}
+            label={text.trigger}
+            tooltip={false}
+          />
+        }
+      />
       <DropdownMenuContent align="end">
         <DropdownMenuRadioGroup
           value={theme}

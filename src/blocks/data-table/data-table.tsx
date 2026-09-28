@@ -221,11 +221,12 @@ export function DataTableColumnHeader<TData extends RowData, TValue = unknown>({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3"
+      bleed
+      icon={SortIcon}
+      iconPosition="end"
       onClick={() => column.toggleSorting(direction === 'asc')}
     >
       {title}
-      <SortIcon data-icon="inline-end" aria-hidden="true" />
     </Button>
   );
 }

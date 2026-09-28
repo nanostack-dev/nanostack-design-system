@@ -2,7 +2,7 @@ import { CaretUpDownIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, waitFor } from 'storybook/test';
 
-import { Button } from '@/components/button';
+import { IconButton } from '@/components/button';
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsible';
 
@@ -22,10 +22,16 @@ const meta = {
     <Collapsible className="flex w-72 flex-col gap-2" {...args}>
       <div className="flex items-center justify-between gap-4">
         <span className="text-sm font-medium">Three starred repositories</span>
-        <CollapsibleTrigger render={<Button variant="ghost" size="icon-sm" />}>
-          <CaretUpDownIcon />
-          <span className="sr-only">Show repositories</span>
-        </CollapsibleTrigger>
+        <CollapsibleTrigger
+          render={
+            <IconButton
+              icon={CaretUpDownIcon}
+              label="Show repositories"
+              size="sm"
+              tooltip={false}
+            />
+          }
+        />
       </div>
       <div className="rounded-md border px-4 py-2 text-sm">design-system</div>
       <CollapsibleContent className="flex flex-col gap-2">

@@ -31,7 +31,7 @@ function Actions() {
         <DownloadSimpleIcon data-icon="inline-start" aria-hidden />
         Export
       </Button>
-      <Button onClick={onCreate}>
+      <Button variant="solid" tone="brand" onClick={onCreate}>
         <PlusIcon data-icon="inline-start" aria-hidden />
         New project
       </Button>

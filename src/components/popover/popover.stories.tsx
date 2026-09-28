@@ -37,7 +37,9 @@ const meta = {
           <PopoverTitle>Share this page</PopoverTitle>
           <PopoverDescription>Anyone with the link can view the page.</PopoverDescription>
         </PopoverHeader>
-        <Button onClick={onCopy}>Copy link</Button>
+        <Button variant="solid" tone="brand" onClick={onCopy}>
+          Copy link
+        </Button>
       </PopoverContent>
     </Popover>
   ),

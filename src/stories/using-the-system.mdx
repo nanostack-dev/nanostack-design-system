@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Using the system" />
+
+# Using the system
+
+Every component takes typed props, and nothing else. There is no `className` and no `style`. The system decides radius, colour and spacing, so the same use case always gets the same pixels. When a look is missing, ask for a variant. Do not work around it.
+
+## The variant vocabulary
+
+All components use the same words.
+
+| Prop      | Values                                                       | It answers                                                                     |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `variant` | `solid`, `soft`, `outline`, `ghost`                          | How loud is it? Use one `solid` per surface, for the main action.              |
+| `tone`    | `neutral`, `brand`, `critical`, `success`, `warning`, `info` | What does it mean? `critical` deletes or cannot be undone.                     |
+| `size`    | `xs`, `sm`, `md` (default), `lg`                             | How dense is the place? `xs` in rows and chips, `lg` for a single main action. |
+| `width`   | `auto`, `fill`                                               | Does the control stretch to its container?                                     |
+
+Each component page lists the values it offers and when to use each one.
+
+## Space comes from layout
+
+Components have no outer margin. Put them in a layout block:
+
+- `Stack`: a column with even space.
+- `Inline`: a row that wraps: buttons, tags, toolbars.
+- `Columns` and `Column`: side by side, stacked below a breakpoint.
+- `Spread`: two ends of a row, such as a title and its action.
+
+The spacing scale is `none`, `xxs`, `xs`, `sm`, `md`, `lg`, `xl`, `xxl` (0, 2, 4, 8, 12, 16, 24, 32 px).
+
+```tsx
+<Stack space="lg">
+  <Spread>
+    <Heading level={1}>Webhooks</Heading>
+    <Button variant="solid" tone="brand" icon={PlusIcon}>
+      New webhook
+    </Button>
+  </Spread>
+  <Text tone="muted">Every endpoint that receives events for this workspace.</Text>
+</Stack>
+```
+
+## Where a new component goes
+
+1. A component and variant here covers it. Use it.
+2. It is the same use case with another look. Ask for a variant (it needs two real uses), or take the standard look.
+3. A second product would use it unchanged. It belongs in this package as a block.
+4. Its meaning is product-specific: a flow step, an HTTP method, a run bar. Make a product component:
+   - one feature uses it: `src/features/<feature>/components/`
+   - several features use it: `src/components/<domain>/`
+5. A product component is closed too. It exposes typed variants. Inside its own file it composes these components by their props, or builds on `Box` with design tokens. It never restyles a component from this package.
+
+## Set up a product
+
+```tsx
+import { DesignSystemProvider, ThemeProvider } from '@nanostackorg/design-system';
+import { Link } from '@tanstack/react-router';
+
+function RouterLink({ href, ...props }: LinkComponentProps) {
+  return <Link to={href} {...props} />;
+}
+
+createRoot(root).render(
+  <ThemeProvider defaultTheme="system">
+    <DesignSystemProvider linkComponent={RouterLink}>
+      <App />
+    </DesignSystemProvider>
+  </ThemeProvider>,
+);
+```
+
+`ButtonLink` and `TextLink` then navigate with the product router. The package does not depend on a router.
+
+## Why it is closed
+
+The decision record is `docs/adr/0001-own-shadcn-with-a-closed-api.md`. In short: Echopoint used `className` on 371 of 1,188 component uses, and 260 of them changed the look. There were three button radii and four button heights for the same kind of action. Shopify Polaris, Twilio Paste and SEEK Braid close their components for the same reason: a gap in the system should show, not be patched in one screen.

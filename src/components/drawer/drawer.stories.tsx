@@ -41,7 +41,9 @@ const meta = {
         </DrawerHeader>
         <p className="p-4 text-center text-4xl font-semibold tabular-nums">12</p>
         <DrawerFooter>
-          <DrawerClose render={<Button onClick={onSubmit} />}>Save goal</DrawerClose>
+          <DrawerClose render={<Button variant="solid" tone="brand" onClick={onSubmit} />}>
+            Save goal
+          </DrawerClose>
           <DrawerClose render={<Button variant="outline" />}>Cancel</DrawerClose>
         </DrawerFooter>
       </DrawerContent>

@@ -25,6 +25,8 @@ const meta = {
   render: (args) => (
     <Toaster {...args}>
       <Button
+        variant="solid"
+        tone="brand"
         onClick={() =>
           toast.add({
             title: 'Changes saved',

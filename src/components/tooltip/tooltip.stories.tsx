@@ -2,7 +2,7 @@ import { PlusIcon } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, screen, waitFor } from 'storybook/test';
 
-import { Button } from '@/components/button';
+import { Button, IconButton } from '@/components/button';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
@@ -19,9 +19,11 @@ const meta = {
   component: Tooltip,
   render: (args) => (
     <Tooltip {...args}>
-      <TooltipTrigger render={<Button variant="outline" size="icon" aria-label="Add project" />}>
-        <PlusIcon />
-      </TooltipTrigger>
+      <TooltipTrigger
+        render={
+          <IconButton icon={PlusIcon} label="Add project" variant="outline" tooltip={false} />
+        }
+      />
       <TooltipContent>Add project</TooltipContent>
     </Tooltip>
   ),

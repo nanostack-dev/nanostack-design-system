@@ -135,6 +135,8 @@ function LiveConversation() {
         </MessageScrollerProvider>
       </div>
       <Button
+        variant="solid"
+        tone="brand"
         onClick={() =>
           setMessages((current) => [
             ...current,

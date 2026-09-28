@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
 import { Badge, type BadgeVariant } from '@/components/badge';
-import { Button } from '@/components/button';
+import { Button, IconButton } from '@/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,15 +79,14 @@ const columnsWithActions: ColumnDef<Person>[] = [
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={`Actions for ${row.original.name}`}
+            <IconButton
+              icon={DotsThreeIcon}
+              size="sm"
+              label={`Actions for ${row.original.name}`}
+              tooltip={false}
             />
           }
-        >
-          <DotsThreeIcon aria-hidden="true" />
-        </DropdownMenuTrigger>
+        />
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => onCopyEmail(row.original.email)}>
             Copy email
@@ -243,7 +242,7 @@ export const CustomEmptyState: Story = {
     emptyState: (
       <div className="flex flex-col items-center gap-2">
         <span>No people yet.</span>
-        <Button size="sm">
+        <Button variant="solid" tone="brand" size="sm">
           <PlusIcon data-icon="inline-start" aria-hidden="true" />
           Invite people
         </Button>

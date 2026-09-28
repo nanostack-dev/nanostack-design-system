@@ -33,7 +33,9 @@ function TeamCard(props: CardProps) {
         <p>Three people have access to this project.</p>
       </CardContent>
       <CardFooter>
-        <Button>Invite</Button>
+        <Button variant="solid" tone="brand">
+          Invite
+        </Button>
       </CardFooter>
     </Card>
   );

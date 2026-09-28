@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.2.0
+
+Breaking: the design system owns its shadcn code, and every component has a closed, typed API. See `docs/adr/0001-own-shadcn-with-a-closed-api.md` and the "Guides/Using the system" page.
+
+- Components do not accept `className` or `style`. Their props use one vocabulary: `variant` (`solid`, `soft`, `outline`, `ghost`), `tone` (`neutral`, `brand`, `critical`, `success`, `warning`, `info`), `size` (`xs`, `sm`, `md`, `lg`) and `width` (`auto`, `fill`). `pnpm test:package` checks every export.
+- `Button` takes `variant`, `tone`, `size`, `width`, `icon`, `iconPosition`, `loading` and `bleed`. `IconButton` needs a `label`, which is also its tooltip. `ButtonLink` looks like a button and navigates. `buttonVariants` is no longer exported.
+- New layout blocks own spacing: `Box`, `Stack`, `Inline`, `Columns` with `Column`, and `Spread`, under `@nanostackorg/design-system/layout/<name>`. `Box` is the only part that accepts `className`, for product component files.
+- New `Text`, `Heading` and `TextLink` components replace text classes.
+- New `DesignSystemProvider` takes the product router link (`linkComponent`) for `ButtonLink` and `TextLink`, and provides the tooltip context.
+- New `--destructive-foreground` token for text on a solid critical surface.
+- The shadcn CLI output is kept in `upstream/` as a merge base. `pnpm shadcn:update` merges an upstream change three ways into the owned file.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.0`. Wrap the app in `<DesignSystemProvider linkComponent={RouterLink}>`. Replace `className` on components with props, and page spacing with `Stack`, `Inline`, `Columns` and `Spread`. Button changes:
+
+| 0.1.0 | 0.2.0 |
+| --- | --- |
+| `<Button>` (default) | `<Button variant="solid" tone="brand">` |
+| `variant="secondary"` | `variant="soft"` |
+| `variant="destructive"` | `variant="soft" tone="critical"` |
+| `variant="link"` | `<TextLink>` or `variant="ghost" tone="brand"` |
+| `size="default"` | `size="md"` or no `size` |
+| `size="icon"`, `"icon-sm"`, `"icon-xs"`, `"icon-lg"` | `<IconButton icon={…} label="…" size="md" \| "sm" \| "xs" \| "lg">` |
+| `<PlusIcon data-icon="inline-start" />` child | `icon={PlusIcon}` |
+| `render={<Link to="…" />}` | `<ButtonLink href="…">` |
+| `className="w-full"` | `width="fill"` |
+
 ## 0.1.0
 
 Breaking: a new library built on shadcn/ui. Nothing from 0.0.x keeps its API.

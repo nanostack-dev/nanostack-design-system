@@ -38,7 +38,7 @@ export const CustomLabel: Story = {
 
 export const InButton: Story = {
   render: (args) => (
-    <Button disabled>
+    <Button variant="solid" tone="brand" disabled>
       <Spinner {...args} data-icon="inline-start" />
       Saving
     </Button>

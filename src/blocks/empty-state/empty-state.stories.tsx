@@ -27,7 +27,7 @@ const meta = {
     description: 'Create a project to start collecting results.',
     children: (
       <div className="flex flex-wrap justify-center gap-2">
-        <Button onClick={onCreate}>
+        <Button variant="solid" tone="brand" onClick={onCreate}>
           <PlusIcon data-icon="inline-start" aria-hidden="true" />
           Create project
         </Button>
