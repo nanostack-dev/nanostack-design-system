@@ -13,7 +13,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/alert-dialog';
-import { Spinner } from '@/components/spinner';
 
 export type ConfirmDialogTone = 'default' | 'destructive';
 
@@ -91,13 +90,11 @@ export function ConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction
-            variant={tone === 'destructive' ? 'destructive' : 'default'}
+            tone={tone === 'destructive' ? 'critical' : 'brand'}
             onClick={confirm}
-            disabled={pending}
-            focusableWhenDisabled
+            loading={pending}
             aria-busy={pending}
           >
-            {pending ? <Spinner data-icon="inline-start" aria-hidden="true" /> : null}
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

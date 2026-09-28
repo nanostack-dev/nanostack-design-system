@@ -1,1 +1,22 @@
-export * from './alert-dialog';
+export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  type AlertDialogActionProps,
+  type AlertDialogCancelProps,
+  type AlertDialogContentProps,
+  type AlertDialogDescriptionProps,
+  type AlertDialogFooterProps,
+  type AlertDialogHeaderProps,
+  type AlertDialogMediaProps,
+  type AlertDialogProps,
+  type AlertDialogTitleProps,
+  type AlertDialogTriggerProps,
+} from './alert-dialog';

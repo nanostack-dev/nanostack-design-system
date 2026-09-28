@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
 import { Button } from '@/components/button';
-
 import {
   Sheet,
   SheetClose,
@@ -13,21 +12,61 @@ import {
   SheetTitle,
   SheetTrigger,
   type SheetSide,
-} from './sheet';
+  type SheetSize,
+} from '@/components/sheet';
+import { Text } from '@/components/text';
+import { Inline } from '@/layout/inline';
 
 const sides: SheetSide[] = ['top', 'right', 'bottom', 'left'];
+const sizes: { size: SheetSize; width: string }[] = [
+  { size: 'sm', width: 'sm:max-w-xs' },
+  { size: 'md', width: 'sm:max-w-sm' },
+];
 const onApply = fn();
+
+const usage = `
+A panel that slides over the page from one edge. Use it for a secondary task that keeps the page in view: filters, details, a list of folders on a phone. For a task that needs full attention, use \`Dialog\`. For a panel that closes with a swipe on a phone, use \`Drawer\`.
+
+The parts are closed. \`SheetContent\` does not accept \`className\` or \`style\`: the edge comes from \`side\`, the width from \`size\`.
+
+## side: where the sheet comes from
+
+| Value | Use it for |
+| --- | --- |
+| \`right\` | The default. Details and edit forms for the item the user selected. |
+| \`left\` | Navigation, such as a folder tree that the page hides on a small screen. |
+| \`bottom\` | A detail view on a phone, under the list it belongs to. |
+| \`top\` | A notice or a search that belongs to the whole page. Rare. |
+
+## size: how wide a left or right sheet is
+
+| Value | Width | Use it for |
+| --- | --- | --- |
+| \`sm\` | 320 px | A list or a tree: folders, chats. |
+| \`md\` | 384 px | The default. Filters, details, a short form. |
+
+On a phone, a left or right sheet takes three quarters of the screen. A top or bottom sheet takes the full width and at most 90% of the height. \`size\` has no effect on them.
+
+## Height and scroll
+
+The sheet body scrolls when the content is taller than the sheet. The close button stays in the corner.
+
+## Other props
+
+- \`SheetTrigger\` and \`SheetClose\` take \`render\`: \`<SheetTrigger render={<Button>Filters</Button>} />\`.
+- \`SheetContent showCloseButton={false}\`: removes the close button, when the content has its own.
+- \`SheetHeader visuallyHidden\`: hides the title and description on screen and keeps them for screen readers, when the content already shows what the sheet is.
+
+## Do not
+
+- Do not set a width, a height or a padding on the content. Choose \`side\` and \`size\`.
+- Do not remove \`SheetTitle\`. Every sheet needs a name. Use \`SheetHeader visuallyHidden\` to hide it.
+- Do not ask for a confirm in a sheet. Use \`AlertDialog\`.
+`;
 
 const meta = {
   title: 'Components/Sheet',
-  parameters: {
-    docs: {
-      description: {
-        component:
-          'A side panel over the page for a secondary task. Use it for filters, details and edit forms that keep the page in view.',
-      },
-    },
-  },
+  parameters: { docs: { description: { component: usage } } },
   component: Sheet,
   args: { onOpenChange: fn() },
   beforeEach: () => {
@@ -70,6 +109,7 @@ export const Default: Story = {
     const sheet = await screen.findByRole('dialog', { name: 'Filters' });
     await waitFor(() => expect(sheet).toBeVisible());
     await expect(sheet).toHaveAttribute('data-side', 'right');
+    await expect(sheet).toHaveAttribute('data-size', 'md');
     await userEvent.click(within(sheet).getByRole('button', { name: 'Apply filters' }));
     await expect(onApply).toHaveBeenCalledOnce();
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
@@ -106,7 +146,7 @@ export const CloseButton: Story = {
 
 export const Sides: Story = {
   render: (args) => (
-    <div className="flex flex-wrap gap-2">
+    <Inline space="sm">
       {sides.map((side) => (
         <Sheet key={side} {...args}>
           <SheetTrigger render={<Button variant="outline" />}>Open {side}</SheetTrigger>
@@ -118,7 +158,7 @@ export const Sides: Story = {
           </SheetContent>
         </Sheet>
       ))}
-    </div>
+    </Inline>
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Open left' }));
@@ -131,5 +171,112 @@ export const Sides: Story = {
     await waitFor(() =>
       expect(Math.round(bottom.getBoundingClientRect().bottom)).toBe(window.innerHeight),
     );
+  },
+};
+
+export const Sizes: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`sm` fits a list or a tree, such as folders. `md` is the default, for filters and details.',
+      },
+    },
+  },
+  render: (args) => (
+    <Inline space="sm">
+      {sizes.map(({ size }) => (
+        <Sheet key={size} {...args}>
+          <SheetTrigger render={<Button variant="outline" />}>Open {size}</SheetTrigger>
+          <SheetContent side="left" size={size}>
+            <SheetHeader>
+              <SheetTitle>Folders {size}</SheetTitle>
+              <SheetDescription>The width comes from the size prop.</SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      ))}
+    </Inline>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    for (const { size, width } of sizes) {
+      await userEvent.click(canvas.getByRole('button', { name: `Open ${size}` }));
+      const sheet = await screen.findByRole('dialog', { name: `Folders ${size}` });
+      await expect(sheet).toHaveAttribute('data-size', size);
+      await expect(sheet).toHaveClass(width);
+      await userEvent.keyboard('{Escape}');
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    }
+  },
+};
+
+export const LongContent: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A bottom sheet with more content than fits. It stops at 90% of the screen height, and the body scrolls. The body joins the tab order only while it scrolls, so a keyboard user can scroll text that has no focusable element.',
+      },
+    },
+  },
+  args: { defaultOpen: true },
+  render: (args) => (
+    <Sheet {...args}>
+      <SheetTrigger render={<Button variant="outline" />}>Run detail</SheetTrigger>
+      <SheetContent side="bottom">
+        <SheetHeader>
+          <SheetTitle>Run detail</SheetTitle>
+          <SheetDescription>Every step of the run, in order.</SheetDescription>
+        </SheetHeader>
+        <div className="flex flex-col gap-3 px-6 pb-6">
+          {Array.from({ length: 30 }, (_, index) => (
+            <Text key={index} tone="muted">
+              Step {index + 1} finished in {40 + index} ms.
+            </Text>
+          ))}
+        </div>
+      </SheetContent>
+    </Sheet>
+  ),
+  play: async () => {
+    const sheet = await screen.findByRole('dialog', { name: 'Run detail' });
+    await waitFor(() =>
+      expect(sheet.getBoundingClientRect().height).toBeLessThanOrEqual(window.innerHeight * 0.9),
+    );
+    const body = sheet.querySelector<HTMLElement>('[data-slot="sheet-body"]')!;
+    await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+    await waitFor(() => expect(body).toHaveAttribute('tabindex', '0'));
+  },
+};
+
+export const HiddenHeader: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`SheetHeader visuallyHidden` names the sheet for screen readers when the content shows what it is, such as a list of chats.',
+      },
+    },
+  },
+  args: { defaultOpen: true },
+  render: (args) => (
+    <Sheet {...args}>
+      <SheetTrigger render={<Button variant="outline" />}>Chats</SheetTrigger>
+      <SheetContent side="left" size="sm">
+        <SheetHeader visuallyHidden>
+          <SheetTitle>Chats</SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-col gap-2 p-6">
+          <Text weight="medium">Chats</Text>
+          <Text tone="muted">Flow review</Text>
+          <Text tone="muted">Webhook retry</Text>
+        </div>
+      </SheetContent>
+    </Sheet>
+  ),
+  play: async () => {
+    const sheet = await screen.findByRole('dialog', { name: 'Chats' });
+    const header = sheet.querySelector<HTMLElement>('[data-slot="sheet-header"]')!;
+    await expect(header.getBoundingClientRect().width).toBeLessThanOrEqual(1);
   },
 };
