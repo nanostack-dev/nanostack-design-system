@@ -9,6 +9,9 @@
 - Skeleton: `height="fill"` has no minimum height any more, so it fits a 28 px row or a fixed-height box. Upgrade: a `fill` skeleton needs a container with a height.
 - ScrollArea: the usage docs show how to put a floating header over the area with one measured CSS variable, with a story that tests it.
 - New `SearchButton` (`@nanostackorg/design-system/components/search-button`): a button that looks like a search field, with a `label`, an optional `shortcut` shown with `Kbd` and set in `aria-keyshortcuts`, `size` (`sm`, `md`) and `width` (`auto`, `fill`).
+- New `Autocomplete` (`@nanostackorg/design-system/components/autocomplete`): a text field that suggests values while the typed text stays free, built on the Base UI Autocomplete. Parts: `Autocomplete`, `AutocompleteInput` (`size` `sm` | `md`, `font` `sans` | `mono`, `width` `auto` | `fill`, `icon`), `AutocompleteContent`, `AutocompleteList`, `AutocompleteItem`, `AutocompleteEmpty`, `AutocompleteGroup`, `AutocompleteGroupLabel`, `AutocompleteCollection`. It shares the Combobox field, list and item look. Upgrade: replace a `Combobox` that copies the typed text into its value, or a `Command` with a positioned `CommandList`, with `Autocomplete value={text} onValueChange={setText}`.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.1`. Nothing is removed. A `Skeleton height="fill"` now needs a parent with a height, and a `ghost neutral` `IconButton` now shows a muted icon.
 
 ## 0.2.0
 
