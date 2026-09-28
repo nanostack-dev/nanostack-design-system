@@ -1,0 +1,107 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks';
+
+import { SectionLinks, WelcomeHero } from './welcome-parts';
+
+<Meta title="Welcome" />
+
+<Unstyled>
+  <WelcomeHero />
+  <SectionLinks />
+</Unstyled>
+
+## What the library holds
+
+- **Components.** A typed wrapper for each shadcn/ui component, with the same name and API. The wrappers are the only styling surface. The raw shadcn files stay private.
+- **Blocks.** Parts that do not come from shadcn and that a second product can use unchanged: `AppShell`, `PageHeader`, `EmptyState`, `DataTable`, `StatCard`, `ConfirmDialog`, `ThemeProvider` and `ThemeToggle`.
+- **Foundations.** The design tokens: colors, fonts, radii and easing, with a light value and a dark value for each color.
+
+A product (Echopoint, Anchor) owns its routes, data, copy and the visuals that only its meaning explains.
+
+## Install
+
+1. Add the package, its peers and the fonts:
+
+   ```bash
+   pnpm add @nanostackorg/design-system tailwindcss @tailwindcss/vite @fontsource-variable/plus-jakarta-sans @fontsource-variable/outfit @fontsource-variable/geist-mono
+   ```
+
+2. Add the Tailwind plugin to `vite.config.ts`:
+
+   ```ts
+   import tailwindcss from '@tailwindcss/vite';
+
+   export default defineConfig({ plugins: [react(), tailwindcss()] });
+   ```
+
+3. In the main CSS file, import Tailwind, then the library tokens. Then register the package output, so that Tailwind generates the classes that the components use. The `@source` path is relative to this CSS file:
+
+   ```css
+   @import 'tailwindcss';
+   @import '@nanostackorg/design-system/styles.css';
+   @source "../node_modules/@nanostackorg/design-system/dist";
+   ```
+
+4. Load the fonts one time in the entry point. Plus Jakarta Sans is the text font, Outfit is the heading font and Geist Mono is the code font:
+
+   ```ts
+   import '@fontsource-variable/plus-jakarta-sans';
+   import '@fontsource-variable/outfit';
+   import '@fontsource-variable/geist-mono';
+   ```
+
+5. Wrap the application in `ThemeProvider`. It stores the light, dark or system choice and sets the `dark` class on `<html>`:
+
+   ```tsx
+   import { ThemeProvider, TooltipProvider } from '@nanostackorg/design-system';
+
+   createRoot(root).render(
+     <ThemeProvider defaultTheme="system">
+       <TooltipProvider>
+         <App />
+       </TooltipProvider>
+     </ThemeProvider>,
+   );
+   ```
+
+## Use
+
+```tsx
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@nanostackorg/design-system';
+import { DataTable } from '@nanostackorg/design-system/blocks/data-table';
+
+<Card>
+  <CardHeader>
+    <CardTitle>Deployments</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <Badge variant="success">Healthy</Badge>
+    <Button variant="outline" size="sm">
+      Retry
+    </Button>
+  </CardContent>
+</Card>;
+```
+
+## Consumer rule
+
+Each product guide holds a copy of these rules.
+
+1. Import UI only from `@nanostackorg/design-system` (the root, `components/<name>` or `blocks/<name>`). Do not copy a shadcn component into the application. Do not import `components/ui`.
+2. Wire Tailwind v4 in the main CSS file as in step 3 above, and load the three fonts.
+3. Put an application-specific component in one scoped folder (for example `src/features/<feature>/components/`). It composes the package wrappers and follows the shadcn conventions: variants through props, `data-slot`, and `render` for custom elements.
+4. Style only with the design tokens (`bg-primary`, `text-muted-foreground`, `border-border-strong`). Do not use palette or arbitrary colors, `dark:` color overrides, CSS that targets library markup, or token overrides. Use `className` on a library component for layout only.
+5. Send a missing variant, or a component that a second product needs, back to this repository.
+
+## Read this site
+
+- Each component page starts with one sentence: what the part is for and when to use it. **Nanostack addition** marks a variant or a fix that the library adds on top of shadcn.
+- Use the paintbrush menu in the toolbar to change between light and dark. The site starts with the color scheme of your system.
+- Each story has `play` tests. The test runner runs every story one time in light and one time in dark, and an accessibility violation fails the test.
+- Source code: [github.com/nanostack-dev/nanostack-design-system](https://github.com/nanostack-dev/nanostack-design-system).
