@@ -14,6 +14,8 @@ export {
   type FieldErrorProps,
   type FieldGroupProps,
   type FieldLabelProps,
+  type FieldLabelSize,
+  type FieldLabelTone,
   type FieldLegendProps,
   type FieldLegendSize,
   type FieldOrientation,
