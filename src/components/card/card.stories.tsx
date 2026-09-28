@@ -13,6 +13,7 @@ import {
   CardTitle,
   type CardProps,
   type CardSize,
+  type CardTitleSize,
   type CardVariant,
 } from '@/components/card';
 import { Text } from '@/components/text';
@@ -22,6 +23,7 @@ import { Stack } from '@/layout/stack';
 
 const variants: CardVariant[] = ['solid', 'outline', 'soft'];
 const sizes: CardSize[] = ['md', 'sm'];
+const titleSizes: CardTitleSize[] = ['sm', 'md', 'lg'];
 
 const usage = `
 A surface that groups a title, content and actions about one subject. Use it for a dashboard panel, a settings section, or an item in a grid. For one key number, use the \`StatCard\` block. For a row in a list, use \`Item\`.
@@ -43,6 +45,14 @@ The props are the whole API. The parts do not accept \`className\` or \`style\`.
 | \`md\` | 24 px | The default. A card with a title, a description and content. |
 | \`sm\` | 16 px | A small card in a grid, or a card in a dialog or a side panel. |
 
+## CardTitle size
+
+| Value | Use it for |
+| --- | --- |
+| \`sm\` | A small card in a grid or a side panel, next to \`Card size="sm"\`. |
+| \`md\` | The default. A dashboard panel, a settings section, a step of a form. |
+| \`lg\` | The one or two main cards of a page that has no other heading under the page title, such as the sections of an admin page. |
+
 ## Parts
 
 - \`CardHeader\` holds \`CardTitle\`, \`CardDescription\` and one \`CardAction\` in the top-right corner.
@@ -51,7 +61,8 @@ The props are the whole API. The parts do not accept \`className\` or \`style\`.
 
 ## Do not
 
-- Do not change the title size. For a big number, use the \`StatCard\` block.
+- Do not use \`CardTitle size="lg"\` for a big number. Use the \`StatCard\` block.
+- Do not mix title sizes in one grid of cards.
 - Do not add spacing classes to \`CardContent\`. Put a \`Stack\` inside it.
 - Do not colour the text of \`CardContent\`. Use \`Text tone="muted"\`.
 - Do not nest a \`solid\` card in another card. Use \`outline\` or \`soft\` inside.
@@ -189,6 +200,40 @@ export const TitleWithIcon: Story = {
   play: async ({ canvas }) => {
     const title = canvas.getByText('API key');
     await expect(title.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+  },
+};
+
+export const TitleSizes: Story = {
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story:
+          '`sm` for a small card, `md` by default, `lg` for the main sections of a page. The icon grows with `lg`.',
+      },
+    },
+  },
+  render: (args) => (
+    <Inline space="lg" alignY="start">
+      {titleSizes.map((size) => (
+        <div key={size} className="w-64">
+          <Card {...args} size={size === 'sm' ? 'sm' : 'md'}>
+            <CardHeader>
+              <CardTitle size={size} icon={KeyIcon}>{`Title ${size}`}</CardTitle>
+              <CardDescription>Keys that can call the API.</CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      ))}
+    </Inline>
+  ),
+  play: async ({ canvas }) => {
+    const fontSizes = titleSizes.map(
+      (size) => getComputedStyle(canvas.getByText(`Title ${size}`)).fontSize,
+    );
+    await expect(fontSizes).toEqual(['14px', '16px', '20px']);
+    const largeIcon = canvas.getByText('Title lg').querySelector('svg')!;
+    await expect(largeIcon.getBoundingClientRect().width).toBe(20);
   },
 };
 
