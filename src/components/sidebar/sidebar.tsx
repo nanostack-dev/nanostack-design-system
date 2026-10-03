@@ -476,15 +476,15 @@ function SidebarMenuButton({
   const element = useRender({
     defaultTagName: 'button',
     props: mergeProps<'button'>({ className: sidebarMenuButtonClasses({ size }) }, props),
-    render: tooltip ? <TooltipTrigger render={target} /> : target,
+    render: target,
     state: { slot: 'sidebar-menu-button', sidebar: 'menu-button', size, active: isActive },
   });
 
   if (!tooltip) return element;
 
   return (
-    <Tooltip>
-      {element}
+    <Tooltip disabled={props.disabled || state !== 'collapsed' || isMobile}>
+      <TooltipTrigger render={element} />
       <TooltipContent side="right" align="center" hidden={state !== 'collapsed' || isMobile}>
         {tooltip}
       </TooltipContent>

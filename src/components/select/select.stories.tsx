@@ -48,7 +48,7 @@ The props are the whole API. The parts do not accept \`className\` or \`style\`.
 
 - \`Select\`: the state. \`value\`, \`defaultValue\`, \`onValueChange\`, \`items\`, \`disabled\`.
 - \`SelectTrigger\` with a \`SelectValue\`: the button. Give it the \`id\` of its \`FieldLabel\`, or an \`aria-label\`.
-- \`SelectContent\` with \`SelectItem\`, \`SelectGroup\`, \`SelectLabel\` and \`SelectSeparator\`: the list.
+- \`SelectContent\` with \`SelectItem\`, \`SelectGroup\`, \`SelectLabel\` and \`SelectSeparator\`: the list. Set \`aria-label\` or \`aria-labelledby\` on \`SelectContent\` to name the opened listbox. A visible \`FieldLabel\` can provide the name through its \`id\`.
 
 ## SelectTrigger variant
 
@@ -137,6 +137,57 @@ export const Keyboard: Story = {
     await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument());
     await expect(trigger).toHaveTextContent('EU West');
     await expect(trigger).toHaveFocus();
+  },
+};
+
+export const OpenListWithAriaLabel: Story = {
+  render: (args) => (
+    <Select {...args}>
+      <SelectTrigger aria-label="Region">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent aria-label="Available regions">
+        <RegionItems />
+      </SelectContent>
+    </Select>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const trigger = canvas.getByRole('combobox', { name: 'Region' });
+    await userEvent.tab();
+    await expect(trigger).toHaveFocus();
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(await screen.findByRole('listbox', { name: 'Available regions' })).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByRole('option', { name: 'Choose a region' })).toHaveFocus(),
+    );
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+    await expect(screen.getByRole('option', { name: 'EU West' })).toHaveFocus();
+  },
+};
+
+export const OpenListWithAriaLabelledBy: Story = {
+  render: (args) => (
+    <Field>
+      <FieldLabel id="region-list-label" htmlFor="region-list-trigger">
+        Region
+      </FieldLabel>
+      <Select {...args}>
+        <SelectTrigger id="region-list-trigger">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent aria-labelledby="region-list-label">
+          <RegionItems />
+        </SelectContent>
+      </Select>
+    </Field>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('combobox', { name: 'Region' }));
+    await expect(await screen.findByRole('listbox', { name: 'Region' })).toBeVisible();
+    await expect(screen.getByRole('option', { name: 'Choose a region' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
   },
 };
 

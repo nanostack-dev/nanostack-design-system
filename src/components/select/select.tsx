@@ -88,6 +88,8 @@ export type SelectContentProps = ClosedProps<Omit<SelectPrimitive.Popup.Props, '
 
 export function SelectContent({
   children,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
   side = 'bottom',
   align = 'center',
   alignItemWithTrigger = true,
@@ -110,7 +112,9 @@ export function SelectContent({
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          <SelectPrimitive.List aria-label={ariaLabel} aria-labelledby={ariaLabelledBy}>
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
