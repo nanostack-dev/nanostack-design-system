@@ -4,6 +4,8 @@ import { expect } from 'storybook/test';
 
 import { Badge, type BadgeSize, type BadgeTone, type BadgeVariant } from '@/components/badge';
 import { Inline } from '@/layout/inline';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
+import { Text } from '@/components/text';
 import { Stack } from '@/layout/stack';
 
 const variants: BadgeVariant[] = ['solid', 'soft', 'outline'];
@@ -178,5 +180,52 @@ export const LongContent: Story = {
   play: async ({ canvas }) => {
     const badge = canvas.getByText('Waiting for the approval of the workspace owner');
     await expect(badge.getBoundingClientRect().height).toBe(20);
+  },
+};
+
+export const SelectedTableRows: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Statuses and muted metadata stay readable on a selected row and on the muted surface used by dense product editors.',
+      },
+    },
+  },
+  render: () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Status treatment</TableHead>
+          <TableHead>Metadata</TableHead>
+          <TableHead>Statuses</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {(['soft', 'outline'] as const).map((variant) => (
+          <TableRow key={variant} data-state="selected">
+            <TableCell>{variant}</TableCell>
+            <TableCell>
+              <Text tone="muted" size="xs">
+                No constraints
+              </Text>
+            </TableCell>
+            <TableCell>
+              <Inline>
+                {tones.map((tone) => (
+                  <Badge key={tone} tone={tone} variant={variant}>
+                    {tone}
+                  </Badge>
+                ))}
+              </Inline>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByText('success')).toHaveLength(2);
+    await expect(canvas.getAllByText('No constraints')).toHaveLength(2);
   },
 };

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.3
+
+- New `CopyButton` and `CopyIconButton` blocks share clipboard outcome feedback across Anchor and Echopoint. They expose the existing Button appearance props, preserve keyboard focus, announce copied/failed outcomes, block duplicate writes while pending, and clean up feedback when unmounted.
+
+- Light theme muted text and success/warning text on tints retain contrast on selected table rows and muted editor surfaces, with a light/dark regression story.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.3`. Replace local copy controls with `CopyButton` or `CopyIconButton` from `@nanostackorg/design-system/blocks/copy-button`, passing `value`, `label` and optional outcome callbacks. Clipboard denial or an unavailable clipboard reports failure; it never reports a successful copy.
+
 ## 0.2.2
 
 - SearchButton: `size="lg"` (40 px), so the search lines up with 40 px top bar controls such as `IconButton size="lg"`.
