@@ -78,3 +78,4 @@ export * from './blocks/confirm-dialog';
 export * from './blocks/data-table';
 export * from './blocks/empty-state';
 export * from './blocks/stat-card';
+export * from './blocks/copy-button';
