@@ -1,6 +1,6 @@
 {
   "name": "@nanostackorg/design-system",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Nanostack design system: owned shadcn/ui components with a closed, typed API, layout blocks and design tokens for Tailwind CSS v4",
   "type": "module",
   "license": "MIT",

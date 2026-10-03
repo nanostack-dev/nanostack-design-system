@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.4
+
+- `SelectContent` sends `aria-label` and `aria-labelledby` to the opened listbox. Its presentation wrapper no longer receives an inaccessible label.
+- `SidebarMenuButton disabled` keeps the native disabled button, its muted appearance, and its exclusion from keyboard navigation when a tooltip is provided. Tooltips do not open for disabled buttons or an expanded sidebar.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.4`. Name opened select lists with `SelectContent aria-label` or `aria-labelledby`. Existing disabled sidebar buttons need no caller changes.
+
 ## 0.2.3
 
 - New `CopyButton` and `CopyIconButton` blocks share clipboard outcome feedback across Anchor and Echopoint. They expose the existing Button appearance props, preserve keyboard focus, announce copied/failed outcomes, block duplicate writes while pending, and clean up feedback when unmounted.

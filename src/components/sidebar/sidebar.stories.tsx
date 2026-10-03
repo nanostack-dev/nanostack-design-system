@@ -8,7 +8,7 @@ import {
 } from '@phosphor-icons/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, fn, waitFor, within } from 'storybook/test';
+import { expect, fn, screen, waitFor, within } from 'storybook/test';
 
 import { Text } from '@/components/text';
 import { Inline } from '@/layout/inline';
@@ -42,7 +42,7 @@ import {
   SidebarTrigger,
   useIsMobile,
   useSidebar,
-} from './sidebar';
+} from '@/components/sidebar';
 
 const usage = `
 The parts of a collapsible application sidebar. For the frame of a signed-in product, use the \`AppShell\` block: it composes these parts with the right defaults. Use the parts directly only for a sidebar that \`AppShell\` cannot express.
@@ -90,6 +90,7 @@ The parts are closed. They do not accept \`className\` or \`style\`. The width c
 
 - \`SidebarMenuButton href\`: renders the link component of \`DesignSystemProvider\`. Use \`render\` only for a trigger, such as \`DropdownMenuTrigger\` or \`CollapsibleTrigger\`.
 - \`SidebarMenuButton tooltip\`: the label shown when the sidebar is collapsed to icons. Give one to every item.
+- \`SidebarMenuButton disabled\`: an unavailable button keeps its native disabled state and is skipped by the keyboard. Its tooltip stays closed.
 - \`SidebarMenuAction showOnHover\`: shows the action only when the item has hover or focus.
 - \`SidebarTrigger label\` and \`SidebarRail label\`: the accessible name. The default is "Toggle Sidebar".
 - \`Ctrl+B\` or \`Cmd+B\` opens and closes the sidebar.
@@ -363,6 +364,89 @@ export const CollapsedTooltip: Story = {
       expect(tooltip).toHaveTextContent('Reports');
       expect(tooltip).toBeVisible();
     });
+  },
+};
+
+const onDisabledClick = fn();
+
+function DisabledButtonSidebar({ collapsed = false }: { collapsed?: boolean }) {
+  return (
+    <SidebarProvider defaultOpen={!collapsed}>
+      <Sidebar collapsible="icon">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton tooltip="Before action">
+                  <HouseIcon />
+                  <span>Before action</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton disabled tooltip="Unavailable action" onClick={onDisabledClick}>
+                  <FolderIcon />
+                  <span>Unavailable action</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton tooltip="After action">
+                  <GearIcon />
+                  <span>After action</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <Text>Unavailable actions stay outside the keyboard sequence.</Text>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
+
+async function checkDisabledButton(
+  canvas: ReturnType<typeof within>,
+  userEvent: Parameters<NonNullable<Story['play']>>[0]['userEvent'],
+) {
+  onDisabledClick.mockClear();
+  const disabled = canvas.getByRole('button', { name: 'Unavailable action' });
+  await expect(disabled).toBeDisabled();
+  await expect(getComputedStyle(disabled).opacity).toBe('0.5');
+  disabled.click();
+  await expect(onDisabledClick).not.toHaveBeenCalled();
+  canvas.getByRole('button', { name: 'Before action' }).focus();
+  await userEvent.tab();
+  await expect(canvas.getByRole('button', { name: 'After action' })).toHaveFocus();
+  disabled.focus();
+  await expect(disabled).not.toHaveFocus();
+}
+
+export const DisabledWithTooltip: Story = {
+  render: () => <DisabledButtonSidebar />,
+};
+
+export const DisabledTooltipKeyboard: Story = {
+  render: () => <DisabledButtonSidebar />,
+  play: async ({ canvas, userEvent }) => {
+    await checkDisabledButton(canvas, userEvent);
+    await expect(screen.getAllByText('After action')).toHaveLength(1);
+  },
+};
+
+export const CollapsedDisabledWithTooltip: Story = {
+  render: () => <DisabledButtonSidebar collapsed />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await checkDisabledButton(canvas, userEvent);
+    await userEvent.hover(canvas.getByRole('button', { name: 'After action' }));
+    await waitFor(() => {
+      const tooltip = screen
+        .getAllByText('After action')
+        .filter((element) => !canvasElement.contains(element));
+      expect(tooltip).toHaveLength(1);
+      expect(tooltip[0]).toBeVisible();
+    });
+    await expect(screen.getAllByText('Unavailable action')).toHaveLength(1);
   },
 };
 
