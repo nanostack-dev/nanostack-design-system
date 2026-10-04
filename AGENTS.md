@@ -26,6 +26,7 @@
 8. Owned files may import each other's internal parts by path (`@/components/button/button`). Blocks, layout and stories import only the public barrels (`@/components/<name>`), like a product.
 9. Every component story documents how to use each variant: a table per prop in `parameters.docs.description.component`, and a `Do not` list.
 10. Follow the official shadcn skill in `.claude/skills/shadcn/` for composition and accessibility. This project uses the Base UI flavour: `render`, not `asChild`.
+11. Creating or changing a component or block: run the `break-ui` skill on it (not in your skills? WebFetch `https://raw.githubusercontent.com/emilkowalski/skills/main/skills/break-ui/SKILL.md`). Its worst-case data lands as stories beside the demo story (`WorstCase`, plus `Empty` and `One` where they apply) in place of the skill's dev toggle, so the story suite guards it. Fix every Broken and Ugly finding in the same PR; list the Fragile rows and open decisions in the PR body.
 
 ## Consumer rule
 
