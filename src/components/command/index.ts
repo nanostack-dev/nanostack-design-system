@@ -9,6 +9,7 @@ export {
   CommandSeparator,
   CommandShortcut,
   type CommandDialogProps,
+  type CommandDialogSize,
   type CommandEmptyProps,
   type CommandGroupProps,
   type CommandInputProps,
