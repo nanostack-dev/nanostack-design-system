@@ -1,5 +1,6 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { XIcon } from '@phosphor-icons/react';
+import { cva } from 'class-variance-authority';
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
@@ -15,7 +16,10 @@ export type DialogContentProps = ClosedProps<Omit<DialogPrimitive.Popup.Props, '
   size?: DialogSize;
   showCloseButton?: boolean;
 };
-type DialogPaletteContentProps = ClosedProps<DialogPrimitive.Popup.Props>;
+export type DialogPaletteSize = 'md' | 'lg';
+type DialogPaletteContentProps = ClosedProps<DialogPrimitive.Popup.Props> & {
+  size?: DialogPaletteSize;
+};
 
 export type DialogHeaderProps = ClosedProps<ComponentProps<'div'>> & {
   visuallyHidden?: boolean;
@@ -94,11 +98,15 @@ function DialogClose({ ...props }: DialogCloseProps) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogOverlay() {
+function DialogOverlay({ animated = true }: { animated?: boolean }) {
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
-      className="fixed inset-0 isolate z-50 bg-foreground/30 duration-100 supports-backdrop-filter:backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 dark:bg-background/60"
+      className={cn(
+        'fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60',
+        animated &&
+          'duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0',
+      )}
     />
   );
 }
@@ -145,13 +153,28 @@ function DialogContent({
   );
 }
 
-export function DialogPaletteContent({ children, ...props }: DialogPaletteContentProps) {
+// A palette opens many times a day from the keyboard, so it neither fades nor zooms.
+const paletteContentClasses = cva(
+  'fixed left-1/2 z-50 flex w-full max-w-[calc(100%-2rem)] -translate-x-1/2 flex-col overflow-hidden bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 outline-none dark:ring-foreground/10',
+  {
+    variants: {
+      size: {
+        md: 'top-1/3 rounded-4xl sm:max-w-md',
+        lg: 'top-4 max-h-[calc(100dvh-2rem)] rounded-3xl sm:top-[12vh] sm:max-w-[46rem]',
+      },
+    },
+    defaultVariants: { size: 'md' },
+  },
+);
+
+export function DialogPaletteContent({ children, size, ...props }: DialogPaletteContentProps) {
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay animated={false} />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
-        className="fixed top-1/3 left-1/2 z-50 w-full max-w-[calc(100%-2rem)] -translate-x-1/2 overflow-hidden rounded-4xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none sm:max-w-md dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+        data-size={size ?? 'md'}
+        className={paletteContentClasses({ size })}
         {...props}
       >
         {children}

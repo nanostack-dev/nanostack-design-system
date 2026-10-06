@@ -71,9 +71,19 @@ The parts do not accept \`className\` or \`style\`. \`Command\` fills the width 
 - \`CommandShortcut\`: the keyboard shortcut of a command. It replaces the check mark.
 - \`CommandDialog\`: \`title\` and \`description\` name the dialog for screen readers. They are not shown. The defaults are "Command Palette" and "Search for a command to run...".
 
+## CommandDialog size
+
+| Value | Use it for |
+| --- | --- |
+| \`md\` | The default. A short list of commands, 448 px wide, a third of the way down the screen. |
+| \`lg\` | A palette that searches records with a title and a detail line each (requests and their URL, flows and their description), 736 px wide and pinned near the top, so a growing list never moves the field. |
+
+The palette opens and closes without animation, whatever its size: it is opened from the keyboard many times a day.
+
 ## Do not
 
 - Do not use \`Command\` as a form autocomplete. Use \`Combobox\`.
+- Do not use \`size="lg"\` for a few short commands. The extra width is empty space.
 - Do not position \`CommandList\` yourself. Put \`Command\` in a \`Popover\` or a \`CommandDialog\`.
 - Do not put text, a loading message or an error inside \`CommandList\`. Put it next to the list, before it.
 - Do not replace \`CommandInput\` with your own \`InputGroup\`. \`CommandInput\` takes \`value\`, \`onValueChange\`, \`placeholder\` and \`autoFocus\`.
@@ -241,6 +251,63 @@ export const Dialog: Story = {
     await userEvent.type(within(reopened).getByRole('combobox'), 'cal');
     await userEvent.keyboard('{Enter}');
     await expect(onRun).toHaveBeenCalledWith('calendar');
+  },
+};
+
+const longCommands = [
+  'Create a payment intent for a cross-border marketplace payout with idempotency',
+  'PaymentIntentConfirmationWebhookSignatureVerificationEndpointWithoutSpaces',
+  '決済フローの回帰テスト — 夜間スイート',
+  '🚀 Release smoke (do not delete)',
+];
+
+function LargeCommandPalette({ items }: { items: string[] }) {
+  return (
+    <CommandDialog open size="lg" title="Search">
+      <Command label="Search">
+        <CommandInput placeholder="Search requests, flows and specs" />
+        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandList>
+          <CommandGroup heading="Results">
+            {items.map((item) => (
+              <CommandItem key={item} onSelect={() => onRun(item)}>
+                {item}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </Command>
+    </CommandDialog>
+  );
+}
+
+export const DialogLarge: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`size="lg"` is 736 px wide and pinned near the top. Like every palette it appears without a fade or a zoom.',
+      },
+    },
+  },
+  render: () => <LargeCommandPalette items={['Calendar', 'Profile', 'Settings']} />,
+  play: async () => {
+    const dialog = await screen.findByRole('dialog', { name: 'Search' });
+    await expect(dialog).toHaveAttribute('data-size', 'lg');
+    await expect(dialog.getAnimations()).toHaveLength(0);
+    const backdrop = document.querySelector<HTMLElement>('[data-slot=dialog-overlay]');
+    await expect(backdrop?.getAnimations() ?? []).toHaveLength(0);
+    const width = dialog.getBoundingClientRect().width;
+    await expect(width).toBeLessThanOrEqual(736);
+    await expect(width).toBeLessThanOrEqual(window.innerWidth - 32);
+  },
+};
+
+export const DialogLargeWorstCase: Story = {
+  render: () => <LargeCommandPalette items={longCommands} />,
+  play: async () => {
+    const dialog = await screen.findByRole('dialog', { name: 'Search' });
+    await expect(dialog.scrollWidth).toBeLessThanOrEqual(dialog.clientWidth);
   },
 };
 

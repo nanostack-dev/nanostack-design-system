@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.5
+
+- `CommandDialog size="lg"`: a 736 px palette pinned near the top of the screen, for search that lists records with a title and a detail line (Echopoint's global search). `size="md"` stays the default, 448 px wide a third of the way down.
+- Command palettes open and close without a fade or a zoom, and so does their backdrop. They are opened from the keyboard many times a day.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.5`. Pass `size="lg"` to `CommandDialog` for a wide search palette. Existing palettes need no change; they now appear instantly.
+
 ## 0.2.4
 
 - `SelectContent` sends `aria-label` and `aria-labelledby` to the opened listbox. Its presentation wrapper no longer receives an inaccessible label.

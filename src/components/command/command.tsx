@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogPaletteContent,
   DialogTitle,
+  type DialogPaletteSize,
 } from '@/components/dialog/dialog';
 import { buttonStyles } from '@/components/button/button';
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
@@ -47,6 +48,8 @@ export function Command({ variant, ...props }: CommandProps) {
   );
 }
 
+export type CommandDialogSize = DialogPaletteSize;
+
 export type CommandDialogProps = Omit<
   ComponentProps<typeof Dialog>,
   'children' | 'render' | 'className' | 'style'
@@ -54,6 +57,7 @@ export type CommandDialogProps = Omit<
   title?: string;
   description?: string;
   showCloseButton?: boolean;
+  size?: CommandDialogSize;
   children: ReactNode;
 };
 
@@ -61,12 +65,13 @@ export function CommandDialog({
   title = 'Command Palette',
   description = 'Search for a command to run...',
   showCloseButton = false,
+  size = 'md',
   children,
   ...props
 }: CommandDialogProps) {
   return (
     <Dialog {...props}>
-      <DialogPaletteContent>
+      <DialogPaletteContent size={size}>
         <DialogHeader visuallyHidden>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
