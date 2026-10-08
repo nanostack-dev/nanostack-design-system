@@ -2,6 +2,16 @@
 
 `@nanostackorg/design-system` owns its shadcn/ui code and gives products a closed, typed API: components, layout blocks, blocks and design tokens. Products (Echopoint, Anchor) own routes, data, copy and the visuals that only their meaning explains. The decision and its reasons: `docs/adr/0001-own-shadcn-with-a-closed-api.md`.
 
+## Read by task
+
+The repository contains the rules, procedures and tools needed for standalone work. Shared workspace skills are optional enhancements; no parent checkout or bootstrap is required.
+
+- Domain vocabulary or component ownership: read [CONTEXT.md](CONTEXT.md) and [architecture](docs/technical/architecture.md).
+- First checkout or local failure: read [setup](docs/development/setup.md) and [troubleshooting](docs/development/troubleshooting.md).
+- Component, block, token or API changes: follow the local rules below and [testing](docs/development/testing.md), including hostile-data stories.
+- Publishing or upgrading a consumer: read [deployment](docs/runbooks/deployment.md), [rollback](docs/runbooks/rollback.md) and the [migration guide](docs/migration/0.2.0.md).
+- Documentation navigation: [docs/README.md](docs/README.md) links the existing ADR and component stories.
+
 ## Layout
 
 | Path                                 | What                                                             | Who edits                               |
@@ -26,7 +36,7 @@
 8. Owned files may import each other's internal parts by path (`@/components/button/button`). Blocks, layout and stories import only the public barrels (`@/components/<name>`), like a product.
 9. Every component story documents how to use each variant: a table per prop in `parameters.docs.description.component`, and a `Do not` list.
 10. Follow the official shadcn skill in `.claude/skills/shadcn/` for composition and accessibility. This project uses the Base UI flavour: `render`, not `asChild`.
-11. Creating or changing a component or block: run the `break-ui` skill on it (not in your skills? WebFetch `https://raw.githubusercontent.com/emilkowalski/skills/main/skills/break-ui/SKILL.md`). Its worst-case data lands as stories beside the demo story (`WorstCase`, plus `Empty` and `One` where they apply) in place of the skill's dev toggle, so the story suite guards it. Fix every Broken and Ugly finding in the same PR; list the Fragile rows and open decisions in the PR body.
+11. Creating or changing a component or block: run the installed `break-ui` skill when available, or the standalone hostile-data procedure in [testing](docs/development/testing.md#hostile-data-review). Worst-case data lands as stories beside the demo story (`WorstCase`, plus `Empty` and `One` where they apply), so the story suite guards it. Fix every Broken and Ugly finding in the same PR; list the Fragile rows and open decisions in the PR body.
 
 ## Consumer rule
 
@@ -47,3 +57,9 @@ Before a PR: `pnpm lint`, `pnpm typecheck`, `pnpm test` (every story in Chromium
 ## Release
 
 Beta APIs change only with a `CHANGELOG.md` entry: a `## <version>` heading and an `Upgrade:` line. The user approves each npm publish. After approval: `git tag v<version>` on `origin/main`, push the tag, `gh workflow run release.yml --ref v<version>`. npm trusted publishing is configured for that workflow.
+
+## Delivery and documentation
+
+Fetch `origin/main` and edit in an isolated worktree; preserve the primary checkout. Use Conventional Commits and open a focused PR after the gates above. Reviews produce findings and a verdict before implementation. Rendered UI changes need matching before/after evidence at the same viewport, theme and data; document skipped verification explicitly.
+
+Update authoritative documentation in the same PR when behavior, a reusable fix, vocabulary or an architectural choice changes. Component usage belongs in stories; current boundaries in `docs/technical/`, verified development repairs in `docs/development/`, operations in `docs/runbooks/`, and vocabulary in `CONTEXT.md`. Preserve ADR numbers and supersede reversals with new records. Keep [the index](docs/README.md) current. `AGENTS.md` is the sole agent guide filename.
