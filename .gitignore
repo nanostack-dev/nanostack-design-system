@@ -10,3 +10,6 @@ worktrees/
 storybook-static/
 debug-storybook.log
 *storybook.log
+
+# Developer-only Claude settings
+/.claude/settings.local.json
