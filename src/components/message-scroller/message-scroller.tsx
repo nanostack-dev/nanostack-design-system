@@ -8,6 +8,7 @@ import {
 import type { ComponentProps } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -83,6 +84,7 @@ export function MessageScrollerButton({
   children,
   ...props
 }: MessageScrollerButtonProps) {
+  const motion = useMotionAttributes();
   return (
     <MessageScrollerPrimitive.Button
       data-slot="message-scroller-button"
@@ -90,9 +92,10 @@ export function MessageScrollerButton({
       direction={direction}
       className={cn(
         buttonStyles({ variant: 'outline', size: 'sm', iconOnly: true }),
-        'absolute inset-s-1/2 -translate-x-1/2 bg-background dark:bg-background transition-[translate,scale,opacity] duration-200 data-[active=false]:pointer-events-none data-[active=false]:scale-95 data-[active=false]:opacity-0 data-[active=false]:duration-400 data-[active=false]:ease-[cubic-bezier(0.7,0,0.84,0)] data-[active=true]:translate-y-0 data-[active=true]:scale-100 data-[active=true]:opacity-100 data-[active=true]:ease-[cubic-bezier(0.23,1,0.32,1)] data-[direction=end]:bottom-4 data-[direction=end]:data-[active=false]:translate-y-full data-[direction=start]:top-4 data-[direction=start]:data-[active=false]:-translate-y-full rtl:translate-x-1/2 data-[direction=start]:[&_svg]:rotate-180',
+        'absolute inset-s-1/2 -translate-x-1/2 bg-background dark:bg-background transition-[translate,scale,opacity] data-[active=false]:pointer-events-none data-[active=false]:scale-95 data-[active=false]:opacity-0 data-[active=true]:translate-y-0 data-[active=true]:scale-100 data-[active=true]:opacity-100 data-[direction=end]:bottom-4 data-[direction=end]:data-[active=false]:translate-y-full data-[direction=start]:top-4 data-[direction=start]:data-[active=false]:-translate-y-full rtl:translate-x-1/2 data-[direction=start]:[&_svg]:rotate-180',
       )}
       {...props}
+      {...motion}
     >
       {children ?? (
         <>

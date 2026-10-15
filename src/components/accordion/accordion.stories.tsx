@@ -81,7 +81,9 @@ export const Default: Story = {
 
     await userEvent.click(shipping);
     await expect(shipping).toHaveAttribute('aria-expanded', 'true');
-    await expect(await canvas.findByText('Orders ship within two business days.')).toBeVisible();
+    await waitFor(() =>
+      expect(canvas.getByText('Orders ship within two business days.')).toBeVisible(),
+    );
     await expect(args.onValueChange).toHaveBeenCalledWith(['shipping'], expect.anything());
 
     await userEvent.click(returns);

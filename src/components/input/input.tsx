@@ -2,6 +2,7 @@ import { Input as InputPrimitive } from '@base-ui/react/input';
 import { cva } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -44,7 +45,13 @@ export type InputProps = ClosedProps<
 };
 
 export function Input({ variant, size, font, ...props }: InputProps) {
+  const motion = useMotionAttributes();
   return (
-    <InputPrimitive data-slot="input" className={inputStyles({ variant, size, font })} {...props} />
+    <InputPrimitive
+      data-slot="input"
+      className={inputStyles({ variant, size, font })}
+      {...props}
+      {...motion}
+    />
   );
 }

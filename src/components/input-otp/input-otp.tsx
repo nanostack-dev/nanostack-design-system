@@ -2,6 +2,7 @@ import { MinusIcon } from '@phosphor-icons/react';
 import { OTPInput, OTPInputContext } from 'input-otp';
 import { useContext, type ComponentProps, type ReactNode } from 'react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type InputOTPProps = ClosedProps<
@@ -39,6 +40,7 @@ export type InputOTPSlotProps = ClosedProps<ComponentProps<'div'>> & {
 };
 
 export function InputOTPSlot({ index, ...props }: InputOTPSlotProps) {
+  const motion = useMotionAttributes();
   const inputOTPContext = useContext(OTPInputContext);
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
 
@@ -46,8 +48,9 @@ export function InputOTPSlot({ index, ...props }: InputOTPSlotProps) {
     <div
       data-slot="input-otp-slot"
       data-active={isActive}
-      className="relative flex size-9 items-center justify-center border-y border-r border-input bg-input/50 text-sm transition-all outline-none first:rounded-l-3xl first:border-l last:rounded-r-3xl aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-3 data-[active=true]:ring-ring/30 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40"
+      className="relative flex size-9 items-center justify-center border-y border-r border-input bg-input/50 text-sm transition-[color,background-color,border-color,box-shadow,opacity] outline-none first:rounded-l-3xl first:border-l last:rounded-r-3xl aria-invalid:border-destructive data-[active=true]:z-10 data-[active=true]:border-ring data-[active=true]:ring-3 data-[active=true]:ring-ring/30 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40"
       {...props}
+      {...motion}
     >
       {char}
       {hasFakeCaret && (

@@ -1,5 +1,6 @@
 import { ScrollArea as ScrollAreaPrimitive } from '@base-ui/react/scroll-area';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -38,6 +39,7 @@ export function ScrollArea({
   children,
   ...props
 }: ScrollAreaProps) {
+  const motion = useMotionAttributes();
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
@@ -51,6 +53,7 @@ export function ScrollArea({
           maxHeightClass[maxHeight],
           overscrollClass[overscroll],
         )}
+        {...motion}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
@@ -62,12 +65,14 @@ export function ScrollArea({
 }
 
 function ScrollBar({ orientation }: { orientation: 'vertical' | 'horizontal' }) {
+  const motion = useMotionAttributes();
   return (
     <ScrollAreaPrimitive.Scrollbar
       data-slot="scroll-area-scrollbar"
       data-orientation={orientation}
       orientation={orientation}
       className="flex touch-none p-px transition-colors select-none data-horizontal:h-2.5 data-horizontal:flex-col data-horizontal:border-t data-horizontal:border-t-transparent data-vertical:h-full data-vertical:w-2.5 data-vertical:border-l data-vertical:border-l-transparent"
+      {...motion}
     >
       <ScrollAreaPrimitive.Thumb
         data-slot="scroll-area-thumb"

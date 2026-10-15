@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority';
 import { createContext, useContext, type ComponentPropsWithRef } from 'react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -125,6 +126,7 @@ export function Bubble({
   align = 'start',
   ...props
 }: BubbleProps) {
+  const motion = useMotionAttributes();
   return (
     <BubbleContext.Provider value={{ variant, tone }}>
       <div
@@ -137,6 +139,7 @@ export function Bubble({
           variant === 'ghost' && 'max-w-full',
         )}
         {...props}
+        {...motion}
       />
     </BubbleContext.Provider>
   );

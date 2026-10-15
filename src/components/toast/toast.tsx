@@ -1,3 +1,4 @@
+import { useMotionAttributes } from '@/lib/motion';
 import { Toast as ToastPrimitive } from '@base-ui/react/toast';
 import {
   CheckCircleIcon,
@@ -95,6 +96,7 @@ function isToastType(type: string | undefined): type is ToastType {
 }
 
 function ToastIcon({ type }: { type: string | undefined }) {
+  const motion = useMotionAttributes();
   if (!isToastType(type)) return null;
   const IconComponent = iconOfType[type];
   const tone = toneOfType[type];
@@ -104,6 +106,7 @@ function ToastIcon({ type }: { type: string | undefined }) {
       data-type={type}
       data-tone={tone}
       className={toastIconClasses({ tone })}
+      {...motion}
     >
       <IconComponent aria-hidden className={type === 'loading' ? 'animate-spin' : undefined} />
     </span>
@@ -113,7 +116,7 @@ function ToastIcon({ type }: { type: string | undefined }) {
 const toastRootClasses = cn(
   'group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-2xl border bg-popover text-popover-foreground shadow-lg will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
   '[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]',
-  'h-(--height) [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_500ms_cubic-bezier(0.22,1,0.36,1),opacity_500ms,height_150ms]',
+  'h-(--height) [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]',
   "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
   'data-expanded:h-(--toast-height) data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))]',
   'data-limited:opacity-0 data-starting-style:[transform:translateY(150%)]',
@@ -129,6 +132,7 @@ const toastRootClasses = cn(
 );
 
 function ToastList() {
+  const motion = useMotionAttributes();
   const { toasts } = ToastPrimitive.useToastManager();
   return toasts.map((toastItem) => (
     <ToastPrimitive.Root
@@ -136,10 +140,12 @@ function ToastList() {
       toast={toastItem}
       data-slot="toast"
       className={toastRootClasses}
+      {...motion}
     >
       <ToastPrimitive.Content
         data-slot="toast-content"
-        className="flex h-full items-center gap-3 overflow-hidden p-4 transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] data-behind:opacity-0 data-expanded:opacity-100"
+        className="flex h-full items-center gap-3 overflow-hidden p-4 transition-opacity data-behind:opacity-0 data-expanded:opacity-100"
+        {...motion}
       >
         <ToastIcon type={toastItem.type} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">

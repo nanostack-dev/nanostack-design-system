@@ -3,6 +3,7 @@ import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { cva } from 'class-variance-authority';
 
 import { Kbd, KbdGroup } from '@/components/kbd/kbd';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -79,6 +80,7 @@ export function SearchButton({
   type = 'button',
   ...props
 }: SearchButtonProps) {
+  const motion = useMotionAttributes();
   const hasShortcut = shortcut !== undefined && shortcut.length > 0;
   return (
     <ButtonPrimitive
@@ -89,6 +91,7 @@ export function SearchButton({
       aria-keyshortcuts={hasShortcut ? toAriaKeyShortcuts(shortcut) : undefined}
       className={cn(searchButtonClasses({ size, width }))}
       {...props}
+      {...motion}
     >
       <MagnifyingGlassIcon aria-hidden />
       <span className="min-w-0 flex-1 truncate text-left">{label}</span>

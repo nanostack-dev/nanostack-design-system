@@ -1,6 +1,7 @@
 import { Toggle as TogglePrimitive } from '@base-ui/react/toggle';
 import { cva } from 'class-variance-authority';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -35,7 +36,13 @@ export type ToggleProps = ClosedProps<Omit<TogglePrimitive.Props, 'render'>> & {
 };
 
 export function Toggle({ variant, size, ...props }: ToggleProps) {
+  const motion = useMotionAttributes();
   return (
-    <TogglePrimitive data-slot="toggle" className={toggleStyles({ variant, size })} {...props} />
+    <TogglePrimitive
+      data-slot="toggle"
+      className={toggleStyles({ variant, size })}
+      {...props}
+      {...motion}
+    />
   );
 }

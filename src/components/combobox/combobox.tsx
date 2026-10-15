@@ -9,6 +9,7 @@ import {
   InputGroupButtonPrimitive,
   InputGroupInput,
 } from '@/components/input-group/input-group';
+import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,7 @@ export function ComboboxValue(props: ComboboxValueProps) {
 export type ComboboxTriggerProps = ClosedProps<ComboboxPrimitive.Trigger.Props>;
 
 export function ComboboxTrigger({ children, ...props }: ComboboxTriggerProps) {
+  useMotionInput();
   return (
     <ComboboxPrimitive.Trigger
       data-slot="combobox-trigger"
@@ -108,6 +110,7 @@ export function ComboboxContent({
   anchor,
   ...props
 }: ComboboxContentProps) {
+  const motion = useMotionAttributes();
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
@@ -121,8 +124,9 @@ export function ComboboxContent({
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
           data-chips={!!anchor}
-          className="group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-3xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 data-[chips=true]:min-w-(--anchor-width) data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1.5 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/50 *:data-[slot=input-group]:shadow-none dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+          className="group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-3xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 data-[chips=true]:min-w-(--anchor-width) *:data-[slot=input-group]:m-1.5 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/50 *:data-[slot=input-group]:shadow-none dark:ring-foreground/10"
           {...props}
+          {...motion}
         />
       </ComboboxPrimitive.Positioner>
     </ComboboxPrimitive.Portal>
@@ -212,11 +216,13 @@ export function ComboboxSeparator(props: ComboboxSeparatorProps) {
 export type ComboboxChipsProps = ClosedProps<Omit<ComboboxPrimitive.Chips.Props, 'render'>>;
 
 export function ComboboxChips(props: ComboboxChipsProps) {
+  const motion = useMotionAttributes();
   return (
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
       className="flex min-h-9 flex-wrap items-center gap-1.5 rounded-3xl border border-transparent bg-input/50 bg-clip-padding px-3 py-1.5 text-sm transition-[color,box-shadow,background-color] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1.5 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40"
       {...props}
+      {...motion}
     />
   );
 }

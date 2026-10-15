@@ -263,3 +263,284 @@
     -webkit-tap-highlight-color: color-mix(in oklab, var(--primary) 12%, transparent);
   }
 }
+
+/* Motion is owned by the library, including portal content. These unlayered
+   rules intentionally take precedence over the upstream Tailwind utilities. */
+:root {
+  --motion-duration-micro: 120ms;
+  --motion-duration-ui: 180ms;
+  --motion-duration-modal: 240ms;
+  --motion-duration-page: 350ms;
+  --motion-duration-reduced: 120ms;
+}
+
+[data-ns-motion] {
+  --ns-micro: var(--motion-duration-micro);
+  --ns-ui: var(--motion-duration-ui);
+  --ns-modal: var(--motion-duration-modal);
+  --ns-travel: 1;
+  transition-duration: var(--ns-micro);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Small anchored surfaces retarget rather than restart an entrance keyframe. */
+:is(
+  [data-slot='dropdown-menu-content'],
+  [data-slot='context-menu-content'],
+  [data-slot='popover-content'],
+  [data-slot='hover-card-content'],
+  [data-slot='tooltip-content'],
+  [data-slot='combobox-content'],
+  [data-slot='select-content'],
+  [data-slot='navigation-menu-popup']
+) {
+  opacity: 1;
+  scale: 1;
+  transition-property: opacity, scale;
+  transition-duration: var(--ns-ui);
+  transition-timing-function: var(--ease-out);
+}
+
+:is(
+  [data-slot='dropdown-menu-content'],
+  [data-slot='context-menu-content'],
+  [data-slot='popover-content'],
+  [data-slot='hover-card-content'],
+  [data-slot='tooltip-content'],
+  [data-slot='combobox-content'],
+  [data-slot='select-content'],
+  [data-slot='navigation-menu-popup'],
+  [data-slot='dialog-content']:not([data-palette]),
+  [data-slot='alert-dialog-content']
+):is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+  scale: calc(1 - 0.03 * var(--ns-travel));
+}
+
+:is([data-slot='dialog-content'], [data-slot='alert-dialog-content']):not([data-palette]) {
+  transform-origin: center;
+  scale: 1;
+  transition-property: opacity, scale;
+  transition-duration: var(--ns-modal);
+}
+
+:is(
+  [data-slot='dialog-overlay'],
+  [data-slot='alert-dialog-overlay'],
+  [data-slot='sheet-overlay'],
+  [data-slot='drawer-overlay']
+):not([data-palette]) {
+  transition-property: opacity;
+  transition-duration: var(--ns-modal);
+}
+
+:is([data-slot='dialog-overlay'], [data-slot='alert-dialog-overlay']):is(
+  [data-starting-style],
+  [data-ending-style]
+) {
+  opacity: 0;
+}
+
+[data-slot='sheet-content'] {
+  transition-property: opacity, translate;
+  transition-duration: var(--ns-modal);
+  transition-timing-function: var(--ease-drawer);
+}
+
+/* The existing gesture transform and snap points stay under Base UI's control. */
+[data-slot='drawer-popup'] {
+  transition-property: transform, opacity;
+  transition-duration: var(--ns-modal);
+  transition-timing-function: var(--ease-drawer);
+}
+
+:is([data-slot='drawer-popup'], [data-slot='drawer-overlay'])[data-ending-style] {
+  transition-duration: var(--ns-ui);
+}
+
+:is([data-slot='drawer-popup'], [data-slot='drawer-overlay']):is(
+    [data-swiping],
+    [data-nested-drawer-swiping]
+  ):not([data-ending-style]) {
+  transition-duration: 0ms;
+}
+
+/* Disclosure height is a deliberate layout exception. Reduced motion snaps the
+   measured height immediately while preserving only the short opacity cue. */
+:is([data-slot='collapsible-content'], [data-slot='accordion-content']) {
+  transition-property: height, opacity;
+  transition-duration: var(--ns-ui);
+  transition-timing-function: var(--ease-in-out), var(--ease-out);
+}
+
+:is([data-slot='collapsible-content'], [data-slot='accordion-content']):is(
+  [data-starting-style],
+  [data-ending-style]
+) {
+  height: 0;
+  opacity: 0;
+}
+
+[data-slot='toast'] {
+  transition-property: transform, opacity;
+  transition-duration: var(--ns-ui);
+  transition-timing-function: var(--ease-out);
+}
+
+[data-slot='toast']:is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+}
+
+[data-slot='toast'][data-swiping] {
+  transition-duration: 0ms;
+}
+
+[data-slot='navigation-menu-content'] {
+  animation: none;
+  translate: none;
+  transition-property: opacity;
+  transition-duration: var(--ns-ui);
+}
+
+[data-slot='navigation-menu-trigger'] > svg {
+  transition: rotate var(--ns-micro) var(--ease-out);
+}
+
+[data-slot='message-scroller-button'] {
+  transition-property: opacity;
+  transition-duration: var(--ns-micro);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Adjacent toolbar tooltips must not replay their entrance. */
+[data-slot='tooltip-content'][data-instant],
+[data-slot='select-content'][data-align-trigger='true'] {
+  transition: none;
+}
+
+[data-ns-motion][data-ns-motion='reduced'] {
+  --ns-micro: var(--motion-duration-reduced);
+  --ns-ui: var(--motion-duration-reduced);
+  --ns-modal: var(--motion-duration-reduced);
+  --ns-travel: 0;
+  transition-property: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ns-motion][data-ns-motion] {
+    --ns-micro: var(--motion-duration-reduced);
+    --ns-ui: var(--motion-duration-reduced);
+    --ns-modal: var(--motion-duration-reduced);
+    --ns-travel: 0;
+    transition-property: opacity;
+  }
+
+  /* Remove entrance travel, retaining final geometry (for example centering). */
+  [data-slot='sheet-content'] {
+    translate: none;
+  }
+
+  [data-slot='drawer-popup']:is([data-starting-style], [data-ending-style]) {
+    transform: none;
+    opacity: 0;
+  }
+
+  [data-slot='toast'] {
+    transform: translateY(var(--offset-y));
+  }
+
+  [data-ns-motion] :is(.animate-spin, .animate-pulse, .animate-caret-blink),
+  [data-ns-motion]:is(.animate-spin, .animate-pulse, .animate-caret-blink) {
+    animation: none;
+  }
+}
+
+[data-slot='sheet-content'][data-ns-motion][data-ns-motion='reduced'] {
+  translate: none;
+}
+
+[data-slot='drawer-popup'][data-ns-motion='reduced']:is(
+    [data-starting-style],
+    [data-ending-style]
+  ) {
+  transform: none;
+  opacity: 0;
+}
+
+[data-slot='toast'][data-ns-motion][data-ns-motion='reduced'] {
+  transform: translateY(var(--offset-y));
+}
+
+[data-ns-motion='reduced'] :is(.animate-spin, .animate-pulse, .animate-caret-blink),
+[data-ns-motion='reduced']:is(.animate-spin, .animate-pulse, .animate-caret-blink) {
+  animation: none;
+}
+
+/* Keyboard policy wins over reduced motion and applies across React portals.
+   Pointerdown re-enables the normal budget before its click handler runs. */
+:root[data-ns-input='keyboard'] [data-ns-motion],
+[data-ns-motion='none'] {
+  --ns-micro: 0ms;
+  --ns-ui: 0ms;
+  --ns-modal: 0ms;
+  transition-duration: 0ms;
+  animation-duration: 0ms;
+}
+
+:root[data-ns-input='keyboard'] [data-slot='navigation-menu-trigger'] > svg,
+[data-ns-motion='none'][data-slot='navigation-menu-trigger'] > svg {
+  transition-duration: 0ms;
+}
+
+:root[data-ns-input='keyboard'] :is([data-slot='button'], [data-slot='icon-button']):active {
+  translate: none;
+}
+
+[data-ns-motion='none'] :is(.animate-spin, .animate-pulse, .animate-caret-blink),
+[data-ns-motion='none']:is(.animate-spin, .animate-pulse, .animate-caret-blink) {
+  animation: none;
+}
+
+/* Frequent changes are immediately readable, including palette backdrops,
+   response tabs, streamed progress, navigation layout and sidebar resizing. */
+:is(
+  [data-palette],
+  [data-slot='tabs-trigger'],
+  [data-slot='progress-indicator'],
+  [data-slot='sidebar-gap'],
+  [data-slot='sidebar-container'],
+  [data-slot='sidebar'],
+  [data-slot='sidebar-overlay'],
+  [data-slot='sidebar-group-label'],
+  [data-slot='sidebar-menu-button'],
+  [data-slot='navigation-menu-positioner'],
+  [data-slot='navigation-menu-indicator']
+)[data-ns-motion] {
+  animation: none;
+  transition: none;
+}
+
+[data-slot='select-content'][data-align-trigger='true'] {
+  opacity: 1;
+  scale: 1;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot='navigation-menu-trigger'] > svg {
+    transition: none;
+  }
+  :is([data-slot='button'], [data-slot='icon-button']):active {
+    translate: none;
+  }
+}
+[data-slot='navigation-menu-trigger']:is([data-ns-motion='reduced'], [data-ns-motion='none'])
+  > svg {
+  transition: none;
+}
+:is([data-slot='button'], [data-slot='icon-button']):is(
+    [data-ns-motion='reduced'],
+    [data-ns-motion='none']
+  ):active {
+  translate: none;
+}

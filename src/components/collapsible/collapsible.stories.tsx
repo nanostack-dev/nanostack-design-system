@@ -14,7 +14,7 @@ A section that shows or hides its content. Use it for optional details that most
 
 ## Motion
 
-\`CollapsibleContent\` animates its height and opacity when it opens and closes: 200 ms on \`--ease-in-out\`. Under reduced motion it takes 120 ms. The panel does not snap. Products add no CSS for it.
+\`CollapsibleContent\` animates its height and opacity when it opens and closes: 180 ms on \`--ease-in-out\`. Reduced motion changes height immediately and keeps a 120 ms fade. Keyboard toggles are immediate. Products add no CSS for it.
 
 ## Behaviour props
 
@@ -124,9 +124,9 @@ export const AnimatedHeight: Story = {
       return element!;
     });
     const { transitionProperty, transitionDuration } = getComputedStyle(panel);
-    await expect(transitionProperty).toBe('height, opacity');
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    await expect(transitionDuration).toBe(reducedMotion ? '0.12s' : '0.2s, 0.16s');
+    await expect(transitionProperty).toBe(reducedMotion ? 'opacity' : 'height, opacity');
+    await expect(transitionDuration).toBe(reducedMotion ? '0.12s' : '0.18s');
     await waitFor(() => expect(panel.getBoundingClientRect().height).toBeGreaterThan(40));
   },
 };

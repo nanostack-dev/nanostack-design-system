@@ -127,7 +127,7 @@ export const Keyboard: Story = {
     await userEvent.tab();
     await expect(trigger).toHaveFocus();
     await userEvent.keyboard('{ArrowDown}');
-    await expect(await screen.findByRole('listbox')).toBeVisible();
+    await waitFor(async () => expect(await screen.findByRole('listbox')).toBeVisible());
     await waitFor(() =>
       expect(screen.getByRole('option', { name: 'Choose a region' })).toHaveFocus(),
     );
@@ -156,7 +156,9 @@ export const OpenListWithAriaLabel: Story = {
     await userEvent.tab();
     await expect(trigger).toHaveFocus();
     await userEvent.keyboard('{ArrowDown}');
-    await expect(await screen.findByRole('listbox', { name: 'Available regions' })).toBeVisible();
+    await waitFor(async () =>
+      expect(await screen.findByRole('listbox', { name: 'Available regions' })).toBeVisible(),
+    );
     await waitFor(() =>
       expect(screen.getByRole('option', { name: 'Choose a region' })).toHaveFocus(),
     );
@@ -183,7 +185,9 @@ export const OpenListWithAriaLabelledBy: Story = {
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('combobox', { name: 'Region' }));
-    await expect(await screen.findByRole('listbox', { name: 'Region' })).toBeVisible();
+    await waitFor(async () =>
+      expect(await screen.findByRole('listbox', { name: 'Region' })).toBeVisible(),
+    );
     await expect(screen.getByRole('option', { name: 'Choose a region' })).toHaveAttribute(
       'aria-selected',
       'true',
@@ -195,7 +199,7 @@ export const Escape: Story = {
   play: async ({ args, canvas, userEvent }) => {
     const trigger = canvas.getByRole('combobox', { name: 'Region' });
     await userEvent.click(trigger);
-    await expect(await screen.findByRole('listbox')).toBeVisible();
+    await waitFor(async () => expect(await screen.findByRole('listbox')).toBeVisible());
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument());
     await expect(trigger).toHaveFocus();
@@ -231,7 +235,9 @@ export const Groups: Story = {
   ),
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole('combobox', { name: 'Engine' }));
-    await expect(await screen.findByRole('group', { name: 'Relational' })).toBeVisible();
+    await waitFor(async () =>
+      expect(await screen.findByRole('group', { name: 'Relational' })).toBeVisible(),
+    );
     await expect(screen.getByRole('group', { name: 'Key-value' })).toBeVisible();
     await expect(screen.getByRole('option', { name: 'PostgreSQL' })).toHaveAttribute(
       'aria-selected',
@@ -300,7 +306,7 @@ export const Variants: Story = {
     await expect(getComputedStyle(ghost).backgroundColor).toBe('rgba(0, 0, 0, 0)');
     await expect(getComputedStyle(soft).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
     await userEvent.click(ghost);
-    await expect(await screen.findByRole('listbox')).toBeVisible();
+    await waitFor(async () => expect(await screen.findByRole('listbox')).toBeVisible());
     await expect(ghost).toHaveAttribute('data-popup-open');
     await waitFor(() =>
       expect(getComputedStyle(ghost).backgroundColor).toBe(getComputedStyle(soft).backgroundColor),

@@ -1,5 +1,6 @@
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type ProgressProps = ClosedProps<Omit<ProgressPrimitive.Root.Props, 'render'>>;
@@ -7,6 +8,7 @@ export type ProgressLabelProps = ClosedProps<Omit<ProgressPrimitive.Label.Props,
 export type ProgressValueProps = ClosedProps<Omit<ProgressPrimitive.Value.Props, 'render'>>;
 
 export function Progress({ children, ...props }: ProgressProps) {
+  const motion = useMotionAttributes();
   return (
     <ProgressPrimitive.Root data-slot="progress" className="flex w-full flex-wrap gap-3" {...props}>
       {children}
@@ -16,7 +18,8 @@ export function Progress({ children, ...props }: ProgressProps) {
       >
         <ProgressPrimitive.Indicator
           data-slot="progress-indicator"
-          className="h-full bg-primary transition-all motion-reduce:transition-none"
+          className="h-full bg-primary transition-[color,background-color,border-color,box-shadow,opacity] motion-reduce:transition-none"
+          {...motion}
         />
       </ProgressPrimitive.Track>
     </ProgressPrimitive.Root>

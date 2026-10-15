@@ -5,6 +5,7 @@ import { cva } from 'class-variance-authority';
 import type { ComponentPropsWithRef } from 'react';
 
 import { IconButton, type IconButtonProps } from '@/components/button/button';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +56,7 @@ export function Attachment({
   orientation = 'horizontal',
   ...props
 }: AttachmentProps) {
+  const motion = useMotionAttributes();
   return (
     <div
       data-slot="attachment"
@@ -63,6 +65,7 @@ export function Attachment({
       data-orientation={orientation}
       className={attachmentClasses({ size, orientation })}
       {...props}
+      {...motion}
     />
   );
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.6
+
+- Apply shared motion budgets: 120 ms control feedback, 180 ms popups/disclosures/toasts, 240 ms dialogs/sheets/drawers, and a 350 ms page-transition token for product navigation.
+- Make keyboard actions immediate, including modified shortcuts and portal content. Keep command palettes, response tabs, live progress and sidebar layout immediate.
+- Respect device reduced motion with opacity-only transitions; remove travel, scale and size interpolation. Stop decorative spinners/pulses while preserving the loading state.
+- Add `DesignSystemProvider motion="auto" | "reduced" | "none"`. Nested providers inherit omitted preferences and carry their policy through portals. Use `none` for controls encountered 100+ times a day.
+- Replace popup entrance keyframes and broad transitions with interruptible, explicit transitions. Keep Base UI drawer swipes and snap points.
+- Add Foundations/Motion examples, interaction tests, hostile-data coverage and a responsive built-Storybook test matrix.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.6`. Existing components adopt the policy automatically. Keep the existing `DesignSystemProvider`; use a nested `motion="none"` provider for high-frequency editor controls or `motion="reduced"` for a gentler surface. No component CSS overrides or caller migrations are required.
+
 ## 0.2.5
 
 - `CommandDialog size="lg"`: a 736 px palette pinned near the top of the screen, for search that lists records with a title and a detail line (Echopoint's global search). `size="md"` stays the default, 448 px wide a third of the way down.

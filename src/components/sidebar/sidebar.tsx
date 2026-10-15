@@ -10,6 +10,7 @@ import { IconButton, type IconButtonProps } from '@/components/button/button';
 import { Input, type InputProps } from '@/components/input/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 import { useLinkComponent, type LinkComponentProps } from '@/provider/design-system-provider';
@@ -198,6 +199,7 @@ function Sidebar({
   dir,
   ...props
 }: SidebarProps) {
+  const motion = useMotionAttributes();
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
   if (collapsible === 'none') {
@@ -211,6 +213,7 @@ function Sidebar({
         )}
         dir={dir}
         {...props}
+        {...motion}
       >
         {children}
       </div>
@@ -223,6 +226,7 @@ function Sidebar({
         <SheetPrimitive.Portal>
           <SheetPrimitive.Backdrop
             data-slot="sidebar-overlay"
+            {...motion}
             className="fixed inset-0 z-50 bg-foreground/30 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 dark:bg-background/60"
           />
           <SheetPrimitive.Popup
@@ -237,6 +241,7 @@ function Sidebar({
               'fixed inset-y-0 z-50 flex h-full w-(--sidebar-width) flex-col p-0 text-sidebar-foreground shadow-xl transition duration-200 ease-in-out outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=left]:left-0 data-[side=left]:border-r data-[side=left]:data-ending-style:-translate-x-10 data-[side=left]:data-starting-style:-translate-x-10 data-[side=right]:right-0 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-10 data-[side=right]:data-starting-style:translate-x-10',
               materialClass[material],
             )}
+            {...motion}
           >
             <SheetPrimitive.Title className="sr-only">Sidebar</SheetPrimitive.Title>
             <SheetPrimitive.Description className="sr-only">
@@ -257,10 +262,12 @@ function Sidebar({
       data-side={side}
       data-material={material}
       data-slot="sidebar"
+      {...motion}
     >
       <div
         data-slot="sidebar-gap"
         className="relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180"
+        {...motion}
       />
       <div
         data-slot="sidebar-container"
@@ -268,6 +275,7 @@ function Sidebar({
         dir={dir}
         className="fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex"
         {...props}
+        {...motion}
       >
         <div
           data-sidebar="sidebar"
@@ -282,6 +290,7 @@ function Sidebar({
 }
 
 function SidebarTrigger({ label = 'Toggle Sidebar', onClick, ...props }: SidebarTriggerProps) {
+  const motion = useMotionAttributes();
   const { toggleSidebar } = useSidebar();
   return (
     <IconButton
@@ -297,6 +306,7 @@ function SidebarTrigger({ label = 'Toggle Sidebar', onClick, ...props }: Sidebar
         toggleSidebar();
       }}
       {...props}
+      {...motion}
     />
   );
 }
@@ -312,7 +322,7 @@ function SidebarRail({ label = 'Toggle Sidebar', ...props }: SidebarRailProps) {
       tabIndex={-1}
       onClick={toggleSidebar}
       title={label}
-      className="absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex ltr:-translate-x-1/2 rtl:-translate-x-1/2 in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize [[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full hover:group-data-[collapsible=offcanvas]:bg-sidebar [[data-side=left][data-collapsible=offcanvas]_&]:-right-2 [[data-side=right][data-collapsible=offcanvas]_&]:-left-2"
+      className="absolute inset-y-0 z-20 hidden w-4 transition-[color,background-color,border-color,box-shadow,opacity] ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex ltr:-translate-x-1/2 rtl:-translate-x-1/2 in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize [[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full hover:group-data-[collapsible=offcanvas]:bg-sidebar [[data-side=left][data-collapsible=offcanvas]_&]:-right-2 [[data-side=right][data-collapsible=offcanvas]_&]:-left-2"
       {...props}
     />
   );
@@ -389,12 +399,14 @@ function SidebarGroup(props: SidebarGroupProps) {
 }
 
 function SidebarGroupLabel(props: SidebarGroupLabelProps) {
+  const motion = useMotionAttributes();
   return (
     <div
       data-slot="sidebar-group-label"
       data-sidebar="group-label"
       className="flex h-8 shrink-0 items-center rounded-xl px-3 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden transition-[margin,opacity] duration-200 ease-linear group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0"
       {...props}
+      {...motion}
     />
   );
 }
@@ -469,13 +481,17 @@ function SidebarMenuButton({
   tooltip,
   ...props
 }: SidebarMenuButtonProps) {
+  const motion = useMotionAttributes();
   const { isMobile, state } = useSidebar();
   const linkComponent = useLinkComponent();
   const target =
     render ?? (href === undefined ? undefined : React.createElement(linkComponent, { href }));
   const element = useRender({
     defaultTagName: 'button',
-    props: mergeProps<'button'>({ className: sidebarMenuButtonClasses({ size }) }, props),
+    props: {
+      ...mergeProps<'button'>({ className: sidebarMenuButtonClasses({ size }) }, props),
+      ...motion,
+    },
     render: target,
     state: { slot: 'sidebar-menu-button', sidebar: 'menu-button', size, active: isActive },
   });

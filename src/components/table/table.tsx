@@ -1,5 +1,6 @@
 import type { ComponentPropsWithRef, ReactNode } from 'react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -65,6 +66,7 @@ export function TableFooter(props: TableFooterProps) {
 }
 
 export function TableRow(props: TableRowProps) {
+  const motion = useMotionAttributes();
   return (
     <tr
       data-slot="table-row"
@@ -73,6 +75,7 @@ export function TableRow(props: TableRowProps) {
         props.onClick && 'cursor-pointer',
       )}
       {...props}
+      {...motion}
     />
   );
 }

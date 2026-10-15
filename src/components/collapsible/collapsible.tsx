@@ -1,5 +1,6 @@
 import { Collapsible as CollapsiblePrimitive } from '@base-ui/react/collapsible';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type CollapsibleProps = ClosedProps<Omit<CollapsiblePrimitive.Root.Props, 'render'>>;
@@ -15,11 +16,13 @@ export function CollapsibleTrigger(props: CollapsibleTriggerProps) {
 }
 
 export function CollapsibleContent(props: CollapsibleContentProps) {
+  const motion = useMotionAttributes();
   return (
     <CollapsiblePrimitive.Panel
       data-slot="collapsible-content"
-      className="h-(--collapsible-panel-height) overflow-hidden [transition:height_200ms_var(--ease-in-out),opacity_160ms_var(--ease-out)] data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0 motion-reduce:duration-120"
+      className="h-(--collapsible-panel-height) overflow-hidden data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0"
       {...props}
+      {...motion}
     />
   );
 }
