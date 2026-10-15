@@ -4,6 +4,7 @@ Start with [agent rules](../AGENTS.md), [canonical vocabulary](../CONTEXT.md) an
 
 ## System and decisions
 
+- [Motion policy](technical/motion.md): timing, frequency, keyboard input, reduced motion and provider inheritance.
 - [Architecture](technical/architecture.md): ownership, public API, tokens, builds and consumer boundaries.
 - [ADR index](adr/README.md) and [ADR 0001](adr/0001-own-shadcn-with-a-closed-api.md): owned shadcn source and the closed API.
 - [0.2.0 migration](migration/0.2.0.md) and [changelog](../CHANGELOG.md).

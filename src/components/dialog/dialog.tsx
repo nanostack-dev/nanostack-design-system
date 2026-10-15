@@ -4,6 +4,7 @@ import { cva } from 'class-variance-authority';
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
+import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -83,6 +84,7 @@ const sizeClass: Record<DialogSize, string> = {
 };
 
 function Dialog({ ...props }: DialogProps) {
+  useMotionInput();
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
@@ -95,18 +97,18 @@ function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
 }
 
 function DialogClose({ ...props }: DialogCloseProps) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
+  const motion = useMotionAttributes();
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} {...motion} />;
 }
 
 function DialogOverlay({ animated = true }: { animated?: boolean }) {
+  const motion = useMotionAttributes();
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
-      className={cn(
-        'fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60',
-        animated &&
-          'duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0',
-      )}
+      data-palette={!animated || undefined}
+      className="fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60"
+      {...motion}
     />
   );
 }
@@ -117,6 +119,7 @@ function DialogContent({
   showCloseButton = true,
   ...props
 }: DialogContentProps) {
+  const motion = useMotionAttributes();
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -124,10 +127,11 @@ function DialogContent({
         data-slot="dialog-content"
         data-size={size}
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-4xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+          'fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-4xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 outline-none dark:ring-foreground/10',
           sizeClass[size],
         )}
         {...props}
+        {...motion}
       >
         <OverlayScrollBody
           slot="dialog-body"
@@ -168,14 +172,17 @@ const paletteContentClasses = cva(
 );
 
 export function DialogPaletteContent({ children, size, ...props }: DialogPaletteContentProps) {
+  const motion = useMotionAttributes();
   return (
     <DialogPortal>
       <DialogOverlay animated={false} />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         data-size={size ?? 'md'}
+        data-palette
         className={paletteContentClasses({ size })}
         {...props}
+        {...motion}
       >
         {children}
       </DialogPrimitive.Popup>

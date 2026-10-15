@@ -3,6 +3,7 @@ import { CaretRightIcon, CheckIcon } from '@phosphor-icons/react';
 import { cva } from 'class-variance-authority';
 import { createElement, type ComponentProps } from 'react';
 
+import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 import { useLinkComponent } from '@/provider/design-system-provider';
@@ -15,7 +16,7 @@ export type DropdownMenuContentWidth = 'auto' | 'sm' | 'md';
 export type DropdownMenuItemTone = 'neutral' | 'critical';
 
 const menuPopupClasses = cva(
-  'z-50 max-h-(--available-height) max-w-(--available-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-1.5 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95',
+  'z-50 max-h-(--available-height) max-w-(--available-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-1.5 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none dark:ring-foreground/10 data-closed:overflow-hidden',
   {
     variants: {
       width: {
@@ -47,6 +48,7 @@ export function MenuPopup({
   width = 'auto',
   ...props
 }: MenuPopupProps) {
+  const motion = useMotionAttributes();
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
@@ -61,6 +63,7 @@ export function MenuPopup({
           data-width={width}
           className={cn(menuPopupClasses({ width }))}
           {...props}
+          {...motion}
         />
       </MenuPrimitive.Positioner>
     </MenuPrimitive.Portal>
@@ -87,6 +90,7 @@ const menuChoiceItemClasses =
 export type DropdownMenuProps = MenuPrimitive.Root.Props;
 
 export function DropdownMenu(props: DropdownMenuProps) {
+  useMotionInput();
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
 }
 

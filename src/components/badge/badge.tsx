@@ -2,6 +2,7 @@ import type { Icon } from '@phosphor-icons/react';
 import { cva } from 'class-variance-authority';
 import type { ComponentPropsWithRef } from 'react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +11,7 @@ export type BadgeTone = 'neutral' | 'brand' | 'critical' | 'success' | 'warning'
 export type BadgeSize = 'md' | 'lg';
 
 const badgeClasses = cva(
-  'group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full border border-transparent font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3!',
+  'group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-full border border-transparent font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3!',
   {
     variants: {
       variant: { solid: '', soft: '', outline: 'bg-transparent' },
@@ -79,6 +80,7 @@ export function Badge({
   children,
   ...props
 }: BadgeProps) {
+  const motion = useMotionAttributes();
   return (
     <span
       data-slot="badge"
@@ -86,6 +88,7 @@ export function Badge({
       data-tone={tone ?? 'neutral'}
       className={cn(badgeClasses({ variant, tone, size }))}
       {...props}
+      {...motion}
     >
       {IconComponent ? <IconComponent aria-hidden data-icon="inline-start" /> : null}
       {children}

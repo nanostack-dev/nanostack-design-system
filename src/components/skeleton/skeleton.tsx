@@ -1,5 +1,6 @@
 import type { ComponentPropsWithRef } from 'react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,7 @@ export type SkeletonProps = ClosedProps<Omit<ComponentPropsWithRef<'div'>, 'chil
 };
 
 export function Skeleton({ height = 'sm', width = 'fill', ...props }: SkeletonProps) {
+  const motion = useMotionAttributes();
   return (
     <div
       data-slot="skeleton"
@@ -41,6 +43,7 @@ export function Skeleton({ height = 'sm', width = 'fill', ...props }: SkeletonPr
         widthClass[width],
       )}
       {...props}
+      {...motion}
     />
   );
 }

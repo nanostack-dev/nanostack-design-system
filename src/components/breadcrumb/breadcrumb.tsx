@@ -1,3 +1,4 @@
+import { useMotionAttributes } from '@/lib/motion';
 import { CaretRightIcon, DotsThreeIcon } from '@phosphor-icons/react';
 import {
   createElement,
@@ -49,9 +50,11 @@ export function BreadcrumbItem(props: BreadcrumbItemProps) {
 }
 
 export function BreadcrumbLink(props: BreadcrumbLinkProps) {
+  const motion = useMotionAttributes();
   const linkComponent = useLinkComponent();
   const linkProps: LinkComponentProps & { 'data-slot': string } = {
     'data-slot': 'breadcrumb-link',
+    ...motion,
     className:
       'rounded-sm transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30',
     ...props,

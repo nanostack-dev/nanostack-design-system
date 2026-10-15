@@ -3,6 +3,7 @@ import { Questionnaire as QuestionnairePrimitive } from '@shadcn/react/questionn
 import type { ComponentProps, ComponentPropsWithRef } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -87,11 +88,13 @@ export function QuestionnaireChoices(props: QuestionnaireChoicesProps) {
 }
 
 export function QuestionnaireChoice({ children, ...props }: QuestionnaireChoiceProps) {
+  const motion = useMotionAttributes();
   return (
     <QuestionnairePrimitive.Choice
       data-slot="questionnaire-choice"
       className="group/questionnaire-choice relative flex min-h-11 cursor-pointer items-start gap-2.5 rounded-3xl border border-input px-4 py-3 text-start text-sm transition-colors outline-none select-none hover:bg-input/40 has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-3 has-[>input:focus-visible]:ring-ring/50 data-invalid:border-destructive data-checked:border-primary/40 data-checked:bg-primary/10 data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50"
       {...props}
+      {...motion}
     >
       <QuestionnairePrimitive.ChoiceInput
         data-slot="questionnaire-choice-input"

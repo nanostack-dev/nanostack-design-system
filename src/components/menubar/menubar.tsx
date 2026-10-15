@@ -27,6 +27,7 @@ import {
   type DropdownMenuSubProps,
   type DropdownMenuSubTriggerProps,
 } from '@/components/dropdown-menu/dropdown-menu';
+import { useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type MenubarItemTone = DropdownMenuItemTone;
@@ -58,6 +59,7 @@ export function MenubarGroup(props: MenubarGroupProps) {
 export type MenubarTriggerProps = ClosedProps<Omit<MenuPrimitive.Trigger.Props, 'render'>>;
 
 export function MenubarTrigger(props: MenubarTriggerProps) {
+  useMotionInput();
   return (
     <MenuPrimitive.Trigger
       data-slot="menubar-trigger"

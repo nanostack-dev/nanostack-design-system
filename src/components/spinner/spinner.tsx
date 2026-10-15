@@ -1,5 +1,6 @@
 import { SpinnerIcon, type IconProps } from '@phosphor-icons/react';
 
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +19,7 @@ export type SpinnerProps = ClosedProps<
 };
 
 export function Spinner({ size = 'md', ...props }: SpinnerProps) {
+  const motion = useMotionAttributes();
   return (
     <SpinnerIcon
       data-slot="spinner"
@@ -26,6 +28,7 @@ export function Spinner({ size = 'md', ...props }: SpinnerProps) {
       aria-label="Loading"
       className={cn('shrink-0 animate-spin motion-reduce:animate-none', sizeClass[size])}
       {...props}
+      {...motion}
     />
   );
 }

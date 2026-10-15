@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { Separator } from '@/components/separator/separator';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 import { useLinkComponent, type LinkComponentProps } from '@/provider/design-system-provider';
@@ -59,6 +60,7 @@ export type ItemHeaderProps = DivProps;
 export type ItemFooterProps = DivProps;
 
 export function Item({ variant = 'ghost', size = 'md', ...props }: ItemProps) {
+  const motion = useMotionAttributes();
   return (
     <div
       data-slot="item"
@@ -66,6 +68,7 @@ export function Item({ variant = 'ghost', size = 'md', ...props }: ItemProps) {
       data-size={size}
       className={cn(itemClasses({ variant, size }))}
       {...props}
+      {...motion}
     />
   );
 }

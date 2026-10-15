@@ -1,5 +1,6 @@
 import { PreviewCard as PreviewCardPrimitive } from '@base-ui/react/preview-card';
 
+import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type HoverCardSide = NonNullable<PreviewCardPrimitive.Positioner.Props['side']>;
@@ -15,6 +16,7 @@ export type HoverCardContentProps = ClosedProps<
 };
 
 function HoverCard({ ...props }: HoverCardProps) {
+  useMotionInput();
   return <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />;
 }
 
@@ -23,6 +25,7 @@ function HoverCardTrigger({ ...props }: HoverCardTriggerProps) {
 }
 
 function HoverCardContent({ side = 'bottom', align = 'center', ...props }: HoverCardContentProps) {
+  const motion = useMotionAttributes();
   return (
     <PreviewCardPrimitive.Portal data-slot="hover-card-portal">
       <PreviewCardPrimitive.Positioner
@@ -34,8 +37,9 @@ function HoverCardContent({ side = 'bottom', align = 'center', ...props }: Hover
       >
         <PreviewCardPrimitive.Popup
           data-slot="hover-card-content"
-          className="z-50 w-72 origin-(--transform-origin) rounded-3xl bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+          className="z-50 w-72 origin-(--transform-origin) rounded-3xl bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-hidden dark:ring-foreground/10"
           {...props}
+          {...motion}
         />
       </PreviewCardPrimitive.Positioner>
     </PreviewCardPrimitive.Portal>

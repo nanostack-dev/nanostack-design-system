@@ -3,6 +3,7 @@ import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui/react/toggle-group
 import { createContext, useContext } from 'react';
 
 import { toggleStyles, type ToggleSize, type ToggleVariant } from '@/components/toggle/toggle';
+import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
@@ -54,6 +55,7 @@ export function ToggleGroup({
 export type ToggleGroupItemProps = ClosedProps<Omit<TogglePrimitive.Props, 'render'>>;
 
 export function ToggleGroupItem(props: ToggleGroupItemProps) {
+  const motion = useMotionAttributes();
   const { variant, size } = useContext(ToggleGroupContext);
   return (
     <TogglePrimitive
@@ -66,6 +68,7 @@ export function ToggleGroupItem(props: ToggleGroupItemProps) {
         toggleStyles({ variant, size }),
       )}
       {...props}
+      {...motion}
     />
   );
 }

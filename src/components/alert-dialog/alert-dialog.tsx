@@ -2,6 +2,7 @@ import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog
 import type * as React from 'react';
 
 import { Button, buttonStyles, type ButtonProps } from '@/components/button/button';
+import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
 export type AlertDialogProps = AlertDialogPrimitive.Root.Props;
@@ -19,6 +20,7 @@ export type AlertDialogCancelProps = ClosedProps<Omit<AlertDialogPrimitive.Close
   Pick<ButtonProps, 'variant' | 'size'>;
 
 function AlertDialog({ ...props }: AlertDialogProps) {
+  useMotionInput();
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 }
 
@@ -31,22 +33,26 @@ function AlertDialogPortal({ ...props }: AlertDialogPrimitive.Portal.Props) {
 }
 
 function AlertDialogOverlay() {
+  const motion = useMotionAttributes();
   return (
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
-      className="fixed inset-0 isolate z-50 bg-foreground/30 duration-100 supports-backdrop-filter:backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 dark:bg-background/60"
+      className="fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60"
+      {...motion}
     />
   );
 }
 
 function AlertDialogContent({ ...props }: AlertDialogContentProps) {
+  const motion = useMotionAttributes();
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
-        className="group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-xs -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto overscroll-contain rounded-4xl bg-popover p-6 text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none sm:max-w-md dark:ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+        className="group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-xs -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto overscroll-contain rounded-4xl bg-popover p-6 text-popover-foreground shadow-xl ring-1 ring-foreground/5 outline-none sm:max-w-md dark:ring-foreground/10"
         {...props}
+        {...motion}
       />
     </AlertDialogPortal>
   );
@@ -111,11 +117,13 @@ function AlertDialogAction({
 }
 
 function AlertDialogCancel({ variant = 'outline', size, ...props }: AlertDialogCancelProps) {
+  const motion = useMotionAttributes();
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"
       className={buttonStyles({ variant, tone: 'neutral', size })}
       {...props}
+      {...motion}
     />
   );
 }

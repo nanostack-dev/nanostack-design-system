@@ -133,5 +133,10 @@ export const Placement: Story = {
         trigger.getBoundingClientRect().right,
       ),
     );
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: 'Details' })).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(trigger).toHaveFocus());
   },
 };
