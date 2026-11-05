@@ -1,0 +1,97 @@
+pub description = "The design system's checks: lint, types, browser tests, the package, Storybook and motion"
+
+type Designsystem {
+  """
+  Playwright image matching the playwright package: Node.js and Chromium.
+  """
+  pub playwrightImage: String!
+
+  """
+  pnpm release, as packageManager in package.json.
+  """
+  pub pnpmVersion: String!
+
+  new(
+    playwrightImage: String! = "mcr.microsoft.com/playwright:v1.63.0-noble",
+    pnpmVersion: String! = "10.33.0",
+  ) {
+    self.playwrightImage = playwrightImage
+    self.pnpmVersion = pnpmVersion
+    self
+  }
+
+  """
+  The repository with dependencies installed. The install layer depends only
+  on the manifest and lockfile.
+  """
+  pub workspace(ws: Workspace!): Container! {
+    container
+      .from(playwrightImage)
+      .withExec(["npm", "install", "--global", "pnpm@" + pnpmVersion])
+      .withEnvVariable("npm_config_store_dir", "/pnpm-store")
+      .withMountedCache("/pnpm-store", cacheVolume("designsystem-pnpm-store"))
+      .withEnvVariable("CI", "true")
+      .withDirectory("/src", ws.directory("/", include: ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", ".npmrc"]))
+      .withWorkdir("/src")
+      .withExec(["pnpm", "install", "--frozen-lockfile"])
+      .withDirectory("/src", ws.directory("/", exclude: [".git", ".dagger", "node_modules", "dist", "site", "dagger.toml", "dagger.lock"]))
+      .withMountedTemp("/dev/shm", size: 1073741824)
+  }
+
+  """
+  ESLint and Prettier.
+  """
+  lint(ws: Workspace!): Void @check {
+    workspace(ws).withExec(["pnpm", "lint"]).sync
+    null
+  }
+
+  """
+  TypeScript type check.
+  """
+  typecheck(ws: Workspace!): Void @check {
+    workspace(ws).withExec(["pnpm", "typecheck"]).sync
+    null
+  }
+
+  """
+  Component tests in Chromium (Vitest browser mode).
+  """
+  test(ws: Workspace!): Void @check {
+    workspace(ws).withExec(["pnpm", "test"]).sync
+    null
+  }
+
+  """
+  The library builds and its published package imports and works.
+  """
+  package(ws: Workspace!): Void @check {
+    workspace(ws).withExec(["pnpm", "test:package"]).sync
+    null
+  }
+
+  let storybook(ws: Workspace!): Container! {
+    workspace(ws).withExec(["pnpm", "build-storybook"])
+  }
+
+  """
+  The Storybook site builds, and its motion stays finite.
+  """
+  storybookMotion(ws: Workspace!): Void @check {
+    storybook(ws)
+      # test-motion.mjs lists the tracked files and records HEAD: give it a
+      # repository with one commit of the checked-out tree.
+      .withExec(["sh", "-c", "git init -q && git add -A && git -c user.email=ci@nanostack.invalid -c user.name=ci commit -qm ci"])
+      .withExec(["pnpm", "test:motion"])
+      .sync
+    null
+  }
+
+  """
+  The built Storybook site, as the workflow uploads it. On the same engine it
+  is the build storybook-motion already ran.
+  """
+  pub site(ws: Workspace!): Directory! {
+    storybook(ws).directory("/src/site")
+  }
+}
