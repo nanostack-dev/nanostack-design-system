@@ -1,33 +1,46 @@
 name: Design system
+
 on:
   push:
     branches: [main]
   pull_request:
+
 permissions:
   contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Every check is a Dagger check (dagger.toml, .dagger/modules/designsystem):
+# `dagger check` runs them the same way on a laptop. This public repository
+# stays on GitHub-hosted runners, so each run starts a cold engine. One check
+# at a time, as the old job ran its steps: the browser tests time out when the
+# package and Storybook builds share the runner's 4 vCPUs.
+env:
+  DAGGER_VERSION: v1.0.0-beta.24
+  DAGGER_ENGINE: image://registry.dagger.io/engine:v1.0.0-beta.24
+  DAGGER_NO_NAG: '1'
+  DAGGER_CHECK_PARALLEL: '1'
+
 jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test
-      - run: pnpm build
-      - run: pnpm test:package
-      - run: pnpm build-storybook
-      - run: pnpm test:motion
+      - name: Install the Dagger CLI
+        run: ./scripts/ci/install-dagger.sh "$RUNNER_TEMP/dagger-bin"
+      - name: Run every check
+        run: |
+          set -euo pipefail
+          export PATH="$RUNNER_TEMP/dagger-bin:$PATH"
+          dagger check --progress=report
+      - name: Export the Storybook site
+        run: |
+          set -euo pipefail
+          export PATH="$RUNNER_TEMP/dagger-bin:$PATH"
+          dagger api call designsystem site export --path site --progress=plain
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: design-system-storybook

@@ -12,6 +12,8 @@ pnpm build-storybook
 pnpm test:motion
 ```
 
+The CI verify job runs them as Dagger checks (`dagger check`, [dagger.toml](../../dagger.toml)): `lint`, `typecheck`, `test`, `package` (build and `test:package`) and `storybook-motion` (`build-storybook` and `test:motion`), one at a time, in the Playwright image the checks pin. Run `dagger check` locally for exactly that; install the pinned CLI with `./scripts/ci/install-dagger.sh ~/.local/bin`. Release verification still runs the pnpm commands.
+
 `pnpm test` executes Storybook play and accessibility tests in Chromium, once per light/dark theme. `pnpm test:package` verifies packed exports, the closed API, consumer types and consumer Tailwind output. Pages also requires `pnpm build-storybook`.
 
 During iteration, select the affected component with `pnpm exec vitest run src/components/<name>`. Overlay content renders in portals, so query it through `screen` and async role/name lookups. Cover keyboard, focus return and observable callbacks rather than implementation details. Stories and blocks import public barrels.
