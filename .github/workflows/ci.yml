@@ -18,9 +18,6 @@ concurrency:
 # at a time, as the old job ran its steps: the browser tests time out when the
 # package and Storybook builds share the runner's 4 vCPUs.
 env:
-  DAGGER_VERSION: v1.0.0-beta.24
-  DAGGER_ENGINE: image://registry.dagger.io/engine:v1.0.0-beta.24
-  DAGGER_NO_NAG: '1'
   DAGGER_CHECK_PARALLEL: '1'
 
 jobs:
@@ -29,17 +26,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - name: Install the Dagger CLI
-        run: ./scripts/ci/install-dagger.sh "$RUNNER_TEMP/dagger-bin"
+      # Pinned CLI and the org-wide DAGGER_ENGINE (ci-workflows docs/technical/dagger.md).
+      - uses: nanostack-dev/ci-workflows/.github/actions/setup-dagger@4e3fa3d43941a4a4e047a0e4fcecfdaa4521d881 # main, 2026-11-05
       - name: Run every check
         run: |
           set -euo pipefail
-          export PATH="$RUNNER_TEMP/dagger-bin:$PATH"
           dagger check --progress=report
       - name: Export the Storybook site
         run: |
           set -euo pipefail
-          export PATH="$RUNNER_TEMP/dagger-bin:$PATH"
           dagger api call designsystem site export --path site --progress=plain
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
