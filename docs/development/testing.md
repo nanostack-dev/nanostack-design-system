@@ -1,6 +1,6 @@
 # Testing
 
-The [CI verify job](../../.github/workflows/ci.yml) and [release verification](../../.github/workflows/release.yml) run the project gates:
+[CI](../../.github/workflows/ci.yml) and [release verification](../../.github/workflows/release.yml) run the project gates:
 
 ```sh
 pnpm lint
@@ -12,7 +12,7 @@ pnpm build-storybook
 pnpm test:motion
 ```
 
-The CI verify job runs them as Dagger checks (`dagger check`, [dagger.toml](../../dagger.toml)): `lint`, `typecheck`, `test`, `package` (build and `test:package`) and `storybook-motion` (`build-storybook` and `test:motion`), one at a time, in the Playwright image the checks pin. Run `dagger check` locally for exactly that; install the pinned CLI with `curl -fsSL https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=1.0.0-beta.24 BIN_DIR=~/.local/bin sh`. Release verification still runs the pnpm commands.
+CI runs them as Dagger checks (`dagger check`, [dagger.toml](../../dagger.toml)) in the Playwright image the checks pin: `lint`, `typecheck`, `test-light` and `test-dark` (`pnpm test`, one Vitest project each), `package` (build and `test:package`) and `storybook-motion` (`build-storybook` and `test:motion`). Each check job gets its own runner, because the browser suites time out when they share 4 vCPUs with the builds; the `verify` job is green only when all of them are. Run one with `dagger check --check=test-dark`. Run `dagger check` locally for exactly that; install the pinned CLI with `curl -fsSL https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=1.0.0-beta.24 BIN_DIR=~/.local/bin sh`. Release verification still runs the pnpm commands.
 
 `pnpm test` executes Storybook play and accessibility tests in Chromium, once per light/dark theme. `pnpm test:package` verifies packed exports, the closed API, consumer types and consumer Tailwind output. Pages also requires `pnpm build-storybook`.
 

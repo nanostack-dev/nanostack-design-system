@@ -55,10 +55,18 @@ type Designsystem {
   }
 
   """
-  Component tests in Chromium (Vitest browser mode).
+  Component and a11y tests in Chromium (Vitest browser mode), light theme.
   """
-  test(ws: Workspace!): Void @check {
-    workspace(ws).withExec(["pnpm", "test"]).sync
+  testLight(ws: Workspace!): Void @check {
+    workspace(ws).withExec(["pnpm", "exec", "vitest", "run", "--project=storybook"]).sync
+    null
+  }
+
+  """
+  Component and a11y tests in Chromium (Vitest browser mode), dark theme.
+  """
+  testDark(ws: Workspace!): Void @check {
+    workspace(ws).withExec(["pnpm", "exec", "vitest", "run", "--project=storybook-dark"]).sync
     null
   }
 
