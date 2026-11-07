@@ -42,10 +42,6 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # Pinned CLI and the org-wide DAGGER_ENGINE (ci-workflows docs/technical/dagger.md).
       - uses: nanostack-dev/ci-workflows/.github/actions/setup-dagger@4e3fa3d43941a4a4e047a0e4fcecfdaa4521d881 # main, 2026-11-05
-      - name: '[diag] start memory sampler'
-        run: |
-          nproc; free -m
-          nohup sh -c 'while true; do free -m | awk "/Mem:/{print \$3}" >> /tmp/mem.log; sleep 1; done' >/dev/null 2>&1 &
       - name: Run ${{ matrix.checks }}
         env:
           CHECKS: ${{ matrix.checks }}
@@ -54,11 +50,6 @@ jobs:
           for check in $CHECKS; do
             dagger check --check="$check" --progress=report
           done
-      - name: '[diag] memory report'
-        if: always()
-        run: |
-          echo "peak used MiB: $(sort -n /tmp/mem.log | tail -1) of $(free -m | awk '/Mem:/{print $2}')"
-          sudo dmesg | grep -iE 'oom|killed process' || echo "no OOM in kernel log"
       # The site is the build storybook-motion already ran: a cache hit on this engine.
       - name: Export the Storybook site
         if: matrix.site
