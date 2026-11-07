@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,29 +15,86 @@ concurrency:
 
 # Every check is a Dagger check (dagger.toml, .dagger/modules/designsystem):
 # `dagger check` runs them the same way on a laptop. This public repository
-# stays on GitHub-hosted runners, so each run starts a cold engine. One check
-# at a time, as the old job ran its steps: the browser tests time out when the
-# package and Storybook builds share the runner's 4 vCPUs.
-env:
-  DAGGER_CHECK_PARALLEL: '1'
-
+# stays on GitHub-hosted runners, so each job starts a cold engine. Each job
+# runs its checks on its own runner: the browser suites time out when they
+# share 4 vCPUs with the package and Storybook builds, so they never share one.
 jobs:
-  verify:
+  check:
+    name: check (${{ matrix.name }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: lint-typecheck
+            checks: lint typecheck
+          - name: test-light
+            checks: test-light
+          - name: test-dark
+            checks: test-dark
+          - name: package
+            checks: package
+          - name: storybook-motion
+            checks: storybook-motion
+            site: true
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # Pinned CLI and the org-wide DAGGER_ENGINE (ci-workflows docs/technical/dagger.md).
       - uses: nanostack-dev/ci-workflows/.github/actions/setup-dagger@4e3fa3d43941a4a4e047a0e4fcecfdaa4521d881 # main, 2026-11-05
-      - name: Run every check
+      - name: Run ${{ matrix.checks }}
+        env:
+          CHECKS: ${{ matrix.checks }}
         run: |
           set -euo pipefail
-          dagger check --progress=report
+          for check in $CHECKS; do
+            dagger check --check="$check" --progress=report
+          done
+      # The site is the build storybook-motion already ran: a cache hit on this engine.
       - name: Export the Storybook site
+        if: matrix.site
         run: |
           set -euo pipefail
           dagger api call designsystem site export --path site --progress=plain
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - if: matrix.site
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: design-system-storybook
           path: site/
+      - if: matrix.site && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+  # One stable status for branch protection: green only when every check job is.
+  verify:
+    needs: check
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every check passed
+        env:
+          RESULT: ${{ needs.check.result }}
+        run: |
+          echo "check jobs: $RESULT"
+          test "$RESULT" = success
+
+  # Publishes the site that storybook-motion built and tested, after every check passed.
+  pages:
+    needs: verify
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
