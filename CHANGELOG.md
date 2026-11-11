@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.7
+
+- `ScrollArea` draws its keyboard focus ring inside the area, on a layer that does not scroll. A pane that clips (`overflow-hidden` or `overflow-clip`) no longer cuts the ring. Opaque rows, a sticky header, or a header that floats over the area no longer cover it: the layer is raised to `z-50` while the ring shows. The ring follows the corner radius of the parent of the area.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.2.7`. No caller changes. Remove padding or other workarounds that made room for the old ring, and tests that exempt it.
+
 ## 0.2.6
 
 - Apply shared motion budgets: 120 ms control feedback, 180 ms popups/disclosures/toasts, 240 ms dialogs/sheets/drawers, and a 350 ms page-transition token for product navigation.

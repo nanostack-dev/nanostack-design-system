@@ -43,23 +43,32 @@ export function ScrollArea({
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
-      className={cn('relative min-w-0', heightClass[height])}
+      className={cn('relative min-w-0 rounded-[inherit]', heightClass[height])}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
         className={cn(
-          'size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1',
+          'peer/viewport size-full outline-none',
           maxHeightClass[maxHeight],
           overscrollClass[overscroll],
         )}
-        {...motion}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
       {orientation !== 'horizontal' && <ScrollBar orientation="vertical" />}
       {orientation !== 'vertical' && <ScrollBar orientation="horizontal" />}
       <ScrollAreaPrimitive.Corner />
+      {/* The focus ring is on a layer that does not scroll. A ring outside the viewport is
+          cut by a pane that clips, and an inset ring on the viewport is painted under the
+          content. The layer is raised only while the ring shows, so a sticky header in the
+          content does not cover it and the area makes no stacking context at rest. */}
+      <div
+        aria-hidden
+        data-slot="scroll-area-focus-ring"
+        className="pointer-events-none absolute inset-0 rounded-[inherit] transition-[box-shadow] peer-focus-visible/viewport:z-50 peer-focus-visible/viewport:ring-[3px] peer-focus-visible/viewport:ring-ring/50 peer-focus-visible/viewport:ring-inset"
+        {...motion}
+      />
     </ScrollAreaPrimitive.Root>
   );
 }

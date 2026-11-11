@@ -51,12 +51,19 @@ A header that floats over the top of the area, such as a frosted title bar, need
 
 Measure the header. Do not assume its height: a few pixels short leaves a gap between the two headers.
 
+## Keyboard focus
+
+An area that scrolls is a tab stop, so the arrow keys scroll it. An area with no overflow is not. The focus ring is drawn inside the area, over the content, and follows the corner radius of the parent. A pane that clips (\`overflow-hidden\`) cannot cut it, and the pane needs no padding for it.
+
+While the ring shows, it is above the content of the area, a sticky header included, and above a header that floats over the area. A popup in a portal, such as \`Popover\` or \`Dialog\`, stays above the ring.
+
 ## Do not
 
 - Do not pad the area itself, or its viewport, for a floating header. Pad the content inside it.
 - Do not put \`className\` on the area or reach into \`[data-slot=scroll-area-viewport]\`. Pick \`height\`, \`maxHeight\` and \`overscroll\`.
 - Do not cap the height on a wrapper around the area. The viewport scrolls, so the cap goes on the area with \`maxHeight\`.
 - Do not nest two areas that scroll the same way.
+- Do not pad a pane, or remove its \`overflow-hidden\`, to make room for the focus ring. The ring is inside the area.
 `;
 
 const meta = {
@@ -280,5 +287,128 @@ export const FloatingHeader: Story = {
     await expect(canvas.getByText('Step 1').getBoundingClientRect().bottom).toBeLessThanOrEqual(
       floating.getBoundingClientRect().bottom,
     );
+  },
+};
+
+const responseLines = Array.from(
+  { length: 30 },
+  (_, index) => `"requestId${index + 1}": "req_${'9f2c4e7a1b'.repeat(8)}",`,
+);
+
+function ResponseBodyPane() {
+  return (
+    <section
+      aria-label="Response body"
+      data-testid="clipping-pane"
+      className="h-64 w-80 overflow-hidden rounded-3xl bg-card"
+    >
+      <ScrollArea height="fill" orientation="both">
+        <div className="w-max min-w-full">
+          <h4 className="sticky top-0 z-20 border-b bg-card px-4 py-2 text-sm font-medium">
+            Response body
+          </h4>
+          {responseLines.map((line) => (
+            <pre key={line} className="bg-muted px-4 py-1 font-mono text-xs odd:bg-card">
+              {line}
+            </pre>
+          ))}
+        </div>
+      </ScrollArea>
+    </section>
+  );
+}
+
+// `pnpm test` runs the story in Vitest browser mode, which takes a real screenshot.
+// Only that run defines the theme. Plain Storybook has no screenshot, so it has no pixels.
+async function screenshotOf(element: HTMLElement) {
+  if (!import.meta.env.VITE_STORYBOOK_THEME) return null;
+  const browser = await import('vitest/browser');
+  const base64 = await browser.page.screenshot({ element, save: false });
+  const png = Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
+  const bitmap = await createImageBitmap(new Blob([png], { type: 'image/png' }));
+  const context = new OffscreenCanvas(bitmap.width, bitmap.height).getContext('2d')!;
+  context.drawImage(bitmap, 0, 0);
+  return context.getImageData(0, 0, bitmap.width, bitmap.height);
+}
+
+const sides = ['top', 'right', 'bottom', 'left'] as const;
+const alongSide = [0.15, 0.3, 0.5, 0.7, 0.85];
+
+// Points on the middle line of a 3 px ring that follows the edge of a pane:
+// five on each side, and one on each rounded corner.
+function ringPoints(width: number, height: number, radius: number) {
+  const middle = 1.5;
+  const corner = radius - (radius - middle) / Math.SQRT2;
+  return {
+    top: alongSide.map((fraction) => [fraction * width, middle]),
+    right: alongSide.map((fraction) => [width - middle, fraction * height]),
+    bottom: alongSide.map((fraction) => [fraction * width, height - middle]),
+    left: alongSide.map((fraction) => [middle, fraction * height]),
+    corners: [
+      [corner, corner],
+      [width - corner, corner],
+      [width - corner, height - corner],
+      [corner, height - corner],
+    ],
+  };
+}
+
+function pixelAt(image: ImageData, scale: number, [x, y]: number[]) {
+  const at = (Math.floor(y! * scale) * image.width + Math.floor(x! * scale)) * 4;
+  return Array.from(image.data.slice(at, at + 3));
+}
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The area fills a rounded pane that clips (`overflow-hidden`, no padding). Opaque rows and a sticky header touch every edge. The focus ring is drawn inside the area, over the content, and follows the corners of the pane. All four sides and corners show while the content is scrolled both ways. The test compares screenshots with and without keyboard focus.',
+      },
+    },
+  },
+  render: () => <ResponseBodyPane />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const pane = canvas.getByTestId('clipping-pane');
+    const viewport = viewportOf(canvasElement);
+    // A late font swap moves the rows between the two screenshots.
+    await document.fonts.ready;
+    viewport.scrollTop = 120;
+    viewport.scrollLeft = 90;
+    await waitFor(() => expect(viewport.scrollTop).toBeGreaterThan(100));
+    await waitFor(() => expect(viewport.scrollLeft).toBeGreaterThan(80));
+    const scrolled = [viewport.scrollTop, viewport.scrollLeft];
+    await expect(viewport).not.toHaveFocus();
+    const rest = await screenshotOf(pane);
+
+    await userEvent.tab();
+    await expect(viewport).toHaveFocus();
+    await expect(viewport.matches(':focus-visible')).toBe(true);
+    await expect([viewport.scrollTop, viewport.scrollLeft]).toEqual(scrolled);
+
+    const ring = canvasElement.querySelector<HTMLElement>('[data-slot="scroll-area-focus-ring"]')!;
+    const ringBox = ring.getBoundingClientRect();
+    const paneBox = pane.getBoundingClientRect();
+    for (const side of sides) await expect(ringBox[side]).toBeCloseTo(paneBox[side], 0);
+
+    const focused = await screenshotOf(pane);
+    if (!rest || !focused) return;
+    await expect(focused.width).toBe(rest.width);
+    const scale = focused.width / paneBox.width;
+    const radius = parseFloat(getComputedStyle(pane).borderTopLeftRadius);
+    await expect(radius).toBeGreaterThan(8);
+    for (const [part, points] of Object.entries(
+      ringPoints(paneBox.width, paneBox.height, radius),
+    )) {
+      const drawn = points.filter((point) => {
+        const before = pixelAt(rest, scale, point);
+        return pixelAt(focused, scale, point).some(
+          (channel, at) => Math.abs(channel - before[at]!) > 8,
+        );
+      });
+      await expect(`${part}: ${drawn.length} of ${points.length}`).toBe(
+        `${part}: ${points.length} of ${points.length}`,
+      );
+    }
   },
 };
