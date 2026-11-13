@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # Pinned CLI and the org-wide DAGGER_ENGINE (ci-workflows docs/technical/dagger.md).
-      - uses: nanostack-dev/ci-workflows/.github/actions/setup-dagger@4e3fa3d43941a4a4e047a0e4fcecfdaa4521d881 # main, 2026-11-05
+      - uses: nanostack-dev/ci-workflows/.github/actions/setup-dagger@c8efc8541a71728e29dae345f8a5772685389937 # main, 2026-11-13
       - name: Run ${{ matrix.checks }}
         env:
           CHECKS: ${{ matrix.checks }}
