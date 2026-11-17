@@ -31,7 +31,7 @@ The design system owns the surface material of a product. A product chooses it o
 
 Blur and saturation: `--glass-blur` (24 px), `--glass-saturate` (180% light, 160% dark); data surfaces use two thirds of the blur and 140%.
 
-The backdrop is a mesh of four soft radial glows (blue top left, violet bottom left, cyan top right, pink bottom right) over a faint vertical wash, with `--glass-grain` on top: an SVG noise tile at about 7% (light) and 5% (dark) that removes gradient banding and gives the frame a material feel. The glows sit at the edges, so the page header text in the middle reads on a near-white (light) or near-black (dark) ground.
+The light backdrop is one soft brand-blue wash: a 155° linear gradient from `hsl(214 75% 88%)` at the top left, under the sidebar and the top bar, to a neutral `hsl(220 30% 96.5%)` from 60%, where the data sits. The glass chrome still has colour to refract, and the content area stays quiet so status colours carry the meaning. 0.3.6 replaced the 0.3.3 mesh of four glows (blue, violet, cyan, pink), which competed with dense data and gave the frame a pink cast; [the research note](../research/light-glass-backdrops.md) records the four candidates and why Tide won. The dark backdrop keeps the four-glow mesh at low strength. `--glass-grain` sits on top: an SVG noise tile, neutral grey at about 4.5% in light and white at 5% in dark, that removes gradient banding.
 
 Edges and depth:
 
@@ -56,18 +56,18 @@ Measured on Chromium renders at 1440 × 900, glass material, with the text insid
 | -------------------------------- | ----------- | ------------- | ---------- | ------------ |
 | Top bar over content (WorstCase) | 4.90        | 4.79          | 5.14       | 8.50         |
 | Popover over content (WorstCase) | 5.08        | 4.97          | 4.86       | 8.03         |
-| Sidebar                          | 5.14        | 5.02          | 5.82       | 9.63         |
-| Dropdown menu                    | 6.42        | 6.28          | 6.34       | 10.49        |
+| Sidebar                          | 5.93        | 5.80          | 5.82       | 9.63         |
+| Dropdown menu                    | 6.36        | 6.22          | 6.34       | 10.49        |
 | Dialog                           | 6.15        | 6.01          | 6.18       | 10.23        |
 | Alert dialog                     | 6.19        | 6.06          | 6.29       | 10.40        |
-| Sheet                            | 6.12        | 5.99          | 5.91       | 9.77         |
-| Toast                            | 6.29        | 6.15          | 6.37       | 10.53        |
-| Stat card                        | 6.29        | 6.16          | 6.75       | 11.16        |
-| Data table frame                 | 6.35        | 6.22          | 6.83       | 11.30        |
-| Card                             | 6.40        | 6.26          | 6.77       | 11.19        |
-| Table outside a card             | 6.42        | 6.28          | 6.83       | 11.30        |
+| Sheet                            | 6.13        | 6.00          | 5.91       | 9.77         |
+| Toast                            | 6.40        | 6.26          | 6.37       | 10.53        |
+| Stat card                        | 6.24        | 6.11          | 6.75       | 11.16        |
+| Data table frame                 | 6.29        | 6.15          | 6.83       | 11.30        |
+| Card                             | 6.29        | 6.15          | 6.77       | 11.19        |
+| Table outside a card             | 6.36        | 6.22          | 6.83       | 11.30        |
 
-0.3.5 values; 0.3.5 lifted the dark data surface (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), which moved dark data-surface text from about 7.1 to 6.8. The other rows are the 0.3.3 values. In 0.3.3 the sidebar dropped from 6.03 to 5.14 (light) because the stronger backdrop tints it; its worst pixel is over the violet glow.
+Light values are 0.3.6 (Tide backdrop); dark values are 0.3.5, unchanged in 0.3.6. Against the 0.3.5 mesh the light sidebar rose from 5.14 to 5.93, because its worst pixel was over the violet glow; cards and the data table frame moved by 0.05 to 0.11 (6.24 to 6.36), because the blue wash now sits under the top cards. 0.3.5 lifted the dark data surface (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), which moved dark data-surface text from about 7.1 to 6.8.
 
 The prototype's 58% top bar and 72% popovers measured 2.46 and 3.51 for light muted text over the same content. The `select` popup uses the dropdown-menu token and fill; its options cover the sampled area, so it has no separate row.
 
@@ -86,7 +86,7 @@ Repeat the measurement after a glass token change: start `pnpm storybook`, then 
 | 0.3.5 data table frame             | 5.17 | 3.51  | 3.40 | 3.44   |
 | 0.3.5 card                         | 5.26 | 3.55  | 3.57 | 3.56   |
 
-In 0.3.4 the dark rim faded to 7% and then 3% white, so the lower half of every dark card vanished against the backdrop: the bottom-left corner of an empty table could not be seen. The light rows did not change (about 1.05 at the sides and bottom, 1.13 on top).
+In 0.3.4 the dark rim faded to 7% and then 3% white, so the lower half of every dark card vanished against the backdrop: the bottom-left corner of an empty table could not be seen. The light rows stay soft by design: about 1.0 to 1.1 at the sides and bottom and 1.1 to 1.2 on top with the 0.3.6 backdrop, as with the 0.3.5 mesh.
 
 ## Fallbacks
 
