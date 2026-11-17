@@ -179,7 +179,10 @@ export type AppShellBrandProps = {
   name: string;
   href: string;
   description?: string;
-  /** The product's own mark or icon, 32 px. Defaults to the Nanostack mark. */
+  /**
+   * The product's own mark: a bare SVG in `currentColor`, no tile. The slot sizes it to
+   * 32 px and draws the tile under glass. Defaults to the Nanostack mark.
+   */
   mark?: ReactNode;
 };
 

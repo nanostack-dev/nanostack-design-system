@@ -139,6 +139,15 @@ for (const theme of ['light', 'dark']) {
             controls.some(
               (c) => x > c.left - 8 && x < c.right + 8 && y > c.top - 8 && y < c.bottom + 8,
             );
+          // Separator lines (a row's border) are not a background text sits on.
+          const lines = [];
+          for (const n of el.querySelectorAll('*')) {
+            const cs = getComputedStyle(n);
+            const b = n.getBoundingClientRect();
+            if (parseFloat(cs.borderTopWidth) > 0) lines.push(b.top);
+            if (parseFloat(cs.borderBottomWidth) > 0) lines.push(b.bottom);
+          }
+          const onLine = (y) => lines.some((l) => y > l - 3 && y < l + 3);
           const opaque = (n) => {
             const cs = getComputedStyle(n);
             return (
@@ -148,7 +157,7 @@ for (const theme of ['light', 'dark']) {
           };
           for (let y = r.top + 6; y < Math.min(r.bottom - 6, innerHeight - 1); y += 4) {
             for (let x = r.left + 6; x < Math.min(r.right - 6, innerWidth - 1); x += 4) {
-              if (nearControl(x, y)) continue;
+              if (nearControl(x, y) || onLine(y)) continue;
               let n = document.elementFromPoint(x, y);
               if (!n || !el.contains(n)) continue;
               let ok = true;

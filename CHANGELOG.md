@@ -1,10 +1,22 @@
 # Changelog
 
-## 0.3.2
+## 0.3.4
 
-- `AppShellBrand` takes an optional `mark`, the product's own 32 px mark or icon. Without it the slot shows the Nanostack mark, as in 0.3.0 and 0.3.1. ADR 0003 records the decision.
+- `AppShellBrand` takes an optional `mark`: the product's own mark as a bare SVG drawn in `currentColor`, with no tile of its own. The slot sizes it to 32 px and colours it like the Nanostack mark: sidebar foreground on solid, white on the app-icon tile under glass. Without `mark` the slot shows the Nanostack mark. ADR 0003 records the decision.
 
-Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.2`. No caller changes. To show a product mark: `<AppShellBrand name="Anchor" href="/" mark={<AnchorIcon size="sm" />} />`.
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.4`. No caller changes. To show a product mark: `<AppShellBrand name="Anchor" href="/" mark={<AnchorLogo />} />`. Pass the bare mark, not an icon tile: under glass the slot draws the tile.
+
+## 0.3.3
+
+- Glass looks deeper and more coherent. The backdrop is a richer mesh of four glows with a faint grain (`--glass-grain`), so the translucent sidebar takes its colour instead of reading as white.
+- The sidebar, top bar, cards, stat cards and data table frames lose their border. Their edge is a 1 px rim (`--glass-rim`) that is bright on top and fades below, the only line on the surface. Shadows are stacked and tinted (`--glass-shadow`, new `--glass-shadow-raised` for data surfaces).
+- Glass cards, stat cards and data table frames share `--radius-3xl`.
+- Sidebar navigation on glass: the current page is a raised pill with its icon in `--primary` (`--glass-item-hover`, `--glass-item-active`, `--glass-item-active-shadow`); labels use the sidebar foreground at 82%.
+- The `AppShellBrand` mark sits on a gradient app-icon tile under glass, so the solid logo no longer clashes with the line icons of the navigation.
+- `prefers-contrast: more` draws the rim as one solid `--border-strong` line.
+- Six additive tokens: `--glass-rim`, `--glass-shadow-raised`, `--glass-grain`, `--glass-item-hover`, `--glass-item-active`, `--glass-item-active-shadow`. `--glass-shadow` and `--glass-backdrop` change value. Contrast stays at or above 4.5:1 (`docs/technical/material.md`).
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.3`. No API change. A product that draws its own sidebar link matches the current-page pill with the `--glass-item-*` tokens; a product panel built by hand moves to `Card` or `DataTableFrame` to get the rim and radius.
 
 ## 0.3.1
 
