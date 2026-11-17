@@ -1,6 +1,7 @@
 import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 import * as React from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -78,12 +79,14 @@ function DrawerClose({ ...props }: DrawerCloseProps) {
 
 function DrawerOverlay({ ...props }: ClosedProps<DrawerPrimitive.Backdrop.Props>) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <DrawerPrimitive.Backdrop
       data-slot="drawer-overlay"
       className="fixed inset-0 z-50 min-h-dvh bg-foreground/30 opacity-[max(var(--drawer-overlay-min-opacity,0),calc(1-var(--drawer-swipe-progress)))] transition-opacity select-none data-ending-style:pointer-events-none data-ending-style:opacity-0 data-snap-points:[--drawer-overlay-min-opacity:0.5] data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-sm supports-[-webkit-touch-callout:none]:absolute dark:bg-background/60"
       {...props}
       {...motion}
+      {...material}
     />
   );
 }
@@ -102,6 +105,7 @@ function DrawerSwipeHandle() {
 
 function DrawerContent({ children, ...props }: DrawerContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   const { hasSnapPoints, modal, showSwipeHandle, swipeDirection } = useDrawer();
   const swipeAxis = swipeDirection === 'down' || swipeDirection === 'up' ? 'y' : 'x';
 
@@ -145,6 +149,7 @@ function DrawerContent({ children, ...props }: DrawerContentProps) {
           )}
           {...props}
           {...motion}
+          {...material}
         >
           {showSwipeHandle && <DrawerSwipeHandle />}
           <DrawerPrimitive.Content

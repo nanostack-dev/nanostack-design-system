@@ -1,7 +1,9 @@
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react-vite';
 
-import { DesignSystemProvider } from '../src/provider';
+import { useLayoutEffect } from 'react';
+
+import { DesignSystemProvider, type Material } from '../src/provider';
 import { ThemedDocsContainer } from './docs-container';
 import './preview.css';
 
@@ -10,10 +12,37 @@ function defaultTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+// The glass material needs its backdrop behind every story, not only the app
+// shell, or the translucent surfaces have nothing to show.
+function StoryMaterial({ material }: { material: Material }) {
+  useLayoutEffect(() => {
+    document.body.dataset.storyMaterial = material;
+    return () => {
+      delete document.body.dataset.storyMaterial;
+    };
+  }, [material]);
+  return null;
+}
+
 const preview: Preview = {
+  globalTypes: {
+    material: {
+      description: 'DesignSystemProvider material',
+      toolbar: {
+        title: 'Material',
+        icon: 'mirror',
+        items: [
+          { value: 'solid', title: 'Solid' },
+          { value: 'glass', title: 'Glass' },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
   decorators: [
-    (Story) => (
-      <DesignSystemProvider>
+    (Story, context) => (
+      <DesignSystemProvider material={context.globals.material as Material}>
+        <StoryMaterial material={context.globals.material as Material} />
         <Story />
       </DesignSystemProvider>
     ),
@@ -33,7 +62,7 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { theme: defaultTheme() },
+  initialGlobals: { theme: defaultTheme(), material: 'solid' },
   tags: ['autodocs'],
 };
 

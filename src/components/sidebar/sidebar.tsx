@@ -10,6 +10,7 @@ import { IconButton, type IconButtonProps } from '@/components/button/button';
 import { Input, type InputProps } from '@/components/input/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useMaterial, useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -31,7 +32,12 @@ const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 const sidebarWidthValue: Record<SidebarWidth, string> = { md: '16rem', lg: '17rem' };
 const sidebarIconWidthValue: Record<SidebarIconWidth, string> = { md: '3rem', lg: '3.75rem' };
 
-const materialClass: Record<SidebarMaterial, string> = {
+// `glass` is not a prop value: a sidebar without `material` takes it from a
+// `DesignSystemProvider material="glass"`. styles.css draws that surface.
+type SidebarSurface = SidebarMaterial | 'glass';
+
+const materialClass: Record<SidebarSurface, string> = {
+  glass: 'bg-sidebar',
   solid: 'bg-sidebar',
   frosted:
     'bg-sidebar/82 backdrop-blur-xl backdrop-saturate-180 [@media(prefers-reduced-transparency:reduce)]:bg-sidebar [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none [@media(prefers-reduced-transparency:reduce)]:backdrop-saturate-100',
@@ -164,6 +170,7 @@ function SidebarProvider({
   }, [toggleSidebar]);
 
   const state = open ? 'expanded' : 'collapsed';
+  const material = useMaterialAttributes();
 
   const contextValue = React.useMemo<SidebarContextValue>(
     () => ({ state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar }),
@@ -184,6 +191,7 @@ function SidebarProvider({
         }
         className="group/sidebar-wrapper flex min-h-svh w-full"
         {...props}
+        {...material}
       >
         {children}
       </div>
@@ -194,26 +202,31 @@ function SidebarProvider({
 function Sidebar({
   side = 'left',
   collapsible = 'offcanvas',
-  material = 'solid',
+  material,
   children,
   dir,
   ...props
 }: SidebarProps) {
   const motion = useMotionAttributes();
+  const appMaterial = useMaterial();
+  // An explicit `material` wins; otherwise the sidebar follows the app material.
+  const surface: SidebarSurface = material ?? (appMaterial === 'glass' ? 'glass' : 'solid');
+  const surfaceMaterial = { 'data-ns-material': surface === 'glass' ? 'glass' : 'solid' } as const;
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
   if (collapsible === 'none') {
     return (
       <div
         data-slot="sidebar"
-        data-material={material}
+        data-material={surface}
         className={cn(
           'flex h-full w-(--sidebar-width) flex-col text-sidebar-foreground',
-          materialClass[material],
+          materialClass[surface],
         )}
         dir={dir}
         {...props}
         {...motion}
+        {...surfaceMaterial}
       >
         {children}
       </div>
@@ -235,13 +248,14 @@ function Sidebar({
             data-slot="sidebar"
             data-mobile="true"
             data-side={side}
-            data-material={material}
+            data-material={surface}
             style={{ '--sidebar-width': SIDEBAR_WIDTH_MOBILE } as React.CSSProperties}
             className={cn(
               'fixed inset-y-0 z-50 flex h-full w-(--sidebar-width) flex-col p-0 text-sidebar-foreground shadow-xl transition duration-200 ease-in-out outline-none data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=left]:left-0 data-[side=left]:border-r data-[side=left]:data-ending-style:-translate-x-10 data-[side=left]:data-starting-style:-translate-x-10 data-[side=right]:right-0 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-10 data-[side=right]:data-starting-style:translate-x-10',
-              materialClass[material],
+              materialClass[surface],
             )}
             {...motion}
+            {...surfaceMaterial}
           >
             <SheetPrimitive.Title className="sr-only">Sidebar</SheetPrimitive.Title>
             <SheetPrimitive.Description className="sr-only">
@@ -260,7 +274,7 @@ function Sidebar({
       data-state={state}
       data-collapsible={state === 'collapsed' ? collapsible : ''}
       data-side={side}
-      data-material={material}
+      data-material={surface}
       data-slot="sidebar"
       {...motion}
     >
@@ -280,7 +294,8 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className={cn('flex size-full flex-col', materialClass[material])}
+          className={cn('flex size-full flex-col', materialClass[surface])}
+          {...surfaceMaterial}
         >
           {children}
         </div>
@@ -329,11 +344,13 @@ function SidebarRail({ label = 'Toggle Sidebar', ...props }: SidebarRailProps) {
 }
 
 function SidebarInset(props: SidebarInsetProps) {
+  const material = useMaterialAttributes();
   return (
     <main
       data-slot="sidebar-inset"
       className="relative flex w-full min-w-0 flex-1 flex-col bg-background"
       {...props}
+      {...material}
     />
   );
 }

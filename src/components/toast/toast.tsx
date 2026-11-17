@@ -1,3 +1,4 @@
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import { Toast as ToastPrimitive } from '@base-ui/react/toast';
 import {
@@ -133,6 +134,7 @@ const toastRootClasses = cn(
 
 function ToastList() {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   const { toasts } = ToastPrimitive.useToastManager();
   return toasts.map((toastItem) => (
     <ToastPrimitive.Root
@@ -141,6 +143,7 @@ function ToastList() {
       data-slot="toast"
       className={toastRootClasses}
       {...motion}
+      {...material}
     >
       <ToastPrimitive.Content
         data-slot="toast-content"

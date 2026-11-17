@@ -3,6 +3,7 @@ import { CaretRightIcon, CheckIcon } from '@phosphor-icons/react';
 import { cva } from 'class-variance-authority';
 import { createElement, type ComponentProps } from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -49,6 +50,7 @@ export function MenuPopup({
   ...props
 }: MenuPopupProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
@@ -64,6 +66,7 @@ export function MenuPopup({
           className={cn(menuPopupClasses({ width }))}
           {...props}
           {...motion}
+          {...material}
         />
       </MenuPrimitive.Positioner>
     </MenuPrimitive.Portal>

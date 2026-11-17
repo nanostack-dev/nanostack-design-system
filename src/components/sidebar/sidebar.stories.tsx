@@ -67,8 +67,9 @@ The parts are closed. They do not accept \`className\` or \`style\`. The width c
 
 | Value | Use it for |
 | --- | --- |
-| \`solid\` | The default. An opaque sidebar surface. |
-| \`frosted\` | A translucent surface that blurs what is behind it. It becomes \`solid\` when the person asks for reduced transparency. |
+| omitted | The default. The sidebar follows the \`DesignSystemProvider\` material: opaque, or glass that floats with a gap. |
+| \`solid\` | An opaque sidebar surface, whatever the provider material. |
+| \`frosted\` | A translucent surface that blurs what is behind it, on an otherwise solid product. It becomes \`solid\` when the person asks for reduced transparency. Under a glass provider, omit \`material\` instead. |
 
 ## Sidebar collapsible: how it closes
 

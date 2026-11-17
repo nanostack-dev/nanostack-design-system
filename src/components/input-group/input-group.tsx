@@ -14,6 +14,7 @@ import {
 } from '@/components/button/button';
 import { inputStyles, type InputProps } from '@/components/input/input';
 import { textareaStyles, type TextareaProps } from '@/components/textarea/textarea';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -44,6 +45,7 @@ export function InputGroupPrimitive({
   ...props
 }: InputGroupPrimitiveProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <InputGroupSizeContext.Provider value={size}>
       <div
@@ -53,6 +55,7 @@ export function InputGroupPrimitive({
         className={cn(inputGroupClasses({ size }), className)}
         {...props}
         {...motion}
+        {...material}
       />
     </InputGroupSizeContext.Provider>
   );

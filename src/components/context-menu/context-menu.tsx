@@ -3,6 +3,7 @@ import { CaretRightIcon, CheckIcon } from '@phosphor-icons/react';
 import { cva } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,7 @@ type ContextMenuPopupProps = ClosedProps<Omit<ContextMenuPrimitive.Popup.Props, 
 
 function ContextMenuPopup({ side = 'right', alignOffset = 4, ...props }: ContextMenuPopupProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <ContextMenuPrimitive.Portal>
       <ContextMenuPrimitive.Positioner
@@ -66,6 +68,7 @@ function ContextMenuPopup({ side = 'right', alignOffset = 4, ...props }: Context
           className="z-50 max-h-(--available-height) w-auto max-w-(--available-width) min-w-48 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-1.5 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none dark:ring-foreground/10"
           {...props}
           {...motion}
+          {...material}
         />
       </ContextMenuPrimitive.Positioner>
     </ContextMenuPrimitive.Portal>

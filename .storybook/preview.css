@@ -5,3 +5,11 @@
 @import '@fontsource-variable/geist-mono';
 
 @source "../src";
+
+/* Storybook only: under the glass material, every story sits on the backdrop
+   that AppShell draws in a product. */
+body[data-story-material='glass'] {
+  background: var(--glass-backdrop), var(--background);
+  background-attachment: fixed;
+  min-height: 100vh;
+}

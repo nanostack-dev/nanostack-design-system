@@ -20,7 +20,11 @@ export const tokenValues: Record<ThemeName, TokenValues> = {
   dark: { ...lightValues, ...declarationsOf('.dark') },
 };
 
-export const colorTokenNames = Object.keys(lightValues);
+// The translucent glass tokens are a material, not opaque colours: Foundations/Glass
+// material shows them, and their contrast is measured on real renders.
+export const colorTokenNames = Object.keys(lightValues).filter(
+  (name) => !name.startsWith('glass-'),
+);
 
 /**
  * Converts a CSS `hsl(H S% L%)` value to sRGB channels from 0 to 255 (CSS Color 4 formula).

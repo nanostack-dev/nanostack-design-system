@@ -5,8 +5,9 @@ Start with [agent rules](../AGENTS.md), [canonical vocabulary](../CONTEXT.md) an
 ## System and decisions
 
 - [Motion policy](technical/motion.md): timing, frequency, keyboard input, reduced motion and provider inheritance.
+- [Material](technical/material.md): the solid and glass materials, which surfaces are glass, measured contrast and fallbacks.
 - [Architecture](technical/architecture.md): ownership, public API, tokens, builds and consumer boundaries.
-- [ADR index](adr/README.md) and [ADR 0001](adr/0001-own-shadcn-with-a-closed-api.md): owned shadcn source and the closed API.
+- [ADR index](adr/README.md), [ADR 0001](adr/0001-own-shadcn-with-a-closed-api.md): owned shadcn source and the closed API, and [ADR 0002](adr/0002-glass-material-through-the-provider.md): glass as a provider material.
 - [0.2.0 migration](migration/0.2.0.md) and [changelog](../CHANGELOG.md).
 - Component usage is maintained in colocated `src/**/*.stories.tsx` files and published [Storybook](https://nanostack-dev.github.io/nanostack-design-system/).
 - [Owned component procedure](../.claude/skills/own-shadcn-component/SKILL.md) and [vendored shadcn guidance](../.claude/skills/shadcn/SKILL.md) are available in an independent clone.
