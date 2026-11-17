@@ -105,13 +105,16 @@
     inset 0 1px 0 hsl(0 0% 100%), 0 1px 2px hsl(222 50% 25% / 0.06),
     0 4px 12px -4px hsl(217 72% 43% / 0.22);
   --glass-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.42), hsl(0 0% 100% / 0) 42%);
-  --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.13 0 0 0 0 0.16 0 0 0 0 0.3 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E");
-  --glass-backdrop:
-    radial-gradient(42% 58% at 0% 0%, hsl(214 95% 60% / 0.5), transparent 72%),
-    radial-gradient(36% 52% at 4% 100%, hsl(264 85% 66% / 0.42), transparent 72%),
-    radial-gradient(40% 36% at 100% 0%, hsl(188 90% 52% / 0.26), transparent 72%),
-    radial-gradient(34% 40% at 100% 100%, hsl(322 85% 70% / 0.16), transparent 72%),
-    linear-gradient(180deg, hsl(220 40% 97%), hsl(225 35% 95%));
+  --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.21 0 0 0 0 0.24 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
+  /* One soft brand-blue wash from the top left, where the chrome sits, fading to
+     a neutral ground under the data (docs/research/light-glass-backdrops.md). */
+  --glass-backdrop: linear-gradient(
+    155deg,
+    hsl(214 75% 88%) 0%,
+    hsl(216 55% 93%) 28%,
+    hsl(220 30% 96.5%) 60%,
+    hsl(222 22% 96%) 100%
+  );
 }
 
 .dark {
