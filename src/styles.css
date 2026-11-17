@@ -362,6 +362,15 @@
   border-radius: var(--radius-2xl);
 }
 
+/* On a phone the gaps around the bar cost too much width: they shrink. */
+@media (width < 48rem) {
+  [data-slot='app-shell-header'][data-ns-material='glass'] {
+    top: 0.5rem;
+    margin-top: 0.5rem;
+    margin-inline: 0.5rem;
+  }
+}
+
 [data-slot='app-shell-content-start'][data-ns-material='glass'] {
   height: var(--app-shell-header-offset);
 }

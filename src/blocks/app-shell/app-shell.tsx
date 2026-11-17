@@ -276,7 +276,9 @@ export function AppShellHeader({
         }
       >
         <SidebarTrigger />
-        <Separator orientation="vertical" length="short" />
+        <Box data-slot="app-shell-header-divider" className="hidden items-center sm:flex">
+          <Separator orientation="vertical" length="short" />
+        </Box>
       </Box>
       <Box data-slot="app-shell-header-content" className="flex min-w-0 flex-1 items-center gap-2">
         {children}
