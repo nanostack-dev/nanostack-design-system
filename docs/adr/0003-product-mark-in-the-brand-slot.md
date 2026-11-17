@@ -1,6 +1,6 @@
 # 0003: Let a product put its own mark in the brand slot
 
-Status: accepted, 2026-11-16. Ships in 0.3.1. Supersedes the brand-slot consequence of [ADR 0002](0002-glass-material-through-the-provider.md).
+Status: accepted, 2026-11-16. Ships in 0.3.2. Supersedes the brand-slot consequence of [ADR 0002](0002-glass-material-through-the-provider.md).
 
 ## Context
 
@@ -18,6 +18,6 @@ Status: accepted, 2026-11-16. Ships in 0.3.1. Supersedes the brand-slot conseque
 
 ## Consequences
 
-- Products upgrading to 0.3.1 keep the Nanostack mark until they pass `mark`. No caller change is needed.
+- Products upgrading to 0.3.2 keep the Nanostack mark until they pass `mark`. No caller change is needed.
 - A product mark must fit 32 px and carry its own background if it has one (Anchor passes its primary tile). The slot sets only the text colour.
 - The stories show the default Nanostack mark; `Blocks/App Shell/Product Mark` shows a product mark.

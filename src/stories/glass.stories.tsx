@@ -108,7 +108,7 @@ A nested provider without \`material\` inherits the material of its parent.
 
 ## Tokens
 
-\`--glass-surface\`, \`--glass-surface-strong\`, \`--glass-surface-overlay\`, \`--glass-blur\`, \`--glass-saturate\`, \`--glass-edge\`, \`--glass-highlight\`, \`--glass-shade\`, \`--glass-shadow\`, \`--glass-sheen\` and \`--glass-backdrop\`, in light and dark. They add to the token set; nothing is renamed.
+\`--glass-surface\`, \`--glass-surface-strong\`, \`--glass-surface-overlay\`, \`--glass-blur\`, \`--glass-saturate\`, \`--glass-edge\`, \`--glass-highlight\`, \`--glass-shadow\`, \`--glass-sheen\` and \`--glass-backdrop\`, in light and dark. They add to the token set; nothing is renamed.
 
 ## Do not
 

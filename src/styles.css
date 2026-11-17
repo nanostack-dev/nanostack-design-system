@@ -82,9 +82,8 @@
   --glass-surface-overlay: hsl(0 0% 100% / 0.88);
   --glass-blur: 24px;
   --glass-saturate: 180%;
-  --glass-edge: hsl(0 0% 100% / 0.75);
+  --glass-edge: color-mix(in oklab, var(--border-strong) 75%, transparent);
   --glass-highlight: hsl(0 0% 100% / 0.95);
-  --glass-shade: hsl(218 30% 45% / 0.12);
   --glass-shadow: 0 1px 2px hsl(222 47% 11% / 0.05), 0 12px 40px -10px hsl(222 47% 11% / 0.16);
   --glass-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.42), hsl(0 0% 100% / 0) 42%);
   --glass-backdrop:
@@ -152,7 +151,6 @@
   --glass-saturate: 160%;
   --glass-edge: hsl(210 40% 96% / 0.1);
   --glass-highlight: hsl(210 40% 96% / 0.08);
-  --glass-shade: hsl(222 47% 3% / 0.4);
   --glass-shadow: 0 1px 2px hsl(222 47% 3% / 0.4), 0 12px 40px -10px hsl(222 47% 3% / 0.6);
   --glass-sheen: linear-gradient(180deg, hsl(210 40% 96% / 0.06), hsl(210 40% 96% / 0) 42%);
   --glass-backdrop:
@@ -323,10 +321,12 @@
   background: var(--glass-sheen), var(--glass-surface);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  /* One edge per surface: the border itself, drawn at the outer edge. A second
+     line (an inset ring or a lighter border over the fill) shows as a doubled,
+     offset curve at the corners. The highlight is light on the top row only. */
   border: 1px solid var(--glass-edge);
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
-    inset 0 -1px 0 var(--glass-shade),
     var(--glass-shadow);
 }
 
@@ -418,7 +418,6 @@
   [data-slot='toast']:not(:focus-visible)
 )[data-ns-material='glass'] {
   box-shadow:
-    inset 0 0 0 1px var(--glass-edge),
     inset 0 1px 0 var(--glass-highlight),
     var(--glass-shadow);
 }
@@ -461,9 +460,9 @@
   background: var(--glass-surface-strong);
   -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.66)) saturate(140%);
   backdrop-filter: blur(calc(var(--glass-blur) * 0.66)) saturate(140%);
+  border: 1px solid var(--glass-edge);
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
-    0 0 0 1px color-mix(in oklab, var(--border-strong) 45%, transparent),
     0 8px 28px -14px color-mix(in oklab, var(--foreground) 18%, transparent);
 }
 

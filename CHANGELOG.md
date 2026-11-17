@@ -1,10 +1,19 @@
 # Changelog
 
+## 0.3.2
+
+- `AppShellBrand` takes an optional `mark`, the product's own 32 px mark or icon. Without it the slot shows the Nanostack mark, as in 0.3.0 and 0.3.1. ADR 0003 records the decision.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.2`. No caller changes. To show a product mark: `<AppShellBrand name="Anchor" href="/" mark={<AnchorIcon size="sm" />} />`.
+
 ## 0.3.1
 
-- `AppShellBrand` takes an optional `mark`, the product's own 32 px mark or icon. Without it the slot shows the Nanostack mark, as in 0.3.0. ADR 0003 records the decision.
+- Glass surfaces draw one edge. The sidebar, top bar, popups, dialogs, sheets, toasts, cards, stat cards and data tables showed a doubled, offset line at their rounded corners: a white border over the translucent fill plus an inset shade (chrome), an inset ring (popups) or an outer ring beside the card border (data surfaces). Each now has only its 1 px border in `--glass-edge`, a top highlight and its shadow.
+- Light `--glass-edge` is `--border-strong` at 75% instead of white at 75%, so the edge shows on the near-white backdrop.
+- `DataTableFrame` (`blocks/data-table-frame`): the bordered surface `DataTable` draws its table in, exported for products that run their own table engine. Under glass a product-built bordered wrapper stayed solid and the `Table` inside it drew a second rounded surface whose corners crossed the wrapper's separator lines; inside `DataTableFrame` the frame is the one surface. `as="fieldset"` with `disabled` turns off every control inside.
+- `--glass-shade` is removed; nothing reads it any more.
 
-Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.1`. No caller changes. To show a product mark: `<AppShellBrand name="Anchor" href="/" mark={<AnchorIcon size="sm" />} />`.
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.1`. Remove any product use of `--glass-shade`. Replace a hand-built bordered wrapper around a `Table` with `DataTableFrame` (`as="fieldset" disabled={...}` where the wrapper was a fieldset).
 
 ## 0.3.0
 

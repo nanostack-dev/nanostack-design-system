@@ -29,7 +29,9 @@ The design system owns the surface material of a product. A product chooses it o
 | Soft fields (input, select trigger, textarea, input group)                              | The soft fill made opaque over `--card`                  | The backdrop does not tint them.      |
 | Dialog, sheet and drawer overlays                                                       | A lighter scrim with a 6 px blur                         | The glass frame stays visible behind. |
 
-Blur and saturation: `--glass-blur` (24 px), `--glass-saturate` (180% light, 160% dark); data surfaces use two thirds of the blur and 140%. Edges: `--glass-edge`, `--glass-highlight`, `--glass-shade`, `--glass-shadow`.
+Blur and saturation: `--glass-blur` (24 px), `--glass-saturate` (180% light, 160% dark); data surfaces use two thirds of the blur and 140%. Edges: `--glass-edge`, `--glass-highlight`, `--glass-shadow`.
+
+Each glass surface draws exactly one edge: its 1 px `border` in `--glass-edge`, at the outer edge, plus `--glass-highlight` as an inset light on the top row and `--glass-shadow` outside. Do not add a second line. A lighter border over a translucent fill (the background paints under the border), an `inset 0 0 0 1px` ring inside the border, or an outer `0 0 0 1px` ring beside a component's own border each show as a doubled curve, offset by 1 px, at the rounded corners. In light, `--glass-edge` is `--border-strong` at 75%, because a white edge vanishes on the near-white backdrop and leaves only the inner lines visible. 0.3.0 had that doubled edge; 0.3.1 fixed it, checked at zoom on the corners of the sidebar, top bar, cards and menus in Chromium 157.
 
 ## Contrast
 
