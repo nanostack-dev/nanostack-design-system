@@ -42,7 +42,7 @@ Edges and depth:
 
 Sidebar navigation on glass: a `SidebarMenuButton` label uses the sidebar foreground at 82%; hover fills it with `--glass-item-hover`; the current page sits on a raised pill (`--glass-item-active`, `--glass-item-active-shadow`) with its icon in `--primary`. A product that draws its own navigation link matches these tokens.
 
-The `AppShellBrand` mark sits on an app-icon tile under glass: a blue-to-violet gradient with a top sheen and a white mark. The solid logo then reads as a different kind of object from the line icons of the navigation.
+The `AppShellBrand` mark (the Nanostack mark, or the product mark passed as `mark`) sits on an app-icon tile under glass: a blue-to-violet gradient with a top sheen and a white mark. The solid logo then reads as a different kind of object from the line icons of the navigation.
 
 Do not add a second line to a glass surface. A lighter border over a translucent fill (the background paints under the border), an `inset 0 0 0 1px` ring inside the border, or an outer `0 0 0 1px` ring beside a component's own border each show as a doubled curve, offset by 1 px, at the rounded corners.
 

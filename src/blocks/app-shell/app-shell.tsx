@@ -175,13 +175,18 @@ export function AppShellNav({ label, children }: AppShellNavProps) {
 }
 
 export type AppShellBrandProps = {
-  /** The product name, shown next to the Nanostack mark. */
+  /** The product name, shown next to the mark. */
   name: string;
   href: string;
   description?: string;
+  /**
+   * The product's own mark: a bare SVG in `currentColor`, no tile. The slot sizes it to
+   * 32 px and draws the tile under glass. Defaults to the Nanostack mark.
+   */
+  mark?: ReactNode;
 };
 
-export function AppShellBrand({ name, href, description }: AppShellBrandProps) {
+export function AppShellBrand({ name, href, description, mark }: AppShellBrandProps) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -190,7 +195,7 @@ export function AppShellBrand({ name, href, description }: AppShellBrandProps) {
             data-slot="app-shell-brand-mark"
             className="flex size-8 shrink-0 items-center justify-center text-sidebar-foreground [&>svg]:size-full!"
           >
-            <NanostackMark size="lg" />
+            {mark ?? <NanostackMark size="lg" />}
           </span>
           <span className="grid min-w-0 flex-1 text-left leading-tight">
             <span className="truncate font-heading text-sm font-semibold">{name}</span>

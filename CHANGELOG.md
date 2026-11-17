@@ -1,6 +1,15 @@
 # Changelog
 
+## 0.3.4
+
+- Includes every 0.3.3 change below: 0.3.3 was tagged but never published to npm (its release check hit a Combobox story race, now fixed), and 0.3.2 was never released either.
+- `AppShellBrand` takes an optional `mark`: the product's own mark as a bare SVG drawn in `currentColor`, with no tile of its own. The slot sizes it to 32 px and colours it like the Nanostack mark: sidebar foreground on solid, white on the app-icon tile under glass. Without `mark` the slot shows the Nanostack mark. ADR 0003 records the decision.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.4` (also applies the 0.3.3 upgrade notes). No caller changes. To show a product mark: `<AppShellBrand name="Anchor" href="/" mark={<AnchorLogo />} />`. Pass the bare mark, not an icon tile: under glass the slot draws the tile.
+
 ## 0.3.3
+
+Not published; ships in 0.3.4.
 
 - Glass looks deeper and more coherent. The backdrop is a richer mesh of four glows with a faint grain (`--glass-grain`), so the translucent sidebar takes its colour instead of reading as white.
 - The sidebar, top bar, cards, stat cards and data table frames lose their border. Their edge is a 1 px rim (`--glass-rim`) that is bright on top and fades below, the only line on the surface. Shadows are stacked and tinted (`--glass-shadow`, new `--glass-shadow-raised` for data surfaces).

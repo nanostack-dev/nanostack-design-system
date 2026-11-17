@@ -7,7 +7,7 @@ import { Inline } from '@/layout/inline';
 import { NanostackMark } from './index';
 
 const usage = `
-The Nanostack mark: every Nanostack product carries it. \`AppShellBrand\` already shows it next to the product name at the top of the sidebar, so a signed-in screen needs nothing more. Use \`NanostackMark\` on its own for a screen outside the app frame, such as sign-in or an error page.
+The Nanostack mark: every Nanostack product carries it. \`AppShellBrand\` shows it next to the product name at the top of the sidebar unless the product passes its own \`mark\`. Use \`NanostackMark\` on its own for a screen outside the app frame, such as sign-in or an error page.
 
 The mark fills with the current text colour, so it reads in light and dark. The drawing is a placeholder until the final Nanostack mark lands; its API will not change.
 
@@ -27,7 +27,7 @@ Give \`label\` ("Nanostack") when no text next to the mark names it. Omit it whe
 
 - Do not redraw or crop the mark, or copy its SVG into a product. Ask for a variant here.
 - Do not put the mark in a coloured tile. It is drawn to stand on the surface.
-- Do not use a product's own logo in the sidebar brand slot. \`AppShellBrand\` shows the Nanostack mark and the product name.
+- Do not pass \`NanostackMark\` to \`AppShellBrand mark\`. Leave \`mark\` out and the slot shows it.
 `;
 
 const meta = {
