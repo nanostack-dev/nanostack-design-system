@@ -22,35 +22,50 @@ The design system owns the surface material of a product. A product chooses it o
 
 | Surface                                                                                 | Fill                                                     | Why                                   |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------- |
-| App frame (`sidebar-wrapper`)                                                           | `--glass-backdrop` over `--background`                   | Glass needs something to show.        |
+| App frame (`sidebar-wrapper`)                                                           | `--glass-grain`, `--glass-backdrop` over `--background`  | Glass needs something to show.        |
 | Sidebar                                                                                 | `--glass-sheen`, `--glass-surface` (58% light, 62% dark) | Only the backdrop passes under it.    |
 | Top bar, popover, menus, select, combobox, hover card, dialogs, sheets, drawers, toasts | `--glass-sheen`, `--glass-surface-overlay` (88% / 86%)   | Any content can pass under them.      |
 | Card, stat card, data table frame, table outside a card                                 | `--glass-surface-strong` (84% / 86%)                     | Dense data stays as legible as solid. |
 | Soft fields (input, select trigger, textarea, input group)                              | The soft fill made opaque over `--card`                  | The backdrop does not tint them.      |
 | Dialog, sheet and drawer overlays                                                       | A lighter scrim with a 6 px blur                         | The glass frame stays visible behind. |
 
-Blur and saturation: `--glass-blur` (24 px), `--glass-saturate` (180% light, 160% dark); data surfaces use two thirds of the blur and 140%. Edges: `--glass-edge`, `--glass-highlight`, `--glass-shadow`.
+Blur and saturation: `--glass-blur` (24 px), `--glass-saturate` (180% light, 160% dark); data surfaces use two thirds of the blur and 140%.
 
-Each glass surface draws exactly one edge: its 1 px `border` in `--glass-edge`, at the outer edge, plus `--glass-highlight` as an inset light on the top row and `--glass-shadow` outside. Do not add a second line. A lighter border over a translucent fill (the background paints under the border), an `inset 0 0 0 1px` ring inside the border, or an outer `0 0 0 1px` ring beside a component's own border each show as a doubled curve, offset by 1 px, at the rounded corners. In light, `--glass-edge` is `--border-strong` at 75%, because a white edge vanishes on the near-white backdrop and leaves only the inner lines visible. 0.3.0 had that doubled edge; 0.3.1 fixed it, checked at zoom on the corners of the sidebar, top bar, cards and menus in Chromium 157.
+The backdrop is a mesh of four soft radial glows (blue top left, violet bottom left, cyan top right, pink bottom right) over a faint vertical wash, with `--glass-grain` on top: an SVG noise tile at about 7% (light) and 5% (dark) that removes gradient banding and gives the frame a material feel. The glows sit at the edges, so the page header text in the middle reads on a near-white (light) or near-black (dark) ground.
+
+Edges and depth:
+
+- The sidebar, the top bar, cards, stat cards and data table frames have no border. Their edge is the rim: a 1 px `::after` line on the inside edge in `--glass-rim`, bright on top where light catches the pane and fading to a soft shade at the bottom. It is the only line, so no doubled curve shows at the rounded corners (0.3.0 drew a border plus an inset ring; 0.3.1 kept only the border; 0.3.3 replaces the border with the rim).
+- Shadows are stacked and tinted with the backdrop hue instead of one grey blur: `--glass-shadow` for the chrome (four layers) and `--glass-shadow-raised` for data surfaces (three layers, less spread).
+- Popups, dialogs, sheets and toasts keep their 1 px border in `--glass-edge`, `--glass-highlight` as an inset light on the top row and `--glass-shadow`.
+- Glass cards, stat cards and data table frames share one radius, `--radius-3xl`, so product panels and cards match.
+
+Sidebar navigation on glass: a `SidebarMenuButton` label uses the sidebar foreground at 82%; hover fills it with `--glass-item-hover`; the current page sits on a raised pill (`--glass-item-active`, `--glass-item-active-shadow`) with its icon in `--primary`. A product that draws its own navigation link matches these tokens.
+
+The `AppShellBrand` mark sits on an app-icon tile under glass: a blue-to-violet gradient with a top sheen and a white mark. The solid logo then reads as a different kind of object from the line icons of the navigation.
+
+Do not add a second line to a glass surface. A lighter border over a translucent fill (the background paints under the border), an `inset 0 0 0 1px` ring inside the border, or an outer `0 0 0 1px` ring beside a component's own border each show as a doubled curve, offset by 1 px, at the rounded corners.
 
 ## Contrast
 
-Measured on Chromium renders at 1440 × 900, glass material, with the text inside the surface hidden and pixels next to controls excluded (focus rings and button shadows paint outside them). The worst background is the sampled pixel closest in luminance to the text colour. The `WorstCase` story scrolls a `bg-foreground` block (the darkest colour in light, the lightest in dark) under the top bar and opens a popover over it.
+Measured on Chromium renders at 1440 × 900, glass material, with the text inside the surface hidden, pixels next to controls excluded (focus rings and button shadows paint outside them) and pixels within 2 px of a separator line excluded (a table row border is not a background text sits on; 0.3.3 removed a frame border, which moved the rows onto the sample grid and read the 1 px row lines as a 4.84 background). The worst background is the sampled pixel closest in luminance to the text colour. The `WorstCase` story scrolls a `bg-foreground` block (the darkest colour in light, the lightest in dark) under the top bar and opens a popover over it.
 
 | Surface (story)                  | Light muted | Light primary | Dark muted | Dark primary |
 | -------------------------------- | ----------- | ------------- | ---------- | ------------ |
-| Top bar over content (WorstCase) | 4.74        | 4.64          | 5.00       | 8.27         |
+| Top bar over content (WorstCase) | 4.90        | 4.79          | 5.14       | 8.50         |
 | Popover over content (WorstCase) | 5.08        | 4.97          | 4.86       | 8.03         |
-| Sidebar                          | 6.03        | 5.90          | 6.19       | 10.24        |
-| Dropdown menu                    | 6.47        | 6.33          | 6.35       | 10.50        |
-| Dialog                           | 6.15        | 6.01          | 5.91       | 9.77         |
-| Alert dialog                     | 6.19        | 6.06          | 6.34       | 10.49        |
-| Sheet                            | 6.13        | 5.99          | 5.95       | 9.84         |
-| Toast                            | 6.37        | 6.23          | 6.31       | 10.44        |
-| Stat card                        | 6.42        | 6.28          | 7.11       | 11.75        |
-| Data table frame                 | 6.47        | 6.33          | 7.16       | 11.84        |
-| Card                             | 6.36        | 6.22          | 7.11       | 11.75        |
-| Table outside a card             | 6.47        | 6.33          | 7.17       | 11.85        |
+| Sidebar                          | 5.14        | 5.02          | 5.82       | 9.63         |
+| Dropdown menu                    | 6.42        | 6.28          | 6.34       | 10.49        |
+| Dialog                           | 6.15        | 6.01          | 6.18       | 10.23        |
+| Alert dialog                     | 6.19        | 6.06          | 6.29       | 10.40        |
+| Sheet                            | 6.12        | 5.99          | 5.91       | 9.77         |
+| Toast                            | 6.29        | 6.15          | 6.37       | 10.53        |
+| Stat card                        | 6.29        | 6.16          | 7.04       | 11.65        |
+| Data table frame                 | 6.35        | 6.22          | 7.15       | 11.82        |
+| Card                             | 6.40        | 6.26          | 7.10       | 11.74        |
+| Table outside a card             | 6.42        | 6.28          | 7.16       | 11.84        |
+
+0.3.3 values. The sidebar dropped from 6.03 to 5.14 (light) because the stronger backdrop tints it; its worst pixel is over the violet glow.
 
 The prototype's 58% top bar and 72% popovers measured 2.46 and 3.51 for light muted text over the same content. The `select` popup uses the dropdown-menu token and fill; its options cover the sampled area, so it has no separate row.
 
@@ -60,6 +75,7 @@ Repeat the measurement after a glass token change: start `pnpm storybook`, then 
 
 - No `backdrop-filter` support: chrome is `--sidebar` or `--popover`, data surfaces `--card`.
 - `prefers-reduced-transparency: reduce`: the same solid fills, no blur. The backdrop tint stays.
+- `prefers-contrast: more`: the rim is one solid line in `--border-strong`.
 
 ## Known limitations
 
