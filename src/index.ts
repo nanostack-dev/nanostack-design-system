@@ -76,6 +76,7 @@ export * from './blocks/page-header';
 export * from './blocks/theme';
 export * from './blocks/confirm-dialog';
 export * from './blocks/data-table';
+export * from './blocks/data-table-frame';
 export * from './blocks/empty-state';
 export * from './blocks/stat-card';
 export * from './blocks/copy-button';

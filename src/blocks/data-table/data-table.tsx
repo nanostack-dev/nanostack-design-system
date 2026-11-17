@@ -26,6 +26,7 @@ import {
 } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
+import { DataTableFrame } from '@/blocks/data-table-frame';
 import { Button } from '@/components/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import { Skeleton } from '@/components/skeleton';
@@ -43,7 +44,6 @@ import { Box } from '@/layout/box';
 import { Inline } from '@/layout/inline';
 import { Spread } from '@/layout/spread';
 import { Stack } from '@/layout/stack';
-import { useMaterialAttributes } from '@/lib/material';
 
 const dataTableFeatures = tableFeatures({
   rowSortingFeature,
@@ -146,7 +146,6 @@ export function DataTable<TData extends RowData, TValue = unknown>({
   toolbar,
 }: DataTableProps<TData, TValue>) {
   const serverSide = rowCount !== undefined;
-  const material = useMaterialAttributes();
   const table = useTable({
     features: dataTableFeatures,
     columns: columns as ColumnDef<TData>[],
@@ -218,11 +217,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
           ) : null}
         </Inline>
       ) : null}
-      <Box
-        data-slot="data-table-frame"
-        className="overflow-hidden rounded-2xl border"
-        {...material}
-      >
+      <DataTableFrame>
         <Table aria-busy={loading}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -265,7 +260,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
             )}
           </TableBody>
         </Table>
-      </Box>
+      </DataTableFrame>
       {showPager ? (
         <Spread data-slot="data-table-pager">
           <Text tone="muted" aria-live="polite">
