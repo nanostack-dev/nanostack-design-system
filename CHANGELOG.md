@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.3
+
+- Glass looks deeper and more coherent. The backdrop is a richer mesh of four glows with a faint grain (`--glass-grain`), so the translucent sidebar takes its colour instead of reading as white.
+- The sidebar, top bar, cards, stat cards and data table frames lose their border. Their edge is a 1 px rim (`--glass-rim`) that is bright on top and fades below, the only line on the surface. Shadows are stacked and tinted (`--glass-shadow`, new `--glass-shadow-raised` for data surfaces).
+- Glass cards, stat cards and data table frames share `--radius-3xl`.
+- Sidebar navigation on glass: the current page is a raised pill with its icon in `--primary` (`--glass-item-hover`, `--glass-item-active`, `--glass-item-active-shadow`); labels use the sidebar foreground at 82%.
+- The `AppShellBrand` mark sits on a gradient app-icon tile under glass, so the solid logo no longer clashes with the line icons of the navigation.
+- `prefers-contrast: more` draws the rim as one solid `--border-strong` line.
+- Six additive tokens: `--glass-rim`, `--glass-shadow-raised`, `--glass-grain`, `--glass-item-hover`, `--glass-item-active`, `--glass-item-active-shadow`. `--glass-shadow` and `--glass-backdrop` change value. Contrast stays at or above 4.5:1 (`docs/technical/material.md`).
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.3`. No API change. A product that draws its own sidebar link matches the current-page pill with the `--glass-item-*` tokens; a product panel built by hand moves to `Card` or `DataTableFrame` to get the rim and radius.
+
 ## 0.3.1
 
 - Glass surfaces draw one edge. The sidebar, top bar, popups, dialogs, sheets, toasts, cards, stat cards and data tables showed a doubled, offset line at their rounded corners: a white border over the translucent fill plus an inset shade (chrome), an inset ring (popups) or an outer ring beside the card border (data surfaces). Each now has only its 1 px border in `--glass-edge`, a top highlight and its shadow.
