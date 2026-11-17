@@ -4,7 +4,7 @@
 
 - Glass material: `DesignSystemProvider material="glass"` makes the chrome translucent over a brand-hued backdrop that `AppShell` paints. The sidebar floats with a gap. The `AppShellHeader` top bar floats and the content scrolls under it. Popover, dropdown and context menus, select, combobox, hover card, command, dialog, alert dialog, sheet, drawer and toasts are glass. Cards, stat cards, data tables, tables outside a card and the soft fields are near-opaque. `solid` stays the default. Without `backdrop-filter`, or with reduced transparency, surfaces are solid. ADR 0002 and `docs/technical/material.md` record the decision and the measured contrast.
 - Eleven additive tokens, in light and dark: `--glass-surface`, `--glass-surface-strong`, `--glass-surface-overlay`, `--glass-blur`, `--glass-saturate`, `--glass-edge`, `--glass-highlight`, `--glass-shade`, `--glass-shadow`, `--glass-sheen`, `--glass-backdrop`. No token is renamed.
-- `NanostackMark`: the Nanostack logo as a block (`blocks/nanostack-mark`), sizes `sm`, `md`, `lg`.
+- `NanostackMark`: the Nanostack mark as a block (`blocks/nanostack-mark`), sizes `sm`, `md`, `lg`, drawn in `currentColor`. The drawing is a placeholder until the final mark is ready.
 - `AppShellBrand` shows the Nanostack mark next to the product `name`. Its `icon` and `logo` props are removed: every product shares one brand slot.
 - `AppShellContent`: a page region that scrolls inside the frame, with the skip-link target at its start. `AppShellHeader sidebarTrigger="mobile"` hides the trigger from the md breakpoint, for a sidebar with its own rail.
 - `Sidebar` and `AppShellSidebar` without `material` follow the provider material. `useMaterial()` and the `Material` type are exported from `provider`.

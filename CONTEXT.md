@@ -32,4 +32,4 @@ The design system owns visual primitives that Nanostack products can use unchang
 
 **Backdrop:** The brand-hued background that the app frame paints under glass, so the translucent chrome has something to show.
 
-**Nanostack mark:** The Nanostack logo. Every product shows it next to its name in the sidebar brand slot.
+**Nanostack mark:** The Nanostack logo symbol, drawn in the current text colour. Every product shows it next to its name in the sidebar brand slot.

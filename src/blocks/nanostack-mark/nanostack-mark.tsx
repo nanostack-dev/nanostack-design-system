@@ -14,19 +14,24 @@ const sizeClass: Record<NanostackMarkSize, string> = {
   lg: 'size-8',
 };
 
-// The brand accent is part of the logo, not a theme colour: it stays the same in
-// light and dark. Source: marketing/nanostack/public/brand/nanostack-mark.svg.
-const BRAND_ACCENT = '#3a5cf5';
-
 /**
- * The Nanostack mark. Its body takes the current text colour, so it reads on
- * light and dark surfaces; its corner keeps the brand blue.
+ * PLACEHOLDER. The final Nanostack mark is being drawn; replace MARK_VIEW_BOX and
+ * MARK_PATHS with it. Until then this is the mark of
+ * marketing/nanostack/public/brand/nanostack-lockup.svg (its first group).
+ * Every path fills with currentColor, so the mark follows the text colour.
  */
+const MARK_VIEW_BOX = '0 0 32 32';
+const MARK_PATHS = [
+  'M3.25 12.25a5.5 5.5 0 0 1 5.5-5.5h6a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 1 1.5 1.5v6a5.5 5.5 0 0 1-5.5 5.5h-11a5.5 5.5 0 0 1-5.5-5.5Z',
+  'M21.25 3.25h2a5.5 5.5 0 0 1 5.5 5.5v2a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5v-6a1.5 1.5 0 0 1 1.5-1.5Z',
+];
+
+/** The Nanostack mark, drawn in the current text colour. */
 export function NanostackMark({ size = 'md', label }: NanostackMarkProps) {
   return (
     <svg
       data-slot="nanostack-mark"
-      viewBox="0 0 32 32"
+      viewBox={MARK_VIEW_BOX}
       xmlns="http://www.w3.org/2000/svg"
       className={cn('shrink-0', sizeClass[size])}
       role={label ? 'img' : undefined}
@@ -34,14 +39,9 @@ export function NanostackMark({ size = 'md', label }: NanostackMarkProps) {
       aria-hidden={label ? undefined : true}
       focusable="false"
     >
-      <path
-        d="M3.25 12.25a5.5 5.5 0 0 1 5.5-5.5h6a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 1 1.5 1.5v6a5.5 5.5 0 0 1-5.5 5.5h-11a5.5 5.5 0 0 1-5.5-5.5Z"
-        fill="currentColor"
-      />
-      <path
-        d="M21.25 3.25h2a5.5 5.5 0 0 1 5.5 5.5v2a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5v-6a1.5 1.5 0 0 1 1.5-1.5Z"
-        fill={BRAND_ACCENT}
-      />
+      {MARK_PATHS.map((d) => (
+        <path key={d} d={d} fill="currentColor" />
+      ))}
     </svg>
   );
 }
