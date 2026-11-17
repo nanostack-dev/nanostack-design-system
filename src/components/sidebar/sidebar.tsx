@@ -483,7 +483,10 @@ const sidebarMenuButtonClasses = cva(
       size: {
         sm: 'h-8 text-xs',
         md: 'h-9 text-sm',
-        lg: 'h-14 px-3 text-sm group-data-[collapsible=icon]:p-0!',
+        // In the rail a large button is exactly its 32 px content (a brand
+        // tile, an avatar): the data-size attribute outranks the base p-2!,
+        // and nothing is clipped by the button's own radius.
+        lg: 'h-14 px-3 text-sm group-data-[collapsible=icon]:data-[size=lg]:overflow-visible group-data-[collapsible=icon]:data-[size=lg]:p-0!',
       },
     },
     defaultVariants: { size: 'md' },

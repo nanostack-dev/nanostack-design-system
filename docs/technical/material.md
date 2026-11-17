@@ -25,7 +25,7 @@ The design system owns the surface material of a product. A product chooses it o
 | App frame (`sidebar-wrapper`)                                                           | `--glass-grain`, `--glass-backdrop` over `--background`  | Glass needs something to show.        |
 | Sidebar                                                                                 | `--glass-sheen`, `--glass-surface` (58% light, 62% dark) | Only the backdrop passes under it.    |
 | Top bar, popover, menus, select, combobox, hover card, dialogs, sheets, drawers, toasts | `--glass-sheen`, `--glass-surface-overlay` (88% / 86%)   | Any content can pass under them.      |
-| Card, stat card, data table frame, table outside a card                                 | `--glass-surface-strong` (84% / 86%)                     | Dense data stays as legible as solid. |
+| Card, stat card, data table frame, table outside a card                                 | `--glass-surface-strong` (84% / 88%)                     | Dense data stays as legible as solid. |
 | Soft fields (input, select trigger, textarea, input group)                              | The soft fill made opaque over `--card`                  | The backdrop does not tint them.      |
 | Dialog, sheet and drawer overlays                                                       | A lighter scrim with a 6 px blur                         | The glass frame stays visible behind. |
 
@@ -35,10 +35,12 @@ The backdrop is a mesh of four soft radial glows (blue top left, violet bottom l
 
 Edges and depth:
 
-- The sidebar, the top bar, cards, stat cards and data table frames have no border. Their edge is the rim: a 1 px `::after` line on the inside edge in `--glass-rim`, bright on top where light catches the pane and fading to a soft shade at the bottom. It is the only line, so no doubled curve shows at the rounded corners (0.3.0 drew a border plus an inset ring; 0.3.1 kept only the border; 0.3.3 replaces the border with the rim).
+- The sidebar, the top bar, cards, stat cards and data table frames have no border. Their edge is the rim: a 1 px `::after` line on the inside edge in `--glass-rim`, bright on top where light catches the pane and fading to a soft shade at the bottom. In dark the lower stops stay at 36% white, so the sides and bottom keep about 3:1 against the backdrop (see Edge visibility). It is the only line, so no doubled curve shows at the rounded corners (0.3.0 drew a border plus an inset ring; 0.3.1 kept only the border; 0.3.3 replaces the border with the rim).
 - Shadows are stacked and tinted with the backdrop hue instead of one grey blur: `--glass-shadow` for the chrome (four layers) and `--glass-shadow-raised` for data surfaces (three layers, less spread).
 - Popups, dialogs, sheets and toasts keep their 1 px border in `--glass-edge`, `--glass-highlight` as an inset light on the top row and `--glass-shadow`.
 - Glass cards, stat cards and data table frames share one radius, `--radius-3xl`, so product panels and cards match.
+
+Brand tile on glass: `AppShellBrand` draws its mark on an app-icon tile. A product tints it by setting `--app-shell-brand-tile` (a colour or gradient) and `--app-shell-brand-tile-foreground` (the mark colour) per theme in its own stylesheet; the shape, the top sheen and the shadow stay shared, and the default is the Nanostack gradient with a white mark. Keep the mark at 3:1 or more against the tile (the `ProductTint` stories check Echopoint's blue with white, 6.38:1, and lime with night, 12.43:1). In the collapsed rail the tile is the whole 32 px button.
 
 Sidebar navigation on glass: a `SidebarMenuButton` label uses the sidebar foreground at 82%; hover fills it with `--glass-item-hover`; the current page sits on a raised pill (`--glass-item-active`, `--glass-item-active-shadow`) with its icon in `--primary`. A product that draws its own navigation link matches these tokens.
 
@@ -60,16 +62,31 @@ Measured on Chromium renders at 1440 × 900, glass material, with the text insid
 | Alert dialog                     | 6.19        | 6.06          | 6.29       | 10.40        |
 | Sheet                            | 6.12        | 5.99          | 5.91       | 9.77         |
 | Toast                            | 6.29        | 6.15          | 6.37       | 10.53        |
-| Stat card                        | 6.29        | 6.16          | 7.04       | 11.65        |
-| Data table frame                 | 6.35        | 6.22          | 7.15       | 11.82        |
-| Card                             | 6.40        | 6.26          | 7.10       | 11.74        |
-| Table outside a card             | 6.42        | 6.28          | 7.16       | 11.84        |
+| Stat card                        | 6.29        | 6.16          | 6.75       | 11.16        |
+| Data table frame                 | 6.35        | 6.22          | 6.83       | 11.30        |
+| Card                             | 6.40        | 6.26          | 6.77       | 11.19        |
+| Table outside a card             | 6.42        | 6.28          | 6.83       | 11.30        |
 
-0.3.3 values. The sidebar dropped from 6.03 to 5.14 (light) because the stronger backdrop tints it; its worst pixel is over the violet glow.
+0.3.5 values; 0.3.5 lifted the dark data surface (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), which moved dark data-surface text from about 7.1 to 6.8. The other rows are the 0.3.3 values. In 0.3.3 the sidebar dropped from 6.03 to 5.14 (light) because the stronger backdrop tints it; its worst pixel is over the violet glow.
 
 The prototype's 58% top bar and 72% popovers measured 2.46 and 3.51 for light muted text over the same content. The `select` popup uses the dropdown-menu token and fill; its options cover the sampled area, so it has no separate row.
 
 Repeat the measurement after a glass token change: start `pnpm storybook`, then run `node scripts/measure-glass-contrast.mjs`. It writes the screenshots and `contrast.json` to `.ui-craft/glass/` and prints one line per surface. `GLASS_CSS` tries other token values without editing `styles.css`. The axe check in `pnpm test` cannot see through `backdrop-filter`.
+
+## Edge visibility
+
+`node scripts/measure-glass-edge.mjs` (Storybook running) compares the rim pixel of each data surface with the backdrop 3 px outside it and the surface 4 px inside, at the top middle, both sides near the bottom and the bottom near the left corner. The aim is about 3:1 on every side in dark, the spirit of WCAG 1.4.11 for a boundary. Light mode separates its cards from the backdrop with the white surface and the tinted shadow instead, so its rim stays soft.
+
+| Data surface, dark (rim : outside) | Top  | Right | Left | Bottom |
+| ---------------------------------- | ---- | ----- | ---- | ------ |
+| 0.3.4 stat card                    | 1.94 | 1.14  | 1.12 | 1.11   |
+| 0.3.4 data table frame             | 1.94 | 1.15  | 1.15 | 1.11   |
+| 0.3.4 card                         | 1.98 | 1.16  | 1.16 | 1.14   |
+| 0.3.5 stat card                    | 5.09 | 3.47  | 3.32 | 3.43   |
+| 0.3.5 data table frame             | 5.17 | 3.51  | 3.40 | 3.44   |
+| 0.3.5 card                         | 5.26 | 3.55  | 3.57 | 3.56   |
+
+In 0.3.4 the dark rim faded to 7% and then 3% white, so the lower half of every dark card vanished against the backdrop: the bottom-left corner of an empty table could not be seen. The light rows did not change (about 1.05 at the sides and bottom, 1.13 on top).
 
 ## Fallbacks
 
