@@ -19,3 +19,9 @@ Run `pnpm exec playwright install chromium`; on a Linux host missing system libr
 ## Package release identity fails
 
 The tag must be `v` followed by the exact package version, and the release commit must be reachable from `origin/main`. The changelog must contain that version and nonempty notes. Follow [publishing](../runbooks/deployment.md); fix identity in a reviewed source change instead of moving a published tag.
+
+## Every CI check fails with `start engine: new client: context deadline exceeded`
+
+Symptom (2026-11-17): every `dagger check` job on a GitHub-hosted runner waits 10 minutes, then fails at `connecting to engine`. A freshly started `registry.dagger.io/engine:v1.0.0-beta.27` container exits at once with `failed to create engine: merge the engine image's entries: root 4875 did not merge (expired true, retained false)` (`docker logs dagger-engine-v1.0.0-beta.27`). An engine started before that point keeps working, so a warm self-hosted engine hides it; a fresh `v1.0.0-beta.24` engine starts normally.
+
+Fix: CI pins engine `v1.0.0-beta.24` again (`engineVersion` in `.dagger/modules/designsystem/dagger-module.toml` and the `setup-dagger` SHA in `.github/workflows/ci.yml`). Move forward again only to an engine release whose fresh start works: `docker run --rm --privileged registry.dagger.io/engine:<version>` must stay up.
