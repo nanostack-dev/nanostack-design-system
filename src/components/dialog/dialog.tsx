@@ -4,6 +4,7 @@ import { cva } from 'class-variance-authority';
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -103,12 +104,14 @@ function DialogClose({ ...props }: DialogCloseProps) {
 
 function DialogOverlay({ animated = true }: { animated?: boolean }) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       data-palette={!animated || undefined}
       className="fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60"
       {...motion}
+      {...material}
     />
   );
 }
@@ -120,6 +123,7 @@ function DialogContent({
   ...props
 }: DialogContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -132,6 +136,7 @@ function DialogContent({
         )}
         {...props}
         {...motion}
+        {...material}
       >
         <OverlayScrollBody
           slot="dialog-body"
@@ -173,6 +178,7 @@ const paletteContentClasses = cva(
 
 export function DialogPaletteContent({ children, size, ...props }: DialogPaletteContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <DialogPortal>
       <DialogOverlay animated={false} />
@@ -183,6 +189,7 @@ export function DialogPaletteContent({ children, size, ...props }: DialogPalette
         className={paletteContentClasses({ size })}
         {...props}
         {...motion}
+        {...material}
       >
         {children}
       </DialogPrimitive.Popup>

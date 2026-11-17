@@ -1,5 +1,6 @@
 import type { ComponentPropsWithRef, ReactNode } from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -40,8 +41,9 @@ export type TableCaptionProps = ClosedProps<ComponentPropsWithRef<'caption'>> & 
 };
 
 export function Table(props: TableProps) {
+  const material = useMaterialAttributes();
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div data-slot="table-container" className="relative w-full overflow-x-auto" {...material}>
       <table data-slot="table" className="w-full caption-bottom text-sm" {...props} />
     </div>
   );

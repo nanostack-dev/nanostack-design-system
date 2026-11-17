@@ -1,6 +1,7 @@
 import { cva } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -30,7 +31,14 @@ export type TextareaProps = ClosedProps<ComponentProps<'textarea'>> & {
 
 export function Textarea({ font, ...props }: TextareaProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
-    <textarea data-slot="textarea" className={textareaStyles({ font })} {...props} {...motion} />
+    <textarea
+      data-slot="textarea"
+      className={textareaStyles({ font })}
+      {...props}
+      {...motion}
+      {...material}
+    />
   );
 }

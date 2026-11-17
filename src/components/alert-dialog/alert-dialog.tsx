@@ -2,6 +2,7 @@ import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog
 import type * as React from 'react';
 
 import { Button, buttonStyles, type ButtonProps } from '@/components/button/button';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
@@ -34,17 +35,20 @@ function AlertDialogPortal({ ...props }: AlertDialogPrimitive.Portal.Props) {
 
 function AlertDialogOverlay() {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
       className="fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60"
       {...motion}
+      {...material}
     />
   );
 }
 
 function AlertDialogContent({ ...props }: AlertDialogContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
@@ -53,6 +57,7 @@ function AlertDialogContent({ ...props }: AlertDialogContentProps) {
         className="group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full max-w-xs -translate-x-1/2 -translate-y-1/2 gap-6 overflow-y-auto overscroll-contain rounded-4xl bg-popover p-6 text-popover-foreground shadow-xl ring-1 ring-foreground/5 outline-none sm:max-w-md dark:ring-foreground/10"
         {...props}
         {...motion}
+        {...material}
       />
     </AlertDialogPortal>
   );

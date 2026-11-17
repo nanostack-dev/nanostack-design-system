@@ -3,6 +3,7 @@ import { CaretDownIcon, CaretUpIcon, CheckIcon } from '@phosphor-icons/react';
 import { cva } from 'class-variance-authority';
 import type { ComponentProps } from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -67,13 +68,16 @@ export function SelectTrigger({
   ...props
 }: SelectTriggerProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
+      data-variant={variant ?? 'soft'}
       className={selectTriggerStyles({ variant, size, width })}
       {...props}
       {...motion}
+      {...material}
     >
       {children}
       <SelectPrimitive.Icon
@@ -99,6 +103,7 @@ export function SelectContent({
   ...props
 }: SelectContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
@@ -112,6 +117,7 @@ export function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           {...motion}
+          {...material}
           data-align-trigger={alignItemWithTrigger}
           className="relative isolate z-50 max-h-(--available-height) w-auto max-w-(--available-width) min-w-[max(var(--anchor-width),9rem)] origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 data-[align-trigger=true]:animate-none dark:ring-foreground/10"
           {...props}

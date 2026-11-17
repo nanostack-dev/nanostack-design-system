@@ -1,7 +1,6 @@
 import {
   BellIcon,
   ChartBarIcon,
-  CubeIcon,
   FolderIcon,
   GearIcon,
   HouseIcon,
@@ -39,6 +38,7 @@ import {
   AppShellSidebarContent,
   AppShellSidebarFooter,
   AppShellBrand,
+  AppShellContent,
   AppShellSidebarHeader,
   useAppShell,
 } from './app-shell';
@@ -51,6 +51,8 @@ const summaries = [
 
 const usage = `
 The frame of an application: a collapsible sidebar with navigation, a sticky top bar with the sidebar trigger, and the main content area. Use it once at the root of every signed-in screen.
+
+Under \`DesignSystemProvider material="glass"\` the frame paints the brand backdrop, the sidebar floats with a gap, and the top bar floats over the content, which scrolls under it. See Foundations/Glass material.
 
 The parts are closed. They do not accept \`className\` or \`style\`. The frame takes its widths, its skip link and its sidebar surface from props.
 
@@ -72,12 +74,29 @@ The parts are closed. They do not accept \`className\` or \`style\`. The frame t
 
 | Value | Use it for |
 | --- | --- |
-| \`solid\` | The default. An opaque sidebar. |
-| \`frosted\` | A translucent sidebar with a blur, for a product whose surfaces use the same material. It is solid with reduced transparency. |
+| omitted | The default. The sidebar follows the \`DesignSystemProvider\` material: opaque, or glass. |
+| \`solid\` | An opaque sidebar, whatever the provider material. |
+| \`frosted\` | A translucent sidebar with a blur on an otherwise solid product. It is solid with reduced transparency. Under a glass provider, omit \`material\` instead. |
+
+## AppShellHeader sidebarTrigger
+
+| Value | Use it for |
+| --- | --- |
+| \`always\` | The default. The trigger and a divider start the top bar. |
+| \`mobile\` | A sidebar with its own collapse control, such as an icon rail. The trigger shows below the md breakpoint only, where the sidebar is a sheet. |
+
+## AppShellMain or AppShellContent
+
+| Part | Use it for |
+| --- | --- |
+| \`AppShellMain\` | A page that scrolls with the document. It sets the page padding and the gap between sections. |
+| \`AppShellContent\` | A page that scrolls inside the frame, under the top bar, such as a wide table or an editor. The page sets its own padding. |
+
+Both carry \`mainId\`, the skip-link target. Use one of them per screen.
 
 ## Other props
 
-- \`AppShellBrand\`: the product mark at the top of the sidebar. Give it a Phosphor \`icon\` or your own \`logo\`, a \`name\`, an optional \`description\` and the home \`href\`. In the collapsed sidebar only the mark shows, with the name as its tooltip.
+- \`AppShellBrand\`: the brand slot at the top of the sidebar, the same in every Nanostack product: the Nanostack mark, then the product \`name\` and an optional \`description\`, linking to the home \`href\`. In the collapsed sidebar only the mark shows, with the name as its tooltip.
 
 - \`skipLinkLabel\`: shows a "skip to content" link first in the tab order. It moves focus to \`AppShellMain\`. Give it on every product with more than a few sidebar links.
 - \`mainId\`: the id of \`AppShellMain\`, the skip link target. Change it only when the page already uses \`app-shell-main\`.
@@ -88,7 +107,8 @@ The parts are closed. They do not accept \`className\` or \`style\`. The frame t
 ## Do not
 
 - Do not put an \`AppShell\` inside another one.
-- Do not add a second sidebar trigger. \`AppShellHeader\` has one.
+- Do not add a second sidebar trigger. \`AppShellHeader\` has one; use \`sidebarTrigger="mobile"\` when the sidebar has its own control.
+- Do not put a product logo in the brand slot. \`AppShellBrand\` shows the Nanostack mark next to the product name.
 - Do not add padding around \`AppShellMain\`. It sets the page padding and the gap between sections.
 - Do not use \`sidebarIconWidth="lg"\` with \`AppShellNavItem\` icons alone. The items do not fill the extra width.
 `;
@@ -111,12 +131,7 @@ function Workspace({
     <AppShell {...props}>
       <AppShellSidebar>
         <AppShellSidebarHeader>
-          <AppShellBrand
-            icon={CubeIcon}
-            name="Acme workspace"
-            description="Team plan"
-            href="#workspace"
-          />
+          <AppShellBrand name="Acme workspace" description="Team plan" href="#workspace" />
         </AppShellSidebarHeader>
         <AppShellSidebarContent>
           <AppShellNav label="Workspace">
@@ -377,5 +392,94 @@ export const HeaderActions: Story = {
     await expect(toggle.getBoundingClientRect().left).toBeGreaterThan(
       breadcrumb.getBoundingClientRect().right,
     );
+  },
+};
+
+export const Glass: Story = {
+  globals: { material: 'glass' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Under `DesignSystemProvider material="glass"`: the brand backdrop, a floating sidebar and a floating top bar.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const wrapper = canvasElement.querySelector<HTMLElement>('[data-slot="sidebar-wrapper"]')!;
+    await expect(wrapper).toHaveAttribute('data-ns-material', 'glass');
+    const header = canvasElement.querySelector<HTMLElement>('[data-slot="app-shell-header"]')!;
+    await expect(header).toHaveAttribute('data-ns-material', 'glass');
+    await expect(sidebarElement(canvasElement)).toHaveAttribute('data-material', 'glass');
+  },
+};
+
+function ScrollingWorkspace({ sidebarTrigger }: { sidebarTrigger?: 'always' | 'mobile' }) {
+  return (
+    <AppShell defaultOpen skipLinkLabel="Skip to content">
+      <AppShellSidebar>
+        <AppShellSidebarHeader>
+          <AppShellBrand name="Echopoint" href="#home" />
+        </AppShellSidebarHeader>
+        <AppShellSidebarContent>
+          <AppShellNav label="Workspace">
+            <AppShellNavItem icon={HouseIcon} label="Overview" href="#overview" active />
+            <AppShellNavItem icon={ChartBarIcon} label="Reports" href="#reports" />
+          </AppShellNav>
+        </AppShellSidebarContent>
+      </AppShellSidebar>
+      <AppShellInset>
+        <AppShellHeader sidebarTrigger={sidebarTrigger}>
+          <Text weight="semibold">Runs</Text>
+        </AppShellHeader>
+        <AppShellContent>
+          {Array.from({ length: 30 }, (_, index) => (
+            <Text key={index}>Run {index + 1} finished in 1.2 s.</Text>
+          ))}
+        </AppShellContent>
+      </AppShellInset>
+    </AppShell>
+  );
+}
+
+export const ScrollingContent: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`AppShellContent` scrolls inside the frame. The skip link moves focus to its start. Under glass, the content scrolls under the floating top bar.',
+      },
+    },
+  },
+  render: () => <ScrollingWorkspace />,
+  play: async ({ canvasElement }) => {
+    const start = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="app-shell-content-start"]',
+    )!;
+    await expect(start).toHaveAttribute('id', 'app-shell-main');
+    const skip = canvasElement.querySelector<HTMLAnchorElement>(
+      '[data-slot="app-shell-skip-link"]',
+    )!;
+    skip.click();
+    await expect(start).toHaveFocus();
+  },
+};
+
+export const MobileOnlyTrigger: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`sidebarTrigger="mobile"`: from the md breakpoint the top bar has no trigger; the sidebar keeps its rail.',
+      },
+    },
+  },
+  render: () => <ScrollingWorkspace sidebarTrigger="mobile" />,
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="app-shell-header-trigger"]',
+    )!;
+    const wide = window.matchMedia('(min-width: 768px)').matches;
+    await expect(getComputedStyle(trigger).display).toBe(wide ? 'none' : 'flex');
   },
 };

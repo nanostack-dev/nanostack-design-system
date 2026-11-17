@@ -2,7 +2,6 @@ import {
   ArchiveIcon,
   BellIcon,
   ChartLineUpIcon,
-  CubeIcon,
   DownloadSimpleIcon,
   FolderIcon,
   GearIcon,
@@ -174,12 +173,7 @@ function DashboardScreen({ defaultTheme }: { defaultTheme: Theme }) {
       <AppShell defaultOpen>
         <AppShellSidebar>
           <AppShellSidebarHeader>
-            <AppShellBrand
-              icon={CubeIcon}
-              name="Acme workspace"
-              description="Team plan"
-              href="#workspace"
-            />
+            <AppShellBrand name="Acme workspace" description="Team plan" href="#workspace" />
           </AppShellSidebarHeader>
           <AppShellSidebarContent>
             <AppShellNav label="Workspace">

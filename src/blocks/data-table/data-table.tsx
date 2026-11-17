@@ -43,6 +43,7 @@ import { Box } from '@/layout/box';
 import { Inline } from '@/layout/inline';
 import { Spread } from '@/layout/spread';
 import { Stack } from '@/layout/stack';
+import { useMaterialAttributes } from '@/lib/material';
 
 const dataTableFeatures = tableFeatures({
   rowSortingFeature,
@@ -145,6 +146,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
   toolbar,
 }: DataTableProps<TData, TValue>) {
   const serverSide = rowCount !== undefined;
+  const material = useMaterialAttributes();
   const table = useTable({
     features: dataTableFeatures,
     columns: columns as ColumnDef<TData>[],
@@ -216,7 +218,11 @@ export function DataTable<TData extends RowData, TValue = unknown>({
           ) : null}
         </Inline>
       ) : null}
-      <Box data-slot="data-table-frame" className="overflow-hidden rounded-2xl border">
+      <Box
+        data-slot="data-table-frame"
+        className="overflow-hidden rounded-2xl border"
+        {...material}
+      >
         <Table aria-busy={loading}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

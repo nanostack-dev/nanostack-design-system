@@ -9,6 +9,7 @@ import {
   InputGroupButtonPrimitive,
   InputGroupInput,
 } from '@/components/input-group/input-group';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -111,6 +112,7 @@ export function ComboboxContent({
   ...props
 }: ComboboxContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
@@ -127,6 +129,7 @@ export function ComboboxContent({
           className="group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-3xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 data-[chips=true]:min-w-(--anchor-width) *:data-[slot=input-group]:m-1.5 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/50 *:data-[slot=input-group]:shadow-none dark:ring-foreground/10"
           {...props}
           {...motion}
+          {...material}
         />
       </ComboboxPrimitive.Positioner>
     </ComboboxPrimitive.Portal>

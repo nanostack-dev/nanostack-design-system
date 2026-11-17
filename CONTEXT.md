@@ -23,3 +23,13 @@ The design system owns visual primitives that Nanostack products can use unchang
 **Upstream merge base:** The untouched shadcn source snapshot used to merge later upstream changes into owned source.
 
 **Story:** A maintained usage example and observable behavior test for a component or block.
+
+**Material:** The surface treatment of a whole product, chosen on the root provider: `solid` (the default) or `glass`.
+
+**Chrome:** The surfaces that frame and float over the content: sidebar, top bar, popups, dialogs, sheets and toasts. Under glass they are translucent.
+
+**Data surface:** A surface that holds dense content: card, stat card, table, form field. Under glass it stays near-opaque.
+
+**Backdrop:** The brand-hued background that the app frame paints under glass, so the translucent chrome has something to show.
+
+**Nanostack mark:** The Nanostack logo. Every product shows it next to its name in the sidebar brand slot.

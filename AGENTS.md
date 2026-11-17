@@ -19,7 +19,7 @@ The repository contains the rules, procedures and tools needed for standalone wo
 | `src/components/<name>/`             | Owned component (shadcn code edited in place), `index.ts`, story | Hand-written                            |
 | `src/layout/<name>/`                 | `Box`, `Stack`, `Inline`, `Columns`, `Spread`                    | Hand-written                            |
 | `src/blocks/<name>/`                 | Product-agnostic compositions of the public components           | Hand-written                            |
-| `src/provider/`                      | `DesignSystemProvider` (router link, tooltip provider)           | Hand-written                            |
+| `src/provider/`                      | `DesignSystemProvider` (router link, tooltip, motion, material)  | Hand-written                            |
 | `src/styles.css`                     | Tokens, `@theme inline` mapping, base layer                      | Hand-written                            |
 | `upstream/ui/`, `upstream/lock.json` | Untouched shadcn CLI output, the merge base                      | Only `pnpm shadcn:update`               |
 | `.claude/skills/shadcn/`             | Official shadcn skill, installed with `skills`                   | `npx skills@latest update shadcn -p -y` |
@@ -31,7 +31,7 @@ The repository contains the rules, procedures and tools needed for standalone wo
 3. Variants use one vocabulary: `variant` (`solid`, `soft`, `outline`, `ghost`), `tone` (`neutral`, `brand`, `critical`, `success`, `warning`, `info`), `size` (`xs`, `sm`, `md`, `lg`), `width` (`auto`, `fill`). No shape, radius, colour or margin props. A new value needs two real product uses and a story.
 4. Components have no outer margin. Layout blocks own spacing on the scale `none`, `xxs`, `xs`, `sm`, `md`, `lg`, `xl`, `xxl`.
 5. `Box` is the only open export. It is for product component files that build a look no component gives, with tokens only.
-6. Tokens keep the shadcn names (`--background`, `--primary`, `--destructive`, `--sidebar-*`, `--chart-1..5`, `--radius`). Extensions add, never rename: `--success`, `--warning`, `--info` with `-foreground` and `-on-tint`, `--destructive-foreground`, `--destructive-on-tint`, `--chart-N-on-tint`, `--border-strong`, `--surface-subtle`, `--surface-elevated`, the font and easing tokens. A token change needs contrast checks and light and dark screenshots.
+6. Tokens keep the shadcn names (`--background`, `--primary`, `--destructive`, `--sidebar-*`, `--chart-1..5`, `--radius`). Extensions add, never rename: `--success`, `--warning`, `--info` with `-foreground` and `-on-tint`, `--destructive-foreground`, `--destructive-on-tint`, `--chart-N-on-tint`, `--border-strong`, `--surface-subtle`, `--surface-elevated`, the `--glass-*` material tokens, the font and easing tokens. A token change needs contrast checks and light and dark screenshots; a glass token change needs the real-render measurement in `docs/technical/material.md`.
 7. Styles use tokens only. ESLint rejects palette colours (`bg-blue-500`) and arbitrary colours (`bg-[#fff]`) in `src/`.
 8. Owned files may import each other's internal parts by path (`@/components/button/button`). Blocks, layout and stories import only the public barrels (`@/components/<name>`), like a product.
 9. Every component story documents how to use each variant: a table per prop in `parameters.docs.description.component`, and a `Do not` list.

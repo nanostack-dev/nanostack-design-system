@@ -3,6 +3,7 @@ import { cva } from 'class-variance-authority';
 import type { ComponentPropsWithRef } from 'react';
 
 import type { ClosedProps } from '@/lib/closed-props';
+import { useMaterialAttributes } from '@/lib/material';
 import { cn } from '@/lib/utils';
 
 export type CardVariant = 'solid' | 'outline' | 'soft';
@@ -41,6 +42,7 @@ export type CardContentProps = DivProps;
 export type CardFooterProps = DivProps;
 
 export function Card({ variant = 'solid', size = 'md', ...props }: CardProps) {
+  const material = useMaterialAttributes();
   return (
     <div
       data-slot="card"
@@ -48,6 +50,7 @@ export function Card({ variant = 'solid', size = 'md', ...props }: CardProps) {
       data-size={size}
       className={cn(cardClasses({ variant, size }))}
       {...props}
+      {...material}
     />
   );
 }

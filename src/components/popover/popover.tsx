@@ -1,6 +1,7 @@
 import { Popover as PopoverPrimitive } from '@base-ui/react/popover';
 import type * as React from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
@@ -30,6 +31,7 @@ function PopoverTrigger({ ...props }: PopoverTriggerProps) {
 
 function PopoverContent({ align = 'center', side = 'bottom', ...props }: PopoverContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
@@ -44,6 +46,7 @@ function PopoverContent({ align = 'center', side = 'bottom', ...props }: Popover
           className="z-50 flex w-72 origin-(--transform-origin) flex-col gap-4 rounded-3xl bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-hidden dark:ring-foreground/10"
           {...props}
           {...motion}
+          {...material}
         />
       </PopoverPrimitive.Positioner>
     </PopoverPrimitive.Portal>

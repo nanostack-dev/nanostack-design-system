@@ -71,6 +71,26 @@
   --sidebar-accent-foreground: hsl(217 72% 29%);
   --sidebar-border: hsl(218 14% 88%);
   --sidebar-ring: hsl(217 72% 43%);
+  /* Glass material (ADR 0002). Used only under DesignSystemProvider material="glass".
+     The opacity follows what can pass under a surface, so muted text keeps 4.5:1
+     (measured on renders, docs/technical/material.md):
+     surface: the sidebar, over the backdrop only.
+     surface-strong: data surfaces (cards, tables), over the backdrop only.
+     surface-overlay: the top bar, popups, dialogs, sheets and toasts, over any content. */
+  --glass-surface: hsl(0 0% 100% / 0.58);
+  --glass-surface-strong: hsl(0 0% 100% / 0.84);
+  --glass-surface-overlay: hsl(0 0% 100% / 0.88);
+  --glass-blur: 24px;
+  --glass-saturate: 180%;
+  --glass-edge: hsl(0 0% 100% / 0.75);
+  --glass-highlight: hsl(0 0% 100% / 0.95);
+  --glass-shade: hsl(218 30% 45% / 0.12);
+  --glass-shadow: 0 1px 2px hsl(222 47% 11% / 0.05), 0 12px 40px -10px hsl(222 47% 11% / 0.16);
+  --glass-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.42), hsl(0 0% 100% / 0) 42%);
+  --glass-backdrop:
+    radial-gradient(55% 45% at 4% 0%, hsl(217 72% 43% / 0.2), transparent 70%),
+    radial-gradient(40% 42% at 100% 6%, hsl(194 67% 40% / 0.15), transparent 70%),
+    radial-gradient(50% 55% at 74% 100%, hsl(262 44% 54% / 0.12), transparent 70%);
 }
 
 .dark {
@@ -125,6 +145,20 @@
   --sidebar-accent-foreground: hsl(210 40% 96%);
   --sidebar-border: hsl(222 30% 18%);
   --sidebar-ring: hsl(84 75% 56%);
+  --glass-surface: hsl(222 40% 10% / 0.62);
+  --glass-surface-strong: hsl(222 40% 10% / 0.86);
+  --glass-surface-overlay: hsl(222 40% 10% / 0.86);
+  --glass-blur: 24px;
+  --glass-saturate: 160%;
+  --glass-edge: hsl(210 40% 96% / 0.1);
+  --glass-highlight: hsl(210 40% 96% / 0.08);
+  --glass-shade: hsl(222 47% 3% / 0.4);
+  --glass-shadow: 0 1px 2px hsl(222 47% 3% / 0.4), 0 12px 40px -10px hsl(222 47% 3% / 0.6);
+  --glass-sheen: linear-gradient(180deg, hsl(210 40% 96% / 0.06), hsl(210 40% 96% / 0) 42%);
+  --glass-backdrop:
+    radial-gradient(55% 45% at 4% 0%, hsl(217 91% 60% / 0.16), transparent 70%),
+    radial-gradient(40% 42% at 100% 6%, hsl(194 67% 45% / 0.12), transparent 70%),
+    radial-gradient(50% 55% at 74% 100%, hsl(262 50% 60% / 0.14), transparent 70%);
 }
 
 @theme inline {
@@ -261,6 +295,272 @@
   a {
     touch-action: manipulation;
     -webkit-tap-highlight-color: color-mix(in oklab, var(--primary) 12%, transparent);
+  }
+}
+
+/* Glass material (ADR 0002). DesignSystemProvider material="glass" stamps
+   data-ns-material="glass" on each surface element, so portal content keeps it.
+   Chrome is translucent and blurred; data surfaces are near-opaque. These rules
+   are unlayered on purpose: they replace the solid fill of the utilities. */
+:root {
+  --app-shell-header-offset: 0px;
+}
+
+[data-slot='sidebar-wrapper'][data-ns-material='glass'] {
+  background: var(--glass-backdrop), var(--background);
+}
+
+[data-slot='sidebar-inset'][data-ns-material='glass'] {
+  background: transparent;
+}
+
+/* Chrome: the sidebar and the top bar. The top bar is drawn with surface-overlay below. */
+:is(
+  [data-slot='sidebar-inner'],
+  [data-slot='sidebar'],
+  [data-slot='app-shell-header']
+)[data-ns-material='glass'] {
+  background: var(--glass-sheen), var(--glass-surface);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 var(--glass-shade),
+    var(--glass-shadow);
+}
+
+/* The desktop sidebar floats: a gap around it, no divider line. */
+[data-slot='sidebar'][data-material='glass'] > [data-slot='sidebar-container'] {
+  border-width: 0;
+  padding: 0.75rem 0 0.75rem 0.75rem;
+}
+
+[data-slot='sidebar'][data-material='glass'][data-side='right'] > [data-slot='sidebar-container'] {
+  padding: 0.75rem 0.75rem 0.75rem 0;
+}
+
+[data-slot='sidebar'][data-material='glass'][data-collapsible='icon']
+  > :is([data-slot='sidebar-gap'], [data-slot='sidebar-container']) {
+  width: calc(var(--sidebar-width-icon) + 0.75rem);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass'] {
+  border-radius: var(--radius-3xl);
+  overflow: hidden;
+}
+
+/* The top bar floats over the content, which scrolls under it. AppShellHeader
+   measures itself into --app-shell-header-offset; AppShellContent and
+   AppShellMain start below it. */
+[data-slot='app-shell-header'][data-ns-material='glass'] {
+  background: var(--glass-sheen), var(--glass-surface-overlay);
+  position: sticky;
+  top: 0.75rem;
+  z-index: 20;
+  margin: 0.75rem 0.75rem calc(-1 * var(--app-shell-header-offset));
+  border-radius: var(--radius-2xl);
+}
+
+[data-slot='app-shell-content-start'][data-ns-material='glass'] {
+  height: var(--app-shell-header-offset);
+}
+
+[data-slot='app-shell-main'][data-ns-material='glass'] {
+  padding-top: calc(var(--app-shell-header-offset) + 1.5rem);
+}
+
+/* Chrome: popups, dialogs, sheets and toasts. */
+:is(
+  [data-slot='popover-content'],
+  [data-slot='dropdown-menu-content'],
+  [data-slot='dropdown-menu-sub-content'],
+  [data-slot='context-menu-content'],
+  [data-slot='context-menu-sub-content'],
+  [data-slot='combobox-content'],
+  [data-slot='select-content'],
+  [data-slot='hover-card-content'],
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content'],
+  [data-slot='sheet-content'],
+  [data-slot='drawer-popup'],
+  [data-slot='toast']
+)[data-ns-material='glass'] {
+  background: var(--glass-sheen), var(--glass-surface-overlay);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-color: var(--glass-edge);
+}
+
+/* The toast keeps its focus ring, which is a box-shadow. */
+:is(
+  [data-slot='popover-content'],
+  [data-slot='dropdown-menu-content'],
+  [data-slot='dropdown-menu-sub-content'],
+  [data-slot='context-menu-content'],
+  [data-slot='context-menu-sub-content'],
+  [data-slot='combobox-content'],
+  [data-slot='select-content'],
+  [data-slot='hover-card-content'],
+  [data-slot='dialog-content'],
+  [data-slot='alert-dialog-content'],
+  [data-slot='sheet-content'],
+  [data-slot='drawer-popup'],
+  [data-slot='toast']:not(:focus-visible)
+)[data-ns-material='glass'] {
+  box-shadow:
+    inset 0 0 0 1px var(--glass-edge),
+    inset 0 1px 0 var(--glass-highlight),
+    var(--glass-shadow);
+}
+
+[data-ns-material='glass'] [data-slot='command'] {
+  background: transparent;
+}
+
+:is(
+  [data-slot='dialog-overlay'],
+  [data-slot='alert-dialog-overlay'],
+  [data-slot='sheet-overlay'],
+  [data-slot='drawer-overlay']
+)[data-ns-material='glass'] {
+  background: color-mix(in oklab, var(--foreground) 16%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.dark
+  :is(
+    [data-slot='dialog-overlay'],
+    [data-slot='alert-dialog-overlay'],
+    [data-slot='sheet-overlay'],
+    [data-slot='drawer-overlay']
+  )[data-ns-material='glass'] {
+  background: color-mix(in oklab, var(--background) 55%, transparent);
+}
+
+/* Data surfaces: near-opaque, so dense text reads as on a solid card. A table
+   draws a surface only when no card or data-table frame already does. */
+:is(
+  [data-slot='card'],
+  [data-slot='stat-card'],
+  [data-slot='data-table-frame'],
+  [data-slot='table-container']:not(
+    :is([data-slot='card'], [data-slot='stat-card'], [data-slot='data-table-frame']) *
+  )
+)[data-ns-material='glass'] {
+  background: var(--glass-surface-strong);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.66)) saturate(140%);
+  backdrop-filter: blur(calc(var(--glass-blur) * 0.66)) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 0 0 1px color-mix(in oklab, var(--border-strong) 45%, transparent),
+    0 8px 28px -14px color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+
+[data-slot='table-container'][data-ns-material='glass']:not(
+    :is([data-slot='card'], [data-slot='stat-card'], [data-slot='data-table-frame']) *
+  ) {
+  border-radius: var(--radius-2xl);
+}
+
+/* Fields keep their soft fill, made opaque so the backdrop does not tint them. */
+:is(
+  [data-slot='input'][data-variant='soft'],
+  [data-slot='select-trigger'][data-variant='soft'],
+  [data-slot='textarea'],
+  [data-slot='input-group']
+)[data-ns-material='glass'] {
+  background-color: color-mix(in srgb, var(--input) 50%, var(--card));
+}
+
+/* Fallbacks: a browser without backdrop-filter, or a person who asks for less
+   transparency, gets solid surfaces. The backdrop tint stays behind them. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :is(
+    [data-slot='sidebar-inner'],
+    [data-slot='sidebar'],
+    [data-slot='app-shell-header']
+  )[data-ns-material='glass'] {
+    background: var(--sidebar);
+  }
+
+  :is(
+    [data-slot='popover-content'],
+    [data-slot='dropdown-menu-content'],
+    [data-slot='dropdown-menu-sub-content'],
+    [data-slot='context-menu-content'],
+    [data-slot='context-menu-sub-content'],
+    [data-slot='combobox-content'],
+    [data-slot='select-content'],
+    [data-slot='hover-card-content'],
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content'],
+    [data-slot='sheet-content'],
+    [data-slot='drawer-popup'],
+    [data-slot='toast']
+  )[data-ns-material='glass'] {
+    background: var(--popover);
+  }
+
+  :is(
+    [data-slot='card'],
+    [data-slot='data-table-frame'],
+    [data-slot='table-container']
+  )[data-ns-material='glass'] {
+    background: var(--card);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :is(
+    [data-slot='sidebar-inner'],
+    [data-slot='sidebar'],
+    [data-slot='app-shell-header']
+  )[data-ns-material='glass'] {
+    background: var(--sidebar);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  :is(
+    [data-slot='popover-content'],
+    [data-slot='dropdown-menu-content'],
+    [data-slot='dropdown-menu-sub-content'],
+    [data-slot='context-menu-content'],
+    [data-slot='context-menu-sub-content'],
+    [data-slot='combobox-content'],
+    [data-slot='select-content'],
+    [data-slot='hover-card-content'],
+    [data-slot='dialog-content'],
+    [data-slot='alert-dialog-content'],
+    [data-slot='sheet-content'],
+    [data-slot='drawer-popup'],
+    [data-slot='toast']
+  )[data-ns-material='glass'] {
+    background: var(--popover);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  :is(
+    [data-slot='card'],
+    [data-slot='data-table-frame'],
+    [data-slot='table-container']
+  )[data-ns-material='glass'] {
+    background: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  :is(
+    [data-slot='dialog-overlay'],
+    [data-slot='alert-dialog-overlay'],
+    [data-slot='sheet-overlay'],
+    [data-slot='drawer-overlay']
+  )[data-ns-material='glass'] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 

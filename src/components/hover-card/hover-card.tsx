@@ -1,5 +1,6 @@
 import { PreviewCard as PreviewCardPrimitive } from '@base-ui/react/preview-card';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 
@@ -26,6 +27,7 @@ function HoverCardTrigger({ ...props }: HoverCardTriggerProps) {
 
 function HoverCardContent({ side = 'bottom', align = 'center', ...props }: HoverCardContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <PreviewCardPrimitive.Portal data-slot="hover-card-portal">
       <PreviewCardPrimitive.Positioner
@@ -40,6 +42,7 @@ function HoverCardContent({ side = 'bottom', align = 'center', ...props }: Hover
           className="z-50 w-72 origin-(--transform-origin) rounded-3xl bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-hidden dark:ring-foreground/10"
           {...props}
           {...motion}
+          {...material}
         />
       </PreviewCardPrimitive.Positioner>
     </PreviewCardPrimitive.Portal>

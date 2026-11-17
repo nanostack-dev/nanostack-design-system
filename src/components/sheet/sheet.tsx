@@ -4,6 +4,7 @@ import type * as React from 'react';
 
 import { buttonStyles } from '@/components/button/button';
 import { OverlayScrollBody } from '@/components/dialog/dialog';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -52,11 +53,13 @@ function SheetPortal({ ...props }: SheetPrimitive.Portal.Props) {
 
 function SheetOverlay() {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <SheetPrimitive.Backdrop
       data-slot="sheet-overlay"
       className="fixed inset-0 z-50 bg-foreground/30 transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60"
       {...motion}
+      {...material}
     />
   );
 }
@@ -69,6 +72,7 @@ function SheetContent({
   ...props
 }: SheetContentProps) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   const vertical = side === 'left' || side === 'right';
   return (
     <SheetPortal>
@@ -83,6 +87,7 @@ function SheetContent({
         )}
         {...props}
         {...motion}
+        {...material}
       >
         <OverlayScrollBody
           slot="sheet-body"
