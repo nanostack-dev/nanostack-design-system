@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.5
+
+- Dark glass data surfaces show their whole outline. The dark `--glass-rim` faded to 7% and then 3% white, so the sides and bottom of every card, stat card and data table frame measured about 1.1:1 against the backdrop and vanished: the bottom-left corner of an empty table could not be seen. Its lower stops are now 38% and 36% white (top 50%), about 3.3 to 3.6:1 on every side, still brighter on top. The sidebar and top bar share the token and get the same visible edge.
+- The dark `--glass-surface-strong` is a little lighter (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), so a card stands off the backdrop. Dark data-surface text measures 6.75 or more (was about 7.1).
+- `scripts/measure-glass-edge.mjs` measures the rim against the backdrop and the surface; `docs/technical/material.md` holds the results.
+- Light mode does not change.
+- The collapsed sidebar shows the whole brand tile. In the 60 px rail a large `SidebarMenuButton` kept 8 px of padding (the base `p-2!` beat the large size's `p-0!`), so the 32 px `AppShellBrand` tile was pushed right, its right edge cut off and its corners clipped by the button's radius: the logo read as a squashed oval in both apps. A large button in the rail now has no padding and does not clip its content; the same fix applies to an avatar in a large footer button. New stories: `CollapsedGlassBrand`, `CollapsedGlassProductMark` (light and dark) and `CollapsedSolidBrand`.
+- A product can tint the glass brand tile with its own colour: set `--app-shell-brand-tile` (a colour or gradient) and `--app-shell-brand-tile-foreground` (the mark colour) per theme in its stylesheet. The tile keeps its shape, sheen and shadow; unset, it stays the Nanostack gradient with a white mark. Keep the mark at 3:1 or more against the tile. Stories: `ProductTint`, `ProductTintDark`, `ProductTintCollapsed`.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.5`. No API change. To tint the brand tile:
+
+```css
+:root { --app-shell-brand-tile: #1f5bbd; --app-shell-brand-tile-foreground: #ffffff; }
+.dark { --app-shell-brand-tile: #a0e33b; --app-shell-brand-tile-foreground: #090e1a; }
+```
+
 ## 0.3.4
 
 - Includes every 0.3.3 change below: 0.3.3 was tagged but never published to npm (its release check hit a Combobox story race, now fixed), and 0.3.2 was never released either.

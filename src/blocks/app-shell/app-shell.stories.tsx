@@ -294,6 +294,130 @@ export const Collapsed: Story = {
   },
 };
 
+/** In the rail the brand tile is the whole 32 px button: not pushed right by
+ * the button's padding, and not clipped by its radius. */
+async function expectWholeBrandTile(canvasElement: HTMLElement) {
+  const sidebar = sidebarElement(canvasElement);
+  await expect(sidebar).toHaveAttribute('data-state', 'collapsed');
+  const mark = canvasElement.querySelector<HTMLElement>('[data-slot="app-shell-brand-mark"]')!;
+  const button = mark.closest<HTMLElement>('[data-slot="sidebar-menu-button"]')!;
+  await waitFor(() => {
+    const markBox = mark.getBoundingClientRect();
+    const buttonBox = button.getBoundingClientRect();
+    expect(markBox.width).toBe(32);
+    expect(markBox.left).toBe(buttonBox.left);
+    expect(markBox.right).toBeLessThanOrEqual(buttonBox.right);
+  });
+  await expect(getComputedStyle(button).overflow).toBe('visible');
+}
+
+export const CollapsedGlassBrand: Story = {
+  args: { defaultOpen: false },
+  globals: { material: 'glass' },
+  play: async ({ canvasElement }) => expectWholeBrandTile(canvasElement),
+};
+
+export const CollapsedGlassBrandDark: Story = {
+  args: { defaultOpen: false },
+  globals: { material: 'glass', theme: 'dark' },
+  play: async ({ canvasElement }) => expectWholeBrandTile(canvasElement),
+};
+
+export const CollapsedGlassProductMark: Story = {
+  args: { defaultOpen: false },
+  globals: { material: 'glass' },
+  render: ({ children: _children, ...args }) => (
+    <Workspace {...args} brandMark={<CubeIcon aria-hidden data-testid="product-mark" />} />
+  ),
+  play: async ({ canvasElement }) => expectWholeBrandTile(canvasElement),
+};
+
+export const CollapsedGlassProductMarkDark: Story = {
+  args: { defaultOpen: false },
+  globals: { material: 'glass', theme: 'dark' },
+  render: ({ children: _children, ...args }) => (
+    <Workspace {...args} brandMark={<CubeIcon aria-hidden data-testid="product-mark" />} />
+  ),
+  play: async ({ canvasElement }) => expectWholeBrandTile(canvasElement),
+};
+
+// A product's tile tint, as Echopoint sets it in its own stylesheet: blue with
+// a white mark in light, lime with a night mark in dark (its favicon colours).
+const PRODUCT_TINT = `
+  :root { --app-shell-brand-tile: #1f5bbd; --app-shell-brand-tile-foreground: #ffffff; }
+  .dark { --app-shell-brand-tile: #a0e33b; --app-shell-brand-tile-foreground: #090e1a; }
+`;
+
+function srgbLuminance(colour: string) {
+  const [r, g, b] = (colour.match(/[\d.]+/g) ?? []).slice(0, 3).map((v) => {
+    const s = Number(v) / 255;
+    return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** The tile takes the product's colour for the current theme, and the mark
+ * keeps at least 3:1 against it. */
+async function expectTintedTile(canvasElement: HTMLElement) {
+  const dark = document.documentElement.classList.contains('dark');
+  const [tile, mark] = dark
+    ? ['rgb(160, 227, 59)', 'rgb(9, 14, 26)']
+    : ['rgb(31, 91, 189)', 'rgb(255, 255, 255)'];
+  const markSlot = canvasElement.querySelector<HTMLElement>('[data-slot="app-shell-brand-mark"]')!;
+  await waitFor(() => {
+    const style = getComputedStyle(markSlot);
+    expect(style.color).toBe(mark);
+    // A colour is the last background layer, so it lands in background-color.
+    expect(style.backgroundColor).toBe(tile);
+  });
+  const [light, darkest] = [srgbLuminance(tile), srgbLuminance(mark)].sort((x, y) => y - x);
+  await expect((light + 0.05) / (darkest + 0.05)).toBeGreaterThanOrEqual(3);
+}
+
+function TintedWorkspace(props: Omit<AppShellProps, 'children'>) {
+  return (
+    <>
+      <style>{PRODUCT_TINT}</style>
+      <Workspace {...props} brandMark={<CubeIcon aria-hidden data-testid="product-mark" />} />
+    </>
+  );
+}
+
+export const ProductTint: Story = {
+  globals: { material: 'glass' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A product tints the glass brand tile with `--app-shell-brand-tile` and `--app-shell-brand-tile-foreground`, set per theme in its own stylesheet. The shape, sheen and shadow stay shared.',
+      },
+    },
+  },
+  render: ({ children: _children, ...args }) => <TintedWorkspace {...args} />,
+  play: async ({ canvasElement }) => expectTintedTile(canvasElement),
+};
+
+export const ProductTintDark: Story = {
+  globals: { material: 'glass', theme: 'dark' },
+  render: ({ children: _children, ...args }) => <TintedWorkspace {...args} />,
+  play: async ({ canvasElement }) => expectTintedTile(canvasElement),
+};
+
+export const ProductTintCollapsed: Story = {
+  args: { defaultOpen: false },
+  globals: { material: 'glass', theme: 'dark' },
+  render: ({ children: _children, ...args }) => <TintedWorkspace {...args} />,
+  play: async ({ canvasElement }) => {
+    await expectWholeBrandTile(canvasElement);
+    await expectTintedTile(canvasElement);
+  },
+};
+
+export const CollapsedSolidBrand: Story = {
+  args: { defaultOpen: false },
+  play: async ({ canvasElement }) => expectWholeBrandTile(canvasElement),
+};
+
 export const Keyboard: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     const sidebar = sidebarElement(canvasElement);
