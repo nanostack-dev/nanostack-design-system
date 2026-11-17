@@ -116,7 +116,10 @@ export const TypeToFilter: Story = {
     await userEvent.type(input, 'nu');
     const listbox = await body.findByRole('listbox');
     await waitFor(() => expect(within(listbox).getAllByRole('option')).toHaveLength(1));
-    await expect(within(listbox).getByRole('option', { name: 'Nuxt.js' })).toBeVisible();
+    // The popup fades in: wait for the option to finish appearing, not just to exist.
+    await waitFor(() =>
+      expect(within(listbox).getByRole('option', { name: 'Nuxt.js' })).toBeVisible(),
+    );
     await userEvent.keyboard('{ArrowDown}{Enter}');
     await expect(input).toHaveValue('Nuxt.js');
     await expect(args.onValueChange).toHaveBeenLastCalledWith('Nuxt.js', expect.anything());
