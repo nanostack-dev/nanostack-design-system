@@ -52,7 +52,7 @@ Measured on Chromium renders at 1440 × 900, glass material, with the text insid
 
 The prototype's 58% top bar and 72% popovers measured 2.46 and 3.51 for light muted text over the same content. The `select` popup uses the dropdown-menu token and fill; its options cover the sampled area, so it has no separate row.
 
-Repeat the measurement after a glass token change. The axe check in `pnpm test` cannot see through `backdrop-filter`.
+Repeat the measurement after a glass token change: start `pnpm storybook`, then run `node scripts/measure-glass-contrast.mjs`. It writes the screenshots and `contrast.json` to `.ui-craft/glass/` and prints one line per surface. `GLASS_CSS` tries other token values without editing `styles.css`. The axe check in `pnpm test` cannot see through `backdrop-filter`.
 
 ## Fallbacks
 
