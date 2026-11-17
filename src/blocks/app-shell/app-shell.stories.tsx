@@ -1,5 +1,6 @@
 import {
   BellIcon,
+  CubeIcon,
   ChartBarIcon,
   FolderIcon,
   GearIcon,
@@ -96,7 +97,7 @@ Both carry \`mainId\`, the skip-link target. Use one of them per screen.
 
 ## Other props
 
-- \`AppShellBrand\`: the brand slot at the top of the sidebar, the same in every Nanostack product: the Nanostack mark, then the product \`name\` and an optional \`description\`, linking to the home \`href\`. In the collapsed sidebar only the mark shows, with the name as its tooltip.
+- \`AppShellBrand\`: the brand slot at the top of the sidebar: a mark, then the product \`name\` and an optional \`description\`, linking to the home \`href\`. The mark is the Nanostack mark unless the product passes its own 32 px mark or icon as \`mark\`. In the collapsed sidebar only the mark shows, with the name as its tooltip.
 
 - \`skipLinkLabel\`: shows a "skip to content" link first in the tab order. It moves focus to \`AppShellMain\`. Give it on every product with more than a few sidebar links.
 - \`mainId\`: the id of \`AppShellMain\`, the skip link target. Change it only when the page already uses \`app-shell-main\`.
@@ -108,7 +109,7 @@ Both carry \`mainId\`, the skip-link target. Use one of them per screen.
 
 - Do not put an \`AppShell\` inside another one.
 - Do not add a second sidebar trigger. \`AppShellHeader\` has one; use \`sidebarTrigger="mobile"\` when the sidebar has its own control.
-- Do not put a product logo in the brand slot. \`AppShellBrand\` shows the Nanostack mark next to the product name.
+- Do not put a product logo or wordmark inside \`name\` or \`description\`. A product mark goes in \`mark\`, at 32 px.
 - Do not add padding around \`AppShellMain\`. It sets the page padding and the gap between sections.
 - Do not use \`sidebarIconWidth="lg"\` with \`AppShellNavItem\` icons alone. The items do not fill the extra width.
 `;
@@ -125,13 +126,19 @@ function ShellState() {
 
 function Workspace({
   headerActions,
+  brandMark,
   ...props
-}: Omit<AppShellProps, 'children'> & { headerActions?: ReactNode }) {
+}: Omit<AppShellProps, 'children'> & { headerActions?: ReactNode; brandMark?: ReactNode }) {
   return (
     <AppShell {...props}>
       <AppShellSidebar>
         <AppShellSidebarHeader>
-          <AppShellBrand name="Acme workspace" description="Team plan" href="#workspace" />
+          <AppShellBrand
+            name="Acme workspace"
+            description="Team plan"
+            href="#workspace"
+            mark={brandMark}
+          />
         </AppShellSidebarHeader>
         <AppShellSidebarContent>
           <AppShellNav label="Workspace">
@@ -223,6 +230,9 @@ export const Default: Story = {
     await expect(
       within(sidebarElement(canvasElement)).getByRole('link', { name: /Acme workspace/ }),
     ).toHaveAttribute('href', '#workspace');
+    await expect(
+      sidebarElement(canvasElement).querySelector('[data-slot="nanostack-mark"]'),
+    ).toBeVisible();
     await expect(canvas.getByText('Team plan')).toBeVisible();
 
     const overview = navLink(canvasElement, 'Overview');
@@ -235,6 +245,29 @@ export const Default: Story = {
 
     await expect(sidebarElement(canvasElement)).toHaveAttribute('data-state', 'expanded');
     await expect(canvas.getByTestId('shell-state')).toHaveTextContent('expanded');
+  },
+};
+
+export const ProductMark: Story = {
+  render: ({ children: _children, ...args }) => (
+    <Workspace
+      {...args}
+      brandMark={
+        <span
+          data-testid="product-mark"
+          className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"
+        >
+          <CubeIcon aria-hidden className="size-5" />
+        </span>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const brand = within(sidebarElement(canvasElement)).getByRole('link', {
+      name: /Acme workspace/,
+    });
+    await expect(within(brand).getByTestId('product-mark')).toBeVisible();
+    await expect(brand.querySelector('[data-slot="nanostack-mark"]')).toBeNull();
   },
 };
 

@@ -32,7 +32,7 @@ Glass also has a legibility cost. The prototype estimated 5.3:1 for muted text o
 ## Consequences
 
 - Products opt in with one prop. A product that does not opt in sees no change.
-- `AppShellBrand` now always shows the Nanostack mark next to the product name; its `icon` and `logo` props are gone. This is the breaking part of 0.3.0.
+- `AppShellBrand` now always shows the Nanostack mark next to the product name; its `icon` and `logo` props are gone. This is the breaking part of 0.3.0. Superseded in 0.3.1 by [ADR 0003](0003-product-mark-in-the-brand-slot.md): a product may pass its own `mark`.
 - A new surface component must stamp `data-ns-material` and add its selector to the glass rules, or it stays solid under glass.
 - The top bar is close to opaque in practice. The glass reads mostly in the sidebar, the floating shapes, the sheen and the backdrop.
 - Contrast on glass depends on what is behind it, so the axe check in the story suite does not prove it. A change to a glass token needs the real-render measurement again.

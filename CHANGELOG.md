@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- `AppShellBrand` takes an optional `mark`, the product's own 32 px mark or icon. Without it the slot shows the Nanostack mark, as in 0.3.0. ADR 0003 records the decision.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.1`. No caller changes. To show a product mark: `<AppShellBrand name="Anchor" href="/" mark={<AnchorIcon size="sm" />} />`.
+
 ## 0.3.0
 
 - Glass material: `DesignSystemProvider material="glass"` makes the chrome translucent over a brand-hued backdrop that `AppShell` paints. The sidebar floats with a gap. The `AppShellHeader` top bar floats and the content scrolls under it. Popover, dropdown and context menus, select, combobox, hover card, command, dialog, alert dialog, sheet, drawer and toasts are glass. Cards, stat cards, data tables, tables outside a card and the soft fields are near-opaque. `solid` stays the default. Without `backdrop-filter`, or with reduced transparency, surfaces are solid. ADR 0002 and `docs/technical/material.md` record the decision and the measured contrast.
