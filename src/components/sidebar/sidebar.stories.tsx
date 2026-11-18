@@ -327,6 +327,83 @@ export const Frosted: Story = {
   },
 };
 
+export const GlassSubMenu: Story = {
+  args: { material: undefined },
+  globals: { material: 'glass' },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'On glass the current sub-page gets the raised pill. A parent marked current because one of its sub-pages is (so the collapsed rail still shows the section) drops its pill while the sub-menu shows. Collapsed, the parent keeps it.',
+      },
+    },
+  },
+  render: (args) => (
+    <SidebarProvider>
+      <Sidebar {...args}>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Product resources</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton isActive tooltip="Roles & Permissions">
+                    <FolderIcon />
+                    <span>Roles &amp; Permissions</span>
+                  </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="#resource-types">
+                        <span>Resource types</span>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="#roles" isActive>
+                        <span>Roles</span>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="#permissions">
+                        <span>Permissions</span>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+        <div className="flex h-12 items-center px-4">
+          <SidebarTrigger />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const parent = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="sidebar-menu-button"][data-active]',
+    )!;
+    const current = canvas.getByRole('link', { name: 'Roles' });
+    const sibling = canvas.getByRole('link', { name: 'Permissions' });
+    const transparent = 'rgba(0, 0, 0, 0)';
+    // The current-page pill is a gradient (--glass-item-active).
+    const pill = (el: HTMLElement) => getComputedStyle(el).backgroundImage;
+    await waitFor(() => expect(pill(current)).toContain('gradient'));
+    await expect(getComputedStyle(current).boxShadow).not.toBe('none');
+    await expect(getComputedStyle(sibling).backgroundColor).toBe(transparent);
+    await expect(pill(sibling)).toBe('none');
+    await expect(getComputedStyle(parent).backgroundColor).toBe(transparent);
+    await expect(pill(parent)).toBe('none');
+    await expect(getComputedStyle(parent).boxShadow).toBe('none');
+
+    await userEvent.click(sidebarTrigger(canvasElement));
+    await expect(sidebarElement(canvasElement)).toHaveAttribute('data-collapsible', 'icon');
+    await waitFor(() => expect(pill(parent)).toContain('gradient'));
+  },
+};
+
 export const KeyboardShortcut: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     const sidebar = sidebarElement(canvasElement);

@@ -77,7 +77,7 @@
      surface: the sidebar, over the backdrop only.
      surface-strong: data surfaces (cards, tables), over the backdrop only.
      surface-overlay: the top bar, popups, dialogs, sheets and toasts, over any content. */
-  --glass-surface: hsl(0 0% 100% / 0.58);
+  --glass-surface: hsl(0 0% 100% / 0.34);
   --glass-surface-strong: hsl(0 0% 100% / 0.84);
   --glass-surface-overlay: hsl(0 0% 100% / 0.88);
   --glass-blur: 24px;
@@ -98,23 +98,54 @@
   --glass-shadow-raised:
     0 1px 1px hsl(222 50% 25% / 0.03), 0 2px 6px -1px hsl(222 50% 25% / 0.05),
     0 12px 28px -14px hsl(222 70% 35% / 0.14);
-  /* Sidebar navigation on glass: hovered row and the current-page pill. */
+  /* Sidebar navigation on glass: hovered row and the current page, a lens:
+     a bright gradient with a lit top edge, an inner rim and a primary glow. */
   --glass-item-hover: hsl(0 0% 100% / 0.5);
-  --glass-item-active: hsl(0 0% 100% / 0.82);
+  --glass-item-active: linear-gradient(180deg, hsl(0 0% 100% / 0.95), hsl(0 0% 100% / 0.66));
   --glass-item-active-shadow:
-    inset 0 1px 0 hsl(0 0% 100%), 0 1px 2px hsl(222 50% 25% / 0.06),
-    0 4px 12px -4px hsl(217 72% 43% / 0.22);
+    inset 0 1px 0 hsl(0 0% 100%), inset 0 0 0 1px hsl(0 0% 100% / 0.75),
+    inset 0 -1px 0 hsl(222 40% 30% / 0.06), 0 1px 2px hsl(222 50% 25% / 0.06),
+    0 8px 18px -10px hsl(217 72% 43% / 0.45);
+  /* A control resting on the glass (a switcher pill, a chip): milky, lit on top. */
+  --glass-chip: linear-gradient(180deg, hsl(0 0% 100% / 0.78), hsl(0 0% 100% / 0.38));
+  --glass-chip-shadow:
+    inset 0 1px 0 hsl(0 0% 100%), inset 0 0 0 1px hsl(0 0% 100% / 0.55),
+    inset 0 -1px 0 hsl(222 40% 30% / 0.06), 0 1px 2px hsl(222 50% 25% / 0.06),
+    0 4px 10px -4px hsl(222 60% 30% / 0.14);
+  /* The sidebar pane: thinner than the other chrome, lit at its top-left
+     corner, with an inner edge that gives it thickness. */
+  --glass-sidebar-blur: 30px;
+  --glass-sidebar-saturate: 210%;
+  --glass-sidebar-rim: linear-gradient(
+    150deg,
+    hsl(0 0% 100% / 1),
+    hsl(0 0% 100% / 0.55) 35%,
+    hsl(0 0% 100% / 0.35) 65%,
+    hsl(222 40% 30% / 0.14)
+  );
+  --glass-sidebar-sheen:
+    linear-gradient(150deg, hsl(0 0% 100% / 0.5), hsl(0 0% 100% / 0) 30%),
+    linear-gradient(180deg, hsl(0 0% 100% / 0.25), hsl(0 0% 100% / 0) 40%);
+  --glass-sidebar-thickness:
+    inset 0 1px 0 hsl(0 0% 100% / 0.9), inset 1px 0 0 hsl(0 0% 100% / 0.55),
+    inset 0 -1px 0 hsl(222 40% 30% / 0.05);
   --glass-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.42), hsl(0 0% 100% / 0) 42%);
   --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.21 0 0 0 0 0.24 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
   /* One soft brand-blue wash from the top left, where the chrome sits, fading to
-     a neutral ground under the data (docs/research/light-glass-backdrops.md). */
-  --glass-backdrop: linear-gradient(
-    155deg,
-    hsl(214 75% 88%) 0%,
-    hsl(216 55% 93%) 28%,
-    hsl(220 30% 96.5%) 60%,
-    hsl(222 22% 96%) 100%
-  );
+     a neutral ground under the data (docs/research/light-glass-backdrops.md),
+     plus blue light behind the sidebar column only, so the thin sidebar glass
+     has colour to carry. The data area stays neutral. */
+  --glass-backdrop:
+    radial-gradient(22% 60% at 0% 72%, hsl(204 90% 74% / 0.75), transparent 75%),
+    radial-gradient(18% 40% at 10% 30%, hsl(226 85% 80% / 0.6), transparent 72%),
+    radial-gradient(14% 28% at 4% 100%, hsl(192 80% 72% / 0.55), transparent 70%),
+    linear-gradient(
+      155deg,
+      hsl(214 75% 88%) 0%,
+      hsl(216 55% 93%) 28%,
+      hsl(220 30% 96.5%) 60%,
+      hsl(222 22% 96%) 100%
+    );
 }
 
 .dark {
@@ -169,7 +200,7 @@
   --sidebar-accent-foreground: hsl(210 40% 96%);
   --sidebar-border: hsl(222 30% 18%);
   --sidebar-ring: hsl(84 75% 56%);
-  --glass-surface: hsl(222 40% 10% / 0.62);
+  --glass-surface: hsl(222 40% 11% / 0.5);
   --glass-surface-strong: hsl(222 30% 15% / 0.9);
   --glass-surface-overlay: hsl(222 40% 10% / 0.86);
   --glass-blur: 24px;
@@ -191,9 +222,30 @@
     0 24px 48px -16px hsl(225 70% 2% / 0.6);
   --glass-shadow-raised: 0 1px 1px hsl(225 60% 2% / 0.25), 0 12px 28px -14px hsl(225 70% 2% / 0.5);
   --glass-item-hover: hsl(210 40% 96% / 0.06);
-  --glass-item-active: hsl(210 40% 96% / 0.1);
+  --glass-item-active: linear-gradient(180deg, hsl(210 40% 96% / 0.16), hsl(210 40% 96% / 0.07));
   --glass-item-active-shadow:
-    inset 0 1px 0 hsl(210 40% 96% / 0.1), 0 4px 14px -6px hsl(222 90% 60% / 0.45);
+    inset 0 1px 0 hsl(210 40% 96% / 0.22), inset 0 0 0 1px hsl(210 40% 96% / 0.08),
+    0 8px 18px -10px hsl(84 75% 56% / 0.35);
+  --glass-chip: linear-gradient(180deg, hsl(210 40% 96% / 0.09), hsl(210 40% 96% / 0.03));
+  --glass-chip-shadow:
+    inset 0 1px 0 hsl(210 40% 96% / 0.14), inset 0 0 0 1px hsl(210 40% 96% / 0.07),
+    0 4px 10px -4px hsl(225 70% 2% / 0.5);
+  --glass-sidebar-blur: 30px;
+  --glass-sidebar-saturate: 180%;
+  /* Brighter at the top-left corner only; the sides and bottom keep the
+     softer data-surface rim (0.3.7). */
+  --glass-sidebar-rim: linear-gradient(
+    150deg,
+    hsl(210 60% 96% / 0.42),
+    hsl(210 60% 96% / 0.16) 35%,
+    hsl(210 60% 96% / 0.13) 65%,
+    hsl(210 60% 96% / 0.12)
+  );
+  --glass-sidebar-sheen:
+    linear-gradient(150deg, hsl(210 40% 96% / 0.09), hsl(210 40% 96% / 0) 30%),
+    linear-gradient(180deg, hsl(210 40% 96% / 0.04), hsl(210 40% 96% / 0) 40%);
+  --glass-sidebar-thickness:
+    inset 0 1px 0 hsl(210 40% 96% / 0.12), inset 1px 0 0 hsl(210 40% 96% / 0.06);
   --glass-sheen: linear-gradient(180deg, hsl(210 40% 96% / 0.06), hsl(210 40% 96% / 0) 42%);
   --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
   --glass-backdrop:
@@ -409,6 +461,17 @@
   pointer-events: none;
 }
 
+/* The sidebar pane is the liquid one: thinner glass with more blur and
+   saturation, its own rim lit at the top-left corner, and an inner edge for
+   thickness. The top bar and the data surfaces keep the shared tokens. */
+[data-slot='sidebar-inner'][data-ns-material='glass'] {
+  --glass-rim: var(--glass-sidebar-rim);
+  background: var(--glass-sidebar-sheen), var(--glass-surface);
+  -webkit-backdrop-filter: blur(var(--glass-sidebar-blur)) saturate(var(--glass-sidebar-saturate));
+  backdrop-filter: blur(var(--glass-sidebar-blur)) saturate(var(--glass-sidebar-saturate));
+  box-shadow: var(--glass-sidebar-thickness), var(--glass-shadow);
+}
+
 /* Sidebar navigation on glass: labels in the foreground tone, the current
    page on a raised glass pill with its icon in the primary colour. */
 [data-slot='sidebar-inner'][data-ns-material='glass'] [data-slot='sidebar-menu-button'] {
@@ -435,6 +498,55 @@
   [data-slot='sidebar-menu-button'][data-active]
   svg {
   color: var(--primary);
+}
+
+/* Sub-pages on glass: the current sub-page gets the same raised pill as a
+   top-level page. The solid accent (97% white in light) did not show on the
+   white glass. */
+[data-slot='sidebar-inner'][data-ns-material='glass'] [data-slot='sidebar-menu-sub-button'] {
+  color: color-mix(in oklab, var(--sidebar-foreground) 82%, transparent);
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-sub-button']:is(:hover, :active) {
+  background: var(--glass-item-hover);
+  color: var(--sidebar-foreground);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-sub-button'][data-active] {
+  background: var(--glass-item-active);
+  color: var(--foreground);
+  box-shadow: var(--glass-item-active-shadow);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass'] [data-slot='sidebar-menu-sub-button'] > svg {
+  color: color-mix(in oklab, var(--sidebar-foreground) 70%, transparent);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-sub-button'][data-active]
+  > svg {
+  color: var(--primary);
+}
+
+/* A parent whose sub-page is current marks the section, not the page: no pill
+   while its sub-menu shows, so only one row reads as the current page. Its
+   label stays at full strength. Collapsed to icons, the sub-menu is hidden and
+   the parent keeps the pill. */
+[data-slot='sidebar']:not([data-collapsible='icon'])
+  [data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-item']:has(
+    > [data-slot='sidebar-menu-sub'] [data-slot='sidebar-menu-sub-button'][data-active]
+  )
+  > [data-slot='sidebar-menu-button'][data-active] {
+  background: transparent;
+  box-shadow: none;
+  color: var(--foreground);
 }
 
 /* The brand mark sits on its own app-icon tile, so the solid logo reads as a
@@ -658,6 +770,7 @@
   :root,
   .dark {
     --glass-rim: linear-gradient(var(--border-strong), var(--border-strong));
+    --glass-sidebar-rim: linear-gradient(var(--border-strong), var(--border-strong));
   }
 }
 
