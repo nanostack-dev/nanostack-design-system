@@ -35,7 +35,7 @@ The light backdrop is one soft brand-blue wash: a 155° linear gradient from `hs
 
 Edges and depth:
 
-- The sidebar, the top bar, cards, stat cards and data table frames have no border. Their edge is the rim: a 1 px `::after` line on the inside edge in `--glass-rim`, bright on top where light catches the pane and fading to a soft shade at the bottom. In dark the lower stops stay at 36% white, so the sides and bottom keep about 3:1 against the backdrop (see Edge visibility). It is the only line, so no doubled curve shows at the rounded corners (0.3.0 drew a border plus an inset ring; 0.3.1 kept only the border; 0.3.3 replaces the border with the rim).
+- The sidebar, the top bar, cards, stat cards and data table frames have no border. Their edge is the rim: a 1 px `::after` line on the inside edge in `--glass-rim`, bright on top where light catches the pane and fading to a soft shade at the bottom. In dark a data surface stands out by its lighter fill (`--glass-surface-strong`); the rim is 34% white on top and 14% then 12% lower down, about 1.7:1 against the backdrop at the sides and bottom (see Edge visibility). It is the only line, so no doubled curve shows at the rounded corners (0.3.0 drew a border plus an inset ring; 0.3.1 kept only the border; 0.3.3 replaces the border with the rim).
 - Shadows are stacked and tinted with the backdrop hue instead of one grey blur: `--glass-shadow` for the chrome (four layers) and `--glass-shadow-raised` for data surfaces (three layers, less spread).
 - Popups, dialogs, sheets and toasts keep their 1 px border in `--glass-edge`, `--glass-highlight` as an inset light on the top row and `--glass-shadow`.
 - Glass cards, stat cards and data table frames share one radius, `--radius-3xl`, so product panels and cards match.
@@ -67,7 +67,7 @@ Measured on Chromium renders at 1440 × 900, glass material, with the text insid
 | Card                             | 6.29        | 6.15          | 6.77       | 11.19        |
 | Table outside a card             | 6.36        | 6.22          | 6.83       | 11.30        |
 
-Light values are 0.3.6 (Tide backdrop); dark values are 0.3.5, unchanged in 0.3.6. Against the 0.3.5 mesh the light sidebar rose from 5.14 to 5.93, because its worst pixel was over the violet glow; cards and the data table frame moved by 0.05 to 0.11 (6.24 to 6.36), because the blue wash now sits under the top cards. 0.3.5 lifted the dark data surface (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), which moved dark data-surface text from about 7.1 to 6.8.
+Light values are 0.3.6 (Tide backdrop); dark values are 0.3.5, except the dark data surfaces, which are 0.3.7. Against the 0.3.5 mesh the light sidebar rose from 5.14 to 5.93, because its worst pixel was over the violet glow; cards and the data table frame moved by 0.05 to 0.11 (6.24 to 6.36), because the blue wash now sits under the top cards. 0.3.5 lifted the dark data surface (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), which moved dark data-surface text from about 7.1 to 6.8. 0.3.7 lifts it again (`hsl(222 30% 15% / 0.9)`): stat card, data table frame, card and table measure 6.25 to 6.35 muted and 10.34 to 10.5 primary.
 
 The prototype's 58% top bar and 72% popovers measured 2.46 and 3.51 for light muted text over the same content. The `select` popup uses the dropdown-menu token and fill; its options cover the sampled area, so it has no separate row.
 
@@ -75,7 +75,7 @@ Repeat the measurement after a glass token change: start `pnpm storybook`, then 
 
 ## Edge visibility
 
-`node scripts/measure-glass-edge.mjs` (Storybook running) compares the rim pixel of each data surface with the backdrop 3 px outside it and the surface 4 px inside, at the top middle, both sides near the bottom and the bottom near the left corner. The aim is about 3:1 on every side in dark, the spirit of WCAG 1.4.11 for a boundary. Light mode separates its cards from the backdrop with the white surface and the tinted shadow instead, so its rim stays soft.
+`node scripts/measure-glass-edge.mjs` (Storybook running) compares the rim pixel of each data surface with the backdrop 3 px outside it and the surface 4 px inside, at the top middle, both sides near the bottom and the bottom near the left corner. The aim in dark is a boundary that is seen but does not read as an outline: about 3:1 on top, where light catches the pane, and 1.6 to 1.8:1 at the sides and bottom, with the lighter fill doing the rest. A card is not a control, so WCAG 1.4.11 does not require 3:1 on its edge; 0.3.5 used that target and drew a white outline around every surface. Light mode separates its cards from the backdrop with the white surface and the tinted shadow instead, so its rim stays soft.
 
 | Data surface, dark (rim : outside) | Top  | Right | Left | Bottom |
 | ---------------------------------- | ---- | ----- | ---- | ------ |
@@ -85,8 +85,11 @@ Repeat the measurement after a glass token change: start `pnpm storybook`, then 
 | 0.3.5 stat card                    | 5.09 | 3.47  | 3.32 | 3.43   |
 | 0.3.5 data table frame             | 5.17 | 3.51  | 3.40 | 3.44   |
 | 0.3.5 card                         | 5.26 | 3.55  | 3.57 | 3.56   |
+| 0.3.7 stat card                    | 3.32 | 1.70  | 1.64 | 1.68   |
+| 0.3.7 data table frame             | 3.38 | 1.70  | 1.68 | 1.67   |
+| 0.3.7 card                         | 3.40 | 1.72  | 1.73 | 1.72   |
 
-In 0.3.4 the dark rim faded to 7% and then 3% white, so the lower half of every dark card vanished against the backdrop: the bottom-left corner of an empty table could not be seen. The light rows stay soft by design: about 1.0 to 1.1 at the sides and bottom and 1.1 to 1.2 on top with the 0.3.6 backdrop, as with the 0.3.5 mesh.
+In 0.3.4 the dark rim faded to 7% and then 3% white, so the lower half of every dark card vanished against the backdrop: the bottom-left corner of an empty table could not be seen. 0.3.5 raised the rim to 36% white (3.3 to 3.6:1), which fixed that but read as a bright white border on every card, table and the sidebar. 0.3.7 lightens the dark fill and lowers the rim to 14% and 12%. The light rows stay soft by design: about 1.0 to 1.1 at the sides and bottom and 1.1 to 1.2 on top with the 0.3.6 backdrop, as with the 0.3.5 mesh.
 
 ## Fallbacks
 

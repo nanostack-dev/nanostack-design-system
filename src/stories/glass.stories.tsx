@@ -290,7 +290,7 @@ export const AppFrame: Story = {
     const card = canvasElement.querySelector<HTMLElement>('[data-slot=stat-card]');
     await expect(card).toHaveAttribute('data-ns-material', 'glass');
     const wrapper = canvasElement.querySelector<HTMLElement>('[data-slot=sidebar-wrapper]');
-    await expect(getComputedStyle(wrapper!).backgroundImage).toContain('radial-gradient');
+    await expect(getComputedStyle(wrapper!).backgroundImage).toMatch(/(linear|radial)-gradient/);
   },
 };
 

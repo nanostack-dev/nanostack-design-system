@@ -170,20 +170,21 @@
   --sidebar-border: hsl(222 30% 18%);
   --sidebar-ring: hsl(84 75% 56%);
   --glass-surface: hsl(222 40% 10% / 0.62);
-  --glass-surface-strong: hsl(222 36% 12% / 0.88);
+  --glass-surface-strong: hsl(222 30% 15% / 0.9);
   --glass-surface-overlay: hsl(222 40% 10% / 0.86);
   --glass-blur: 24px;
   --glass-saturate: 160%;
   --glass-edge: hsl(210 40% 96% / 0.1);
   --glass-highlight: hsl(210 40% 96% / 0.08);
-  /* Brighter on top, and still about 3:1 against the backdrop at the sides
-     and bottom: below that the lower half of a dark card vanished
-     (scripts/measure-glass-edge.mjs). */
+  /* A data surface stands out by its lighter fill; the rim only finishes the
+     edge: bright on top, about 1.7:1 against the backdrop at the sides and
+     bottom (scripts/measure-glass-edge.mjs). At 3:1 it read as a white
+     outline; at 1.1:1 with a fill near the backdrop the bottom vanished. */
   --glass-rim: linear-gradient(
     180deg,
-    hsl(210 60% 96% / 0.5),
-    hsl(210 60% 96% / 0.38) 45%,
-    hsl(210 60% 96% / 0.36)
+    hsl(210 60% 96% / 0.34),
+    hsl(210 60% 96% / 0.14) 45%,
+    hsl(210 60% 96% / 0.12)
   );
   --glass-shadow:
     0 1px 1px hsl(225 60% 2% / 0.3), 0 4px 8px -2px hsl(225 60% 2% / 0.35),

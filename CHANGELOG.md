@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.7
+
+- The dark glass edge no longer reads as a white border. 0.3.5 raised the dark `--glass-rim` to 36% white at the sides and bottom (about 3.4:1 against the backdrop), which drew a bright outline around every card, stat card, data table frame, the sidebar and the top bar. The rim is now 34% white on top and 14% then 12% lower down: about 3.3:1 on top and 1.7:1 at the sides and bottom.
+- The dark `--glass-surface-strong` is lighter (`hsl(222 30% 15% / 0.9)`, was `hsl(222 36% 12% / 0.88)`), so a data surface still stands off the backdrop by its fill and the bottom-left corner of an empty table stays visible. Dark data-surface text measures 6.25 or more (was 6.75).
+- Light mode does not change.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.7`. No API change.
+
 ## 0.3.6
 
 - The light glass backdrop is calmer. The four-glow mesh (blue, violet, cyan, pink) gave the frame a pastel, pink-cast look that competed with dense data. It is now one soft brand-blue wash from the top left, where the sidebar and the top bar sit, fading to a neutral ground under the data (`--glass-backdrop`). `--glass-grain` is neutral grey at about 4.5% (was blue at 7%). Four candidates were compared on Echopoint and Anchor: [research note](docs/research/light-glass-backdrops.md).
