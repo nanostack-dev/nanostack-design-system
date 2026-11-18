@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.8
+
+- The current sub-page shows on glass. A current `SidebarMenuSubButton` fell back to the solid `--sidebar-accent` fill, 97% white in light, so on the white glass it could hardly be told from its siblings. It now gets the raised glass pill of a top-level page, with its icon in `--primary`; sub-page labels and icons use the same tones as top-level ones.
+- A parent marked current because one of its sub-pages is no longer competes with it: while the sub-menu shows, the parent has no pill and a full-strength label. Collapsed to icons, the sub-menu is hidden and the parent keeps the pill. Story: `Components/Sidebar/GlassSubMenu`.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.8`. No API change.
+
 ## 0.3.7
 
 - The dark glass edge no longer reads as a white border. 0.3.5 raised the dark `--glass-rim` to 36% white at the sides and bottom (about 3.4:1 against the backdrop), which drew a bright outline around every card, stat card, data table frame, the sidebar and the top bar. The rim is now 34% white on top and 14% then 12% lower down: about 3.3:1 on top and 1.7:1 at the sides and bottom.

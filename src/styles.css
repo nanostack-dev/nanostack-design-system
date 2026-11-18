@@ -437,6 +437,55 @@
   color: var(--primary);
 }
 
+/* Sub-pages on glass: the current sub-page gets the same raised pill as a
+   top-level page. The solid accent (97% white in light) did not show on the
+   white glass. */
+[data-slot='sidebar-inner'][data-ns-material='glass'] [data-slot='sidebar-menu-sub-button'] {
+  color: color-mix(in oklab, var(--sidebar-foreground) 82%, transparent);
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-sub-button']:is(:hover, :active) {
+  background: var(--glass-item-hover);
+  color: var(--sidebar-foreground);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-sub-button'][data-active] {
+  background: var(--glass-item-active);
+  color: var(--foreground);
+  box-shadow: var(--glass-item-active-shadow);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass'] [data-slot='sidebar-menu-sub-button'] > svg {
+  color: color-mix(in oklab, var(--sidebar-foreground) 70%, transparent);
+}
+
+[data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-sub-button'][data-active]
+  > svg {
+  color: var(--primary);
+}
+
+/* A parent whose sub-page is current marks the section, not the page: no pill
+   while its sub-menu shows, so only one row reads as the current page. Its
+   label stays at full strength. Collapsed to icons, the sub-menu is hidden and
+   the parent keeps the pill. */
+[data-slot='sidebar']:not([data-collapsible='icon'])
+  [data-slot='sidebar-inner'][data-ns-material='glass']
+  [data-slot='sidebar-menu-item']:has(
+    > [data-slot='sidebar-menu-sub'] [data-slot='sidebar-menu-sub-button'][data-active]
+  )
+  > [data-slot='sidebar-menu-button'][data-active] {
+  background: transparent;
+  box-shadow: none;
+  color: var(--foreground);
+}
+
 /* The brand mark sits on its own app-icon tile, so the solid logo reads as a
    different kind of object from the line icons of the navigation. A product
    tints the tile with its brand colour by setting --app-shell-brand-tile and
