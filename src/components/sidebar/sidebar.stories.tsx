@@ -388,15 +388,19 @@ export const GlassSubMenu: Story = {
     const current = canvas.getByRole('link', { name: 'Roles' });
     const sibling = canvas.getByRole('link', { name: 'Permissions' });
     const transparent = 'rgba(0, 0, 0, 0)';
-    await waitFor(() => expect(getComputedStyle(current).backgroundColor).not.toBe(transparent));
+    // The current-page pill is a gradient (--glass-item-active).
+    const pill = (el: HTMLElement) => getComputedStyle(el).backgroundImage;
+    await waitFor(() => expect(pill(current)).toContain('gradient'));
     await expect(getComputedStyle(current).boxShadow).not.toBe('none');
     await expect(getComputedStyle(sibling).backgroundColor).toBe(transparent);
+    await expect(pill(sibling)).toBe('none');
     await expect(getComputedStyle(parent).backgroundColor).toBe(transparent);
+    await expect(pill(parent)).toBe('none');
     await expect(getComputedStyle(parent).boxShadow).toBe('none');
 
     await userEvent.click(sidebarTrigger(canvasElement));
     await expect(sidebarElement(canvasElement)).toHaveAttribute('data-collapsible', 'icon');
-    await waitFor(() => expect(getComputedStyle(parent).backgroundColor).not.toBe(transparent));
+    await waitFor(() => expect(pill(parent)).toContain('gradient'));
   },
 };
 
