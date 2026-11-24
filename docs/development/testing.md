@@ -18,6 +18,31 @@ CI runs them as Dagger checks (`dagger check`, [dagger.toml](../../dagger.toml))
 
 During iteration, select the affected component with `pnpm exec vitest run src/components/<name>`. Overlay content renders in portals, so query it through `screen` and async role/name lookups. Cover keyboard, focus return and observable callbacks rather than implementation details. Stories and blocks import public barrels.
 
+## Token and contrast checks
+
+`pnpm lint` also runs two scripts, so CI and release verification run them too.
+
+| Script                            | Data file             | Fails when                                                                                                                              |
+| --------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `node scripts/check-tokens.mjs`   | `tokens.lock.json`    | A `:root` token has no `.dark` value (theme-independent ones are listed in the script); a locked token is gone; a new token is unlocked |
+| `node scripts/check-contrast.mjs` | `contrast-pairs.json` | A named token pair is below its minimum in light or dark                                                                                |
+
+- A new token: run `node scripts/check-tokens.mjs --write` and commit the lock. The lock holds sorted names, so a value change does not touch it.
+- A removed token is a breaking change. Follow the [deprecation path](../research/versioning-and-deprecation-proposal.md). Run `--write` only for a removal that `CHANGELOG.md` records.
+- A contrast pair has `fg`, `bg`, `min` (4.5 for text, 3 for large text and non-text) and `reason`. A tint pair adds `bgAlpha` and `over`. Add a pair when you add a text or control token. Fix a failing pair in `src/styles.css`, never by lowering `min`.
+
+## Upstream drift
+
+`pnpm shadcn:update --check` compares each owned component with the current shadcn output and changes no file.
+
+| Exit code | Meaning                                 |
+| --------- | --------------------------------------- |
+| 0         | Every component matches upstream        |
+| 2         | At least one component changed upstream |
+| 1         | An error (for example a failed fetch)   |
+
+It prints one summary line. The [upstream drift workflow](../../.github/workflows/upstream-drift.yml) runs it every week, keeps one open issue titled "shadcn upstream changed" while the exit code is 2, and closes the issue on exit 0. Merge a change with `pnpm shadcn:update <name>`.
+
 ## Hostile-data review
 
 For a new or changed component/block, use the installed `break-ui` skill when available. The standalone procedure is:

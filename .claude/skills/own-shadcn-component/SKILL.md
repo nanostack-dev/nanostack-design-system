@@ -77,4 +77,4 @@ Search `src/` for the component. Update stories, blocks and other owned files th
 
 ## Update from upstream
 
-`pnpm shadcn:update --check` lists components whose shadcn output changed. `pnpm shadcn:update <name>` merges the change three ways into the owned file and records the new base in `upstream/`. Resolve any conflict markers, run the checks, and say in the PR which upstream change came in.
+`pnpm shadcn:update --check` lists components whose shadcn output changed (exit 2 when one changed, 0 when all are current). `pnpm shadcn:update <name>` merges the change three ways into the owned file and records the new base in `upstream/`. Resolve any conflict markers, run the checks, and say in the PR which upstream change came in.

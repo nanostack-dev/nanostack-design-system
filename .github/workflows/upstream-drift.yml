@@ -1,0 +1,79 @@
+name: Upstream drift
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: upstream-drift
+  cancel-in-progress: false
+
+# Weekly check of the owned components against the shadcn CLI output
+# (pnpm shadcn:update --check: exit 0 current, 2 changed, 1 error).
+# Exit 2 opens or updates one issue; exit 0 closes it. Exit 1 fails the job.
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - name: Check upstream
+        id: drift
+        run: |
+          set +e
+          pnpm shadcn:update --check | tee drift.txt
+          code=${PIPESTATUS[0]}
+          set -e
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" != 0 ] && [ "$code" != 2 ]; then
+            echo "::error::shadcn:update --check failed with exit code $code"
+            exit "$code"
+          fi
+      - name: Open or update the issue
+        if: steps.drift.outputs.code == '2'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          title="shadcn upstream changed"
+          {
+            echo "\`pnpm shadcn:update --check\` found upstream changes ($(date -u +%F))."
+            echo
+            echo "| Component | Status |"
+            echo "| --------- | ------ |"
+            grep ': upstream changed$' drift.txt | sed 's/: upstream changed$//' | while read -r name; do
+              echo "| \`$name\` | upstream changed |"
+            done
+            echo
+            echo "Merge with \`pnpm shadcn:update <name>\`, resolve conflicts, then run the gates. Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > body.md
+          number=$(gh issue list --state open --search "\"$title\" in:title" --json number,title --jq "map(select(.title == \"$title\")) | .[0].number // empty")
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file body.md
+          else
+            gh issue create --title "$title" --body-file body.md
+          fi
+      - name: Close the issue
+        if: steps.drift.outputs.code == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          title="shadcn upstream changed"
+          number=$(gh issue list --state open --search "\"$title\" in:title" --json number,title --jq "map(select(.title == \"$title\")) | .[0].number // empty")
+          if [ -n "$number" ]; then
+            gh issue close "$number" --comment "All components match upstream again."
+          fi
