@@ -181,3 +181,25 @@ export const ChoiceCards: Story = {
     await expect(canvas.getAllByRole('radio')[1]).toBeChecked();
   },
 };
+
+export const WorstCase: Story = {
+  render: () => (
+    <div className="w-64">
+      <RadioGroup defaultValue="b" aria-label="Digest">
+        {['a', 'b'].map((value) => (
+          <Field key={value} orientation="horizontal">
+            <RadioGroupItem id={`worst-${value}`} value={value} />
+            <FieldLabel htmlFor={`worst-${value}`}>
+              Receive a weekly digest of every deployment, incident, billing change and access
+              request across all of the workspaces that this account belongs to, including archived
+              ones
+            </FieldLabel>
+          </Field>
+        ))}
+      </RadioGroup>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByRole('radio')).toHaveLength(2);
+  },
+};

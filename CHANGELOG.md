@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.9
+
+- Unfilled controls reach 3:1 against their surface (WCAG 1.4.11). New token `--control-edge` (light `hsl(218 12% 54%)`, dark `hsl(222 20% 46%)`, stronger inside glass; utilities `border-control-edge`, `bg-control-edge`) draws the edge of an unchecked Checkbox, RadioGroup item, Switch track and thumb, Questionnaire choice, InputOTP slot, Slider track and thumb, SearchButton and the Resizable grip. They were about 1.3:1. `--border` does not change, so dividers look the same.
+- Keyboard focus is a solid 2 px outline in `--ring` on controls without a border of their own: Toggle, TextLink, Accordion trigger, MenubarTrigger, NavigationMenu trigger and link, Checkbox, RadioGroup, Switch, Slider thumb and SearchButton. `ring-ring/30` alone was 1.6:1 in light.
+- Dark `--chart-3` is teal (`hsl(172 66% 45%)`). It equalled `--chart-1`, so chart series 1 and 3 looked the same in dark.
+- Menubar popups get glass and motion. `MenubarContent` and `MenubarSubContent` overrode the shared popup slot; they now keep `data-slot="dropdown-menu-content"` and carry `data-menubar`.
+- The current NavigationMenu link shows its state: the style keyed on `data-active="true"`, but Base UI writes `data-active`.
+- Glass covers more surfaces: the NavigationMenu popup, NativeSelect, InputOTP slots, the Questionnaire input and an outline `Empty`. Submenus animate like menus. Stat cards and outline empty states get the solid fallbacks. A strip of the page backdrop fills the gap above the floating glass top bar, so scrolled content no longer shows there.
+- Inactive TabsTrigger text uses `--muted-foreground` (5.66:1 light, was 4.49:1).
+- `StatCardValue` wraps by word, so "Not configured" no longer breaks mid-word.
+- A current `SidebarMenuButton` or `SidebarMenuSubButton` sets `aria-current="page"`. Cmd/Ctrl+B no longer toggles the sidebar while typing in a field or editable content.
+- A nested `DesignSystemProvider` without `linkComponent` inherits the parent's instead of falling back to a plain anchor.
+- Error toasts default to `priority: 'high'` and are announced assertively.
+- New `DrawerBody`: the scrolling region between `DrawerHeader` and `DrawerFooter`. Long drawer content clipped before.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.9`. Wrap long drawer content in `DrawerBody` so it scrolls. A product that targeted `[data-slot="menubar-content"]` uses `[data-menubar]` instead. No other API change.
+
 ## 0.3.8
 
 - The sidebar is liquid glass. Its pane is thinner (`--glass-surface` 34% white in light, was 58%; 50% night in dark, was 62%) with more blur and saturation, its own rim lit at the top-left corner and an inner edge that gives it thickness (`--glass-sidebar-blur`, `--glass-sidebar-saturate`, `--glass-sidebar-rim`, `--glass-sidebar-sheen`, `--glass-sidebar-thickness`). The light `--glass-backdrop` adds soft blue light behind the sidebar column only, so the glass has colour to carry; the data area stays neutral. The top bar, popups and data surfaces do not change.

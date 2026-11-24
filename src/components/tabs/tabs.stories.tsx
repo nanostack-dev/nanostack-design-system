@@ -229,3 +229,26 @@ export const Vertical: Story = {
     await expect(password.top).toBeGreaterThanOrEqual(account.bottom);
   },
 };
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: { description: { story: 'Many tabs with long labels in a narrow container.' } },
+  },
+  render: (args) => (
+    <div className="w-60">
+      <Tabs {...args} defaultValue="t0">
+        <TabsList>
+          {Array.from({ length: 8 }, (_, index) => (
+            <TabsTrigger key={index} value={`t${index}`}>
+              Tab number {index + 1} with a long label
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsContent value="t0">First panel.</TabsContent>
+      </Tabs>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByRole('tab')).toHaveLength(8);
+  },
+};

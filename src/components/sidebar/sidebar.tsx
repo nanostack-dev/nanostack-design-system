@@ -29,6 +29,15 @@ const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH_MOBILE = '18rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.isContentEditable ||
+    target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])') !==
+      null
+  );
+}
+
 const sidebarWidthValue: Record<SidebarWidth, string> = { md: '16rem', lg: '17rem' };
 const sidebarIconWidthValue: Record<SidebarIconWidth, string> = { md: '3rem', lg: '3.75rem' };
 
@@ -161,6 +170,7 @@ function SidebarProvider({
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+        if (isEditableTarget(event.target)) return;
         event.preventDefault();
         toggleSidebar();
       }
@@ -509,7 +519,13 @@ function SidebarMenuButton({
   const element = useRender({
     defaultTagName: 'button',
     props: {
-      ...mergeProps<'button'>({ className: sidebarMenuButtonClasses({ size }) }, props),
+      ...mergeProps<'button'>(
+        {
+          className: sidebarMenuButtonClasses({ size }),
+          'aria-current': isActive ? 'page' : undefined,
+        },
+        props,
+      ),
       ...motion,
     },
     render: target,
@@ -615,6 +631,7 @@ function SidebarMenuSubButton({
     'data-sidebar': 'menu-sub-button',
     'data-size': size,
     'data-active': isActive ? '' : undefined,
+    'aria-current': isActive ? 'page' : undefined,
     className:
       'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-xl px-3 text-sidebar-foreground ring-sidebar-ring outline-hidden group-data-[collapsible=icon]:hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[size=md]:text-sm data-[size=sm]:text-xs data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
     ...props,

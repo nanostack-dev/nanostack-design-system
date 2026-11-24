@@ -21,6 +21,7 @@ export type LinkComponent = ComponentType<LinkComponentProps>;
 
 export type DesignSystemProviderProps = {
   children: ReactNode;
+  /** Omitted, it inherits the parent provider's, else a plain anchor. */
   linkComponent?: LinkComponent;
   motion?: MotionPreference;
   /** The surface material. Omitted, it inherits the parent provider's, else `solid`. */
@@ -35,17 +36,18 @@ const LinkComponentContext = createContext<LinkComponent>(AnchorLink);
 
 export function DesignSystemProvider({
   children,
-  linkComponent = AnchorLink,
+  linkComponent,
   motion,
   material,
 }: DesignSystemProviderProps) {
   useMotionInput();
   const inheritedMotion = useContext(MotionPreferenceContext);
   const inheritedMaterial = useContext(MaterialContext);
+  const inheritedLink = useContext(LinkComponentContext);
   return (
     <MotionPreferenceContext.Provider value={motion ?? inheritedMotion}>
       <MaterialContext.Provider value={material ?? inheritedMaterial}>
-        <LinkComponentContext.Provider value={linkComponent}>
+        <LinkComponentContext.Provider value={linkComponent ?? inheritedLink}>
           <TooltipProvider>{children}</TooltipProvider>
         </LinkComponentContext.Provider>
       </MaterialContext.Provider>

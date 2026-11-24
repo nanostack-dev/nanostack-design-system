@@ -4,6 +4,7 @@ import { expect, fn, screen, waitFor, within } from 'storybook/test';
 import { Button } from '@/components/button';
 import {
   Drawer,
+  DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
@@ -35,6 +36,10 @@ The parts are closed. \`DrawerContent\` does not accept \`className\` or \`style
 - \`snapPoints\` on \`Drawer\`: stops the drawer at set heights, for a panel that opens half way first.
 - \`DrawerTrigger\` and \`DrawerClose\` take \`render\`: \`<DrawerTrigger render={<Button>Menu</Button>} />\`.
 - \`DrawerHeader visuallyHidden\`: hides the title and description on screen and keeps them for screen readers.
+
+## Long content
+
+Wrap the content between \`DrawerHeader\` and \`DrawerFooter\` in \`DrawerBody\`. The header and footer stay visible and the body scrolls. Without \`DrawerBody\`, long content is clipped.
 
 ## Do not
 
@@ -160,5 +165,59 @@ export const SwipeHandleAndHiddenHeader: Story = {
     await expect(drawer.querySelector('[data-slot="drawer-swipe-handle"]')).toBeInTheDocument();
     const header = drawer.querySelector<HTMLElement>('[data-slot="drawer-header"]')!;
     await expect(header.getBoundingClientRect().width).toBeLessThanOrEqual(1);
+  },
+};
+
+const longLines = Array.from(
+  { length: 60 },
+  (_, index) =>
+    `Task ${index + 1}: ${'a-very-long-unbroken-task-name-'.repeat(index % 4 === 0 ? 6 : 1)}`,
+);
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Very long content in `DrawerBody`. The header and footer stay visible and the body scrolls.',
+      },
+    },
+  },
+  render: (args) => (
+    <Drawer {...args}>
+      <DrawerTrigger render={<Button variant="outline" />}>Set daily goal</DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Daily goal</DrawerTitle>
+          <DrawerDescription>Choose how many tasks you want to close each day.</DrawerDescription>
+        </DrawerHeader>
+        <DrawerBody>
+          {longLines.map((line) => (
+            <p key={line} className="break-words">
+              {line}
+            </p>
+          ))}
+        </DrawerBody>
+        <DrawerFooter>
+          <DrawerClose render={<Button variant="solid" tone="brand" />}>Save goal</DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: 'Set daily goal' }));
+    const drawer = await screen.findByRole('dialog', { name: 'Daily goal' });
+    const body = drawer.querySelector<HTMLElement>('[data-slot="drawer-body"]');
+    if (!body) throw new Error('The drawer has no body.');
+    await waitFor(() => expect(body.scrollHeight).toBeGreaterThan(body.clientHeight));
+    const save = within(drawer).getByRole('button', { name: 'Save goal' });
+    const title = within(drawer).getByText('Daily goal', {
+      selector: '[data-slot="drawer-title"]',
+    });
+    body.scrollTop = body.scrollHeight;
+    await expect(body.scrollTop).toBeGreaterThan(0);
+    const bounds = drawer.getBoundingClientRect();
+    await expect(save.getBoundingClientRect().bottom).toBeLessThanOrEqual(bounds.bottom);
+    await expect(title.getBoundingClientRect().top).toBeGreaterThanOrEqual(bounds.top);
   },
 };

@@ -2,6 +2,7 @@ import type { Icon } from '@phosphor-icons/react';
 import type { ComponentPropsWithRef } from 'react';
 
 import type { ClosedProps } from '@/lib/closed-props';
+import { useMaterialAttributes } from '@/lib/material';
 import { cn } from '@/lib/utils';
 
 export type EmptyVariant = 'ghost' | 'outline';
@@ -16,8 +17,10 @@ export type EmptyDescriptionProps = DivProps;
 export type EmptyContentProps = DivProps;
 
 export function Empty({ variant = 'ghost', ...props }: EmptyProps) {
+  const material = useMaterialAttributes();
   return (
     <div
+      {...material}
       data-slot="empty"
       data-variant={variant}
       className={cn(

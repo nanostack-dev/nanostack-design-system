@@ -155,3 +155,30 @@ export const Disabled: Story = {
     await waitFor(() => expect(archived).toHaveAttribute('aria-expanded', 'false'));
   },
 };
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: { description: { story: 'Many sections with long questions in a narrow container.' } },
+  },
+  render: (args) => (
+    <div className="w-60">
+      <Accordion {...args}>
+        {Array.from({ length: 15 }, (_, index) => (
+          <AccordionItem key={index} value={`item-${index}`}>
+            <AccordionTrigger>
+              Question {index + 1}: what happens to my data when I downgrade my plan?
+            </AccordionTrigger>
+            <AccordionContent>
+              Nothing is deleted. Anything above the new limits becomes read-only until you upgrade
+              again or remove it yourself.
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const first = canvas.getAllByRole('button')[0];
+    await expect(first.scrollWidth).toBeLessThanOrEqual(first.clientWidth);
+  },
+};

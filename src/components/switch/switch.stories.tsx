@@ -118,3 +118,20 @@ export const WithDescription: Story = {
     await expect(toggle).toHaveAccessibleDescription('Turns off every radio.');
   },
 };
+
+export const WorstCase: Story = {
+  render: () => (
+    <div className="w-64">
+      <Field orientation="horizontal">
+        <Switch id="worst-switch" />
+        <FieldLabel htmlFor="worst-switch">
+          Receive a weekly digest of every deployment, incident, billing change and access request
+          across all of the workspaces that this account belongs to, including archived ones
+        </FieldLabel>
+      </Field>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('switch')).toBeVisible();
+  },
+};

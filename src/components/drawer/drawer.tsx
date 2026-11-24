@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
+import { OverlayScrollBody } from '@/components/dialog/dialog';
 import { cn } from '@/lib/utils';
 
 type DrawerContextProps = {
@@ -23,6 +24,7 @@ export type DrawerHeaderProps = ClosedProps<React.ComponentProps<'div'>> & {
   visuallyHidden?: boolean;
 };
 export type DrawerFooterProps = ClosedProps<React.ComponentProps<'div'>>;
+export type DrawerBodyProps = { children?: React.ReactNode };
 export type DrawerTitleProps = ClosedProps<Omit<DrawerPrimitive.Title.Props, 'render'>>;
 export type DrawerDescriptionProps = ClosedProps<Omit<DrawerPrimitive.Description.Props, 'render'>>;
 
@@ -179,6 +181,18 @@ function DrawerHeader({ visuallyHidden = false, ...props }: DrawerHeaderProps) {
   );
 }
 
+/**
+ * The scrolling region between `DrawerHeader` and `DrawerFooter`. Put the long
+ * content here: the header and footer stay visible and the body scrolls.
+ */
+function DrawerBody({ children }: DrawerBodyProps) {
+  return (
+    <OverlayScrollBody slot="drawer-body" viewportClassName="flex-1" contentClassName="p-4">
+      {children}
+    </OverlayScrollBody>
+  );
+}
+
 function DrawerFooter({ ...props }: DrawerFooterProps) {
   return (
     <div
@@ -211,6 +225,7 @@ function DrawerDescription({ ...props }: DrawerDescriptionProps) {
 
 export {
   Drawer,
+  DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerDescription,

@@ -126,6 +126,9 @@ export const Default: Story = {
     const menu = await screen.findByRole('menu');
     await waitFor(() => expect(menu).toBeVisible());
     await expect(file).toHaveAttribute('aria-expanded', 'true');
+    const popup = menu.closest('[data-slot="dropdown-menu-content"]');
+    await expect(popup).not.toBeNull();
+    await expect(popup).toHaveAttribute('data-ns-material');
     await userEvent.click(within(menu).getByRole('menuitem', { name: 'Open file' }));
     await expect(onOpenFile).toHaveBeenCalledOnce();
     await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
@@ -224,5 +227,42 @@ export const CriticalItem: Story = {
       'data-tone',
       'neutral',
     );
+  },
+};
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Many items, a very long label and a narrow container. The popup stays inside the viewport and keeps the shared popup slot.',
+      },
+    },
+  },
+  render: () => (
+    <div className="w-60">
+      <Menubar>
+        <MenubarMenu>
+          <MenubarTrigger>A very long menu name that does not fit</MenubarTrigger>
+          <MenubarContent>
+            <MenubarGroup>
+              {Array.from({ length: 12 }, (_, index) => (
+                <MenubarItem key={index}>
+                  {index === 0 ? longLabel : `Command number ${index + 1}`}
+                </MenubarItem>
+              ))}
+            </MenubarGroup>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    </div>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole('menuitem'));
+    const menu = await screen.findByRole('menu');
+    await waitFor(() => expect(menu).toBeVisible());
+    await expect(menu.closest('[data-slot="dropdown-menu-content"]')).not.toBeNull();
+    await expect(menu.getBoundingClientRect().width).toBeLessThanOrEqual(window.innerWidth);
+    await expect(menu.getBoundingClientRect().height).toBeLessThanOrEqual(window.innerHeight);
   },
 };

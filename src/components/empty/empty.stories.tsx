@@ -100,6 +100,7 @@ export const Variants: Story = {
     const outline = getComputedStyle(canvas.getByTestId('outline'));
     await expect(outline.borderTopWidth).toBe('1px');
     await expect(outline.borderTopStyle).toBe('dashed');
+    await expect(canvas.getByTestId('outline')).toHaveAttribute('data-ns-material', 'solid');
   },
 };
 

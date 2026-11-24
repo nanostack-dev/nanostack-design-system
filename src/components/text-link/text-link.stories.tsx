@@ -49,3 +49,24 @@ export const External: Story = {
     await expect(link).toHaveAttribute('rel', 'noreferrer');
   },
 };
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: { description: { story: 'A long unbroken label in a narrow container wraps in place.' } },
+  },
+  args: {
+    children:
+      'View all flows that ran in the last thirty days across every workspace you belong to',
+  },
+  render: (args) => (
+    <div className="w-48">
+      <TextLink {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const link = canvas.getByRole('link');
+    await expect(link.getBoundingClientRect().right).toBeLessThanOrEqual(
+      link.parentElement!.getBoundingClientRect().right + 1,
+    );
+  },
+};

@@ -152,3 +152,25 @@ export const Group: Story = {
     await expect(canvas.getByRole('checkbox', { name: 'Incidents' })).toBeChecked();
   },
 };
+
+export const WorstCase: Story = {
+  render: () => (
+    <div className="w-64">
+      <FieldGroup>
+        {['', 'Checked'].map((state) => (
+          <Field key={state} orientation="horizontal">
+            <Checkbox id={`worst-${state}`} defaultChecked={state === 'Checked'} />
+            <FieldLabel htmlFor={`worst-${state}`}>
+              Receive a weekly digest of every deployment, incident, billing change and access
+              request across all of the workspaces that this account belongs to, including archived
+              ones
+            </FieldLabel>
+          </Field>
+        ))}
+      </FieldGroup>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByRole('checkbox')).toHaveLength(2);
+  },
+};

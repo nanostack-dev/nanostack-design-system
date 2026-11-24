@@ -164,3 +164,20 @@ export const WithDescription: Story = {
     await expect(canvas.getByRole('slider', { name: 'Volume' })).toBeVisible();
   },
 };
+
+export const WorstCase: Story = {
+  render: () => (
+    <div className="w-64">
+      <Field>
+        <FieldLabel id="worst-slider-label">
+          Receive a weekly digest of every deployment, incident, billing change and access request
+          across all of the workspaces that this account belongs to, including archived ones
+        </FieldLabel>
+        <Slider defaultValue={[0, 100]} aria-labelledby="worst-slider-label" />
+      </Field>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByRole('slider')).toHaveLength(2);
+  },
+};
