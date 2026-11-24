@@ -1,0 +1,61 @@
+name: Variant request
+description: Ask for a new variant value on an existing component (variant, tone, size or width).
+title: 'Variant: <component> <prop>="<value>"'
+labels: ['variant-request']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form when the use case is the same as an existing component and only the look differs.
+        A new value needs two real product uses and a story ([ADR 0001](https://github.com/nanostack-dev/nanostack-design-system/blob/main/docs/adr/0001-own-shadcn-with-a-closed-api.md), "Where a new component goes").
+        If the meaning belongs to one product (a flow step, an HTTP method), build a product component instead.
+  - type: input
+    id: component
+    attributes:
+      label: Component and prop
+      description: The component and the prop that gets the new value.
+      placeholder: Button, tone
+    validations:
+      required: true
+  - type: input
+    id: value
+    attributes:
+      label: Proposed value
+      placeholder: '"accent"'
+    validations:
+      required: true
+  - type: textarea
+    id: uses
+    attributes:
+      label: Two real product uses
+      description: Link two places in a product (file or screenshot) that need this value today. The rule needs two.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried first
+      description: Which existing variant or component you tried, and why it does not fit.
+    validations:
+      required: true
+  - type: textarea
+    id: why-not-product
+    attributes:
+      label: Why not a product component
+      description: Would a second product use this unchanged?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots
+      description: Light and dark, same viewport and data.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: The look uses tokens only, no raw colour.
+          required: true
+        - label: I will add a story that shows the value (or ask the maintainers to).
+          required: true

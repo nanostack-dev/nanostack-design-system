@@ -1,0 +1,58 @@
+name: Component request
+description: Ask for a new component or block in the design system.
+title: 'Component: <name>'
+labels: ['component-request']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check [ADR 0001](https://github.com/nanostack-dev/nanostack-design-system/blob/main/docs/adr/0001-own-shadcn-with-a-closed-api.md), "Where a new component goes", first.
+
+        | Situation | Where it goes |
+        | --- | --- |
+        | An existing component and variant covers it | Use it |
+        | Same use case, another look | A variant request (two real uses) |
+        | A second product would use it unchanged | A design-system component or block (this form) |
+        | Product meaning (a flow step, an HTTP method) | A product component, in the product repository |
+  - type: input
+    id: name
+    attributes:
+      label: Component name
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What the user does with it, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: products
+    attributes:
+      label: Products that need it
+      description: Link where each product needs it today. A component needs at least two products, or one product and a clear second.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: Component or variant tried first
+      description: Which existing component or variant you tried, and why it does not fit.
+    validations:
+      required: true
+  - type: textarea
+    id: why-not-product
+    attributes:
+      label: Why a product component does not fit
+    validations:
+      required: true
+  - type: textarea
+    id: shadcn
+    attributes:
+      label: shadcn or Base UI equivalent
+      description: Link the shadcn component or Base UI part it would start from, if one exists.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or sketches
