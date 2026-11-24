@@ -1,0 +1,190 @@
+{
+  "pairs": [
+    {
+      "fg": "foreground",
+      "bg": "background",
+      "min": 4.5,
+      "reason": "Body text on the page"
+    },
+    {
+      "fg": "card-foreground",
+      "bg": "card",
+      "min": 4.5,
+      "reason": "Text on a card"
+    },
+    {
+      "fg": "popover-foreground",
+      "bg": "popover",
+      "min": 4.5,
+      "reason": "Text in a popover, menu or dialog"
+    },
+    {
+      "fg": "muted-foreground",
+      "bg": "background",
+      "min": 4.5,
+      "reason": "Secondary text on the page"
+    },
+    {
+      "fg": "muted-foreground",
+      "bg": "card",
+      "min": 4.5,
+      "reason": "Secondary text on a card"
+    },
+    {
+      "fg": "muted-foreground",
+      "bg": "muted",
+      "min": 4.5,
+      "reason": "Secondary text on a muted fill"
+    },
+    {
+      "fg": "secondary-foreground",
+      "bg": "secondary",
+      "min": 4.5,
+      "reason": "Text on a secondary button"
+    },
+    {
+      "fg": "accent-foreground",
+      "bg": "accent",
+      "min": 4.5,
+      "reason": "Text on a hovered or selected item"
+    },
+    {
+      "fg": "primary-foreground",
+      "bg": "primary",
+      "min": 4.5,
+      "reason": "Text on a solid primary button"
+    },
+    {
+      "fg": "destructive-foreground",
+      "bg": "destructive",
+      "min": 4.5,
+      "reason": "Text on a solid critical button"
+    },
+    {
+      "fg": "success-foreground",
+      "bg": "success",
+      "min": 4.5,
+      "reason": "Text on a solid success fill"
+    },
+    {
+      "fg": "warning-foreground",
+      "bg": "warning",
+      "min": 4.5,
+      "reason": "Text on a solid warning fill"
+    },
+    {
+      "fg": "info-foreground",
+      "bg": "info",
+      "min": 4.5,
+      "reason": "Text on a solid info fill"
+    },
+    {
+      "fg": "destructive-on-tint",
+      "bg": "destructive",
+      "min": 4.5,
+      "reason": "destructive text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "success-on-tint",
+      "bg": "success",
+      "min": 4.5,
+      "reason": "success text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "warning-on-tint",
+      "bg": "warning",
+      "min": 4.5,
+      "reason": "warning text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "info-on-tint",
+      "bg": "info",
+      "min": 4.5,
+      "reason": "info text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "chart-1-on-tint",
+      "bg": "chart-1",
+      "min": 4.5,
+      "reason": "Chart 1 text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "chart-2-on-tint",
+      "bg": "chart-2",
+      "min": 4.5,
+      "reason": "Chart 2 text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "chart-3-on-tint",
+      "bg": "chart-3",
+      "min": 4.5,
+      "reason": "Chart 3 text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "chart-4-on-tint",
+      "bg": "chart-4",
+      "min": 4.5,
+      "reason": "Chart 4 text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "chart-5-on-tint",
+      "bg": "chart-5",
+      "min": 4.5,
+      "reason": "Chart 5 text on its tint (base at 10% over card)",
+      "bgAlpha": 0.1,
+      "over": "card"
+    },
+    {
+      "fg": "sidebar-foreground",
+      "bg": "sidebar",
+      "min": 4.5,
+      "reason": "Sidebar text"
+    },
+    {
+      "fg": "sidebar-primary-foreground",
+      "bg": "sidebar-primary",
+      "min": 4.5,
+      "reason": "Text on the sidebar primary fill"
+    },
+    {
+      "fg": "sidebar-accent-foreground",
+      "bg": "sidebar-accent",
+      "min": 4.5,
+      "reason": "Text on the active sidebar item"
+    },
+    {
+      "fg": "ring",
+      "bg": "background",
+      "min": 3,
+      "reason": "Focus ring against background (WCAG 1.4.11)"
+    },
+    {
+      "fg": "ring",
+      "bg": "card",
+      "min": 3,
+      "reason": "Focus ring against card (WCAG 1.4.11)"
+    },
+    {
+      "fg": "ring",
+      "bg": "popover",
+      "min": 3,
+      "reason": "Focus ring against popover (WCAG 1.4.11)"
+    }
+  ]
+}

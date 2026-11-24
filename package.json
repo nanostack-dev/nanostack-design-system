@@ -69,7 +69,7 @@
     "build-storybook": "storybook build -o site",
     "build": "node scripts/clean-dist.mjs && vite build -c vite.lib.config.ts && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && node scripts/build-styles.mjs",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . && prettier --check .",
+    "lint": "eslint . && prettier --check . && node scripts/check-tokens.mjs && node scripts/check-contrast.mjs",
     "test": "vitest run",
     "test:package": "pnpm build && node scripts/test-package.mjs",
     "format": "prettier --write .",
