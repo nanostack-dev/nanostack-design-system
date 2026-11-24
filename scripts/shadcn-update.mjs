@@ -2,6 +2,7 @@
  * Pulls a new shadcn CLI version of owned components and merges it three ways.
  *
  *   pnpm shadcn:update --check        list components whose upstream changed
+ *                                     exit 0: all current, 2: at least one changed, 1: error
  *   pnpm shadcn:update button dialog  merge the upstream change into the owned files
  *   pnpm shadcn:update --add kbd      start owning a new component from the CLI output
  *
@@ -55,6 +56,7 @@ function fetchUpstream(name) {
 
 const scratch = mkdtempSync(join(tmpdir(), 'shadcn-update-'));
 let conflicts = 0;
+const changed = [];
 
 for (const name of names) {
   const file = `${name}.tsx`;
@@ -88,6 +90,7 @@ for (const name of names) {
   }
   if (checkOnly) {
     console.log(`${name}: upstream changed`);
+    changed.push(name);
     continue;
   }
 
@@ -118,3 +121,12 @@ for (const name of names) {
 lock.shadcn = execFileSync('pnpm', ['exec', 'shadcn', '--version'], { encoding: 'utf8' }).trim();
 if (!checkOnly) writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\n`);
 if (conflicts) process.exitCode = 1;
+if (checkOnly) {
+  console.log(
+    changed.length
+      ? `${changed.length} of ${names.length} components changed upstream: ${changed.join(', ')}`
+      : `All ${names.length} components match upstream`,
+  );
+  // 1 (an error) outranks 2 (drift), so a failed fetch never reads as "all current".
+  if (changed.length && !process.exitCode) process.exitCode = 2;
+}
