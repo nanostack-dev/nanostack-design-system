@@ -2,6 +2,8 @@
 
 Status: **research**, 2026-11-24. Nothing is decided. This note compares published practice with this repository and proposes ten changes. It changes no code.
 
+Implemented since (nanostack-dev/nanostack-design-system#68): item 2 (`scripts/check-tokens.mjs`), item 5 (`scripts/check-contrast.mjs`), item 6 (`--check` now exits 2 on change, plus `.github/workflows/upstream-drift.yml`) and item 10 (issue and PR templates). Item 3 is a [proposal](versioning-and-deprecation-proposal.md). The tables below describe the repository before those changes.
+
 ## Summary
 
 1. The repository already does the hard parts: owned shadcn source with a three-way merge base, a closed API that the packed-package test checks, one variant vocabulary, stories that run as tests in two themes with axe set to fail, and measured glass contrast.
