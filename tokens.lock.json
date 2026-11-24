@@ -18,6 +18,7 @@
     "--chart-4-on-tint",
     "--chart-5",
     "--chart-5-on-tint",
+    "--control-edge",
     "--destructive",
     "--destructive-foreground",
     "--destructive-on-tint",

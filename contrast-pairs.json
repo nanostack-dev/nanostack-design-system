@@ -185,6 +185,30 @@
       "bg": "popover",
       "min": 3,
       "reason": "Focus ring against popover (WCAG 1.4.11)"
+    },
+    {
+      "fg": "control-edge",
+      "bg": "background",
+      "min": 3,
+      "reason": "Edge of an unfilled control (checkbox, switch, OTP slot) on the page (WCAG 1.4.11)"
+    },
+    {
+      "fg": "control-edge",
+      "bg": "card",
+      "min": 3,
+      "reason": "Edge of an unfilled control (checkbox, switch, OTP slot) on the card (WCAG 1.4.11)"
+    },
+    {
+      "fg": "control-edge",
+      "bg": "muted",
+      "min": 3,
+      "reason": "Edge of an unfilled control (checkbox, switch, OTP slot) on the muted surface (WCAG 1.4.11)"
+    },
+    {
+      "fg": "control-edge",
+      "bg": "popover",
+      "min": 3,
+      "reason": "Edge of an unfilled control (checkbox, switch, OTP slot) on the popover or menu (WCAG 1.4.11)"
     }
   ]
 }
