@@ -16,18 +16,19 @@ The design system owns the surface material of a product. A product chooses it o
 - Each surface component spreads `useMaterialAttributes()` on the element that draws the surface: `data-ns-material="glass"`. Portal content keeps the attribute.
 - [styles.css](../../src/styles.css) draws glass with unlayered rules keyed on `[data-slot='…'][data-ns-material='glass']`. They replace the solid fill of the Tailwind utilities.
 - `Sidebar` without `material` follows the provider. An explicit `material="solid" | "frosted"` still wins.
-- `AppShellHeader` measures its height and top gap into `--app-shell-header-offset` on its parent. `AppShellContent` (its start spacer) and `AppShellMain` (its top padding) start below the floating bar, so content scrolls under it.
+- `AppShellHeader` measures its height and top gap into `--app-shell-header-offset` on its parent. `AppShellContent` (its start spacer) and `AppShellMain` (its top padding) start below the floating bar, so content scrolls under it. A strip of the page backdrop (`::before`, 0.75rem high) fills the gap above the bar, so scrolled content does not show between the bar and the top edge.
 
 ## Surfaces and tokens
 
-| Surface                                                                                 | Fill                                                                                                                                                                                                    | Why                                   |
-| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| App frame (`sidebar-wrapper`)                                                           | `--glass-grain`, `--glass-backdrop` over `--background`                                                                                                                                                 | Glass needs something to show.        |
-| Sidebar                                                                                 | `--glass-sidebar-sheen`, `--glass-surface` (34% light, 50% dark), blur `--glass-sidebar-blur`, saturation `--glass-sidebar-saturate`, rim `--glass-sidebar-rim`, inner edge `--glass-sidebar-thickness` | Only the backdrop passes under it.    |
-| Top bar, popover, menus, select, combobox, hover card, dialogs, sheets, drawers, toasts | `--glass-sheen`, `--glass-surface-overlay` (88% / 86%)                                                                                                                                                  | Any content can pass under them.      |
-| Card, stat card, data table frame, table outside a card                                 | `--glass-surface-strong` (84% / 88%)                                                                                                                                                                    | Dense data stays as legible as solid. |
-| Soft fields (input, select trigger, textarea, input group)                              | The soft fill made opaque over `--card`                                                                                                                                                                 | The backdrop does not tint them.      |
-| Dialog, sheet and drawer overlays                                                       | A lighter scrim with a 6 px blur                                                                                                                                                                        | The glass frame stays visible behind. |
+| Surface                                                                                                                     | Fill                                                                                                                                                                                                    | Why                                               |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| App frame (`sidebar-wrapper`)                                                                                               | `--glass-grain`, `--glass-backdrop` over `--background`                                                                                                                                                 | Glass needs something to show.                    |
+| Sidebar                                                                                                                     | `--glass-sidebar-sheen`, `--glass-surface` (34% light, 50% dark), blur `--glass-sidebar-blur`, saturation `--glass-sidebar-saturate`, rim `--glass-sidebar-rim`, inner edge `--glass-sidebar-thickness` | Only the backdrop passes under it.                |
+| Top bar, popover, menus and submenus, select, combobox, hover card, navigation menu popup, dialogs, sheets, drawers, toasts | `--glass-sheen`, `--glass-surface-overlay` (88% / 86%)                                                                                                                                                  | Any content can pass under them.                  |
+| Card, stat card, data table frame, table outside a card                                                                     | `--glass-surface-strong` (84% / 88%)                                                                                                                                                                    | Dense data stays as legible as solid.             |
+| Soft fields (input, select trigger, textarea, input group, native select, OTP slot, questionnaire input)                    | The soft fill made opaque over `--card`                                                                                                                                                                 | The backdrop does not tint them.                  |
+| Outline `Empty`                                                                                                             | `--glass-surface-strong` under its dashed edge                                                                                                                                                          | The dashed edge alone disappears on the backdrop. |
+| Dialog, sheet and drawer overlays                                                                                           | A lighter scrim with a 6 px blur                                                                                                                                                                        | The glass frame stays visible behind.             |
 
 Blur and saturation: `--glass-blur` (24 px), `--glass-saturate` (180% light, 160% dark); data surfaces use two thirds of the blur and 140%.
 
@@ -95,12 +96,12 @@ In 0.3.4 the dark rim faded to 7% and then 3% white, so the lower half of every 
 
 ## Fallbacks
 
-- No `backdrop-filter` support: chrome is `--sidebar` or `--popover`, data surfaces `--card`.
+- No `backdrop-filter` support: chrome is `--sidebar` or `--popover`; data surfaces (card, stat card, outline empty state, data table frame, table) are `--card`.
 - `prefers-reduced-transparency: reduce`: the same solid fills, no blur. The backdrop tint stays.
 - `prefers-contrast: more`: the rim is one solid line in `--border-strong`.
 
 ## Known limitations
 
-- A component without a stamped surface stays solid under glass: tooltip, navigation menu, menubar triggers. Tooltips are small and stay crisp on purpose.
+- A component without a stamped surface stays solid under glass: tooltip, menubar triggers. Tooltips are small and stay crisp on purpose.
 - The materials do not nest the other way round: a `solid` provider inside a `glass` one changes only the surfaces it renders, not the backdrop of the frame.
 - The top-bar offset is measured after layout. Server rendering without JavaScript shows the bar in flow, above the content.
