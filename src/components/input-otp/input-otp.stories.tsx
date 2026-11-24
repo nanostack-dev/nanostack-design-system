@@ -153,3 +153,21 @@ export const WithDescription: Story = {
     await expect(canvas.getByRole('textbox', { name: 'PIN' })).toHaveAttribute('maxlength', '4');
   },
 };
+
+export const WorstCase: Story = {
+  args: { maxLength: 12, 'aria-label': 'Long recovery code' },
+  render: ({ children: _children, ...args }) => (
+    <div className="w-72 max-w-full overflow-x-auto">
+      <InputOTP {...args}>
+        <InputOTPGroup>
+          {Array.from({ length: 12 }, (_, index) => (
+            <InputOTPSlot key={index} index={index} />
+          ))}
+        </InputOTPGroup>
+      </InputOTP>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('textbox', { name: 'Long recovery code' })).toBeVisible();
+  },
+};

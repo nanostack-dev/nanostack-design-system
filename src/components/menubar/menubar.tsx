@@ -63,7 +63,7 @@ export function MenubarTrigger(props: MenubarTriggerProps) {
   return (
     <MenuPrimitive.Trigger
       data-slot="menubar-trigger"
-      className="flex items-center rounded-2xl px-2 py-0.75 text-sm font-medium outline-hidden select-none hover:bg-muted focus-visible:bg-muted aria-expanded:bg-muted"
+      className="flex items-center rounded-2xl px-2 py-0.75 text-sm font-medium outline-hidden select-none hover:bg-muted focus-visible:bg-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring aria-expanded:bg-muted"
       {...props}
     />
   );
@@ -72,15 +72,7 @@ export function MenubarTrigger(props: MenubarTriggerProps) {
 export type MenubarContentProps = Omit<DropdownMenuContentProps, 'side' | 'align' | 'width'>;
 
 export function MenubarContent(props: MenubarContentProps) {
-  return (
-    <MenuPopup
-      data-slot="menubar-content"
-      align="start"
-      alignOffset={-4}
-      sideOffset={8}
-      {...props}
-    />
-  );
+  return <MenuPopup data-menubar="" align="start" alignOffset={-4} sideOffset={8} {...props} />;
 }
 
 export type MenubarItemProps = DropdownMenuItemProps;
@@ -171,5 +163,5 @@ export function MenubarSubTrigger(props: MenubarSubTriggerProps) {
 export type MenubarSubContentProps = DropdownMenuSubContentProps;
 
 export function MenubarSubContent(props: MenubarSubContentProps) {
-  return <DropdownMenuSubContent data-slot="menubar-sub-content" {...props} />;
+  return <DropdownMenuSubContent data-menubar="" {...props} />;
 }

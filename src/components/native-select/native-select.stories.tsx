@@ -145,3 +145,19 @@ export const Invalid: Story = {
     await expect(select).toHaveAccessibleDescription('This region is at capacity.');
   },
 };
+
+export const WorstCase: Story = {
+  render: () => (
+    <div className="w-48">
+      <NativeSelect aria-label="Region" defaultValue="long">
+        <NativeSelectOption value="long">
+          Europe, Western region, primary availability zone with the longest possible display name
+        </NativeSelectOption>
+        <NativeSelectOption value="short">US</NativeSelectOption>
+      </NativeSelect>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('combobox', { name: 'Region' })).toBeVisible();
+  },
+};

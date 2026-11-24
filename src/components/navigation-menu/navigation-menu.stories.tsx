@@ -129,8 +129,13 @@ export const ActiveLink: Story = {
       'aria-current',
       'page',
     );
-    await expect(canvas.getByRole('link', { name: 'Documentation' })).not.toHaveAttribute(
-      'aria-current',
+    const pricing = canvas.getByRole('link', { name: 'Pricing' });
+    const documentation = canvas.getByRole('link', { name: 'Documentation' });
+    await expect(documentation).not.toHaveAttribute('aria-current');
+    await expect(pricing).toHaveAttribute('data-active');
+    await expect(documentation).not.toHaveAttribute('data-active');
+    await expect(getComputedStyle(pricing).backgroundColor).not.toBe(
+      getComputedStyle(documentation).backgroundColor,
     );
   },
 };
@@ -183,5 +188,43 @@ export const RouterLinks: Story = {
     await waitFor(() => expect(trigger).toHaveAttribute('aria-expanded', 'false'));
     await waitFor(() => expect(screen.queryByRole('link', { name: /Analytics/ })).toBeNull());
     await waitFor(() => expect(document.querySelector('[data-base-ui-focus-guard]')).toBeNull());
+  },
+};
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Long titles and descriptions, many links and a narrow container.',
+      },
+    },
+  },
+  render: () => (
+    <div className="w-72">
+      <NavigationMenu aria-label="Main">
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Products and everything else we offer</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-64 gap-1">
+                {Array.from({ length: 12 }, (_, index) => (
+                  <li key={index}>
+                    <NavigationMenuLink
+                      href={`#item-${index}`}
+                      description="A long description that goes on and on to check how the panel wraps text in a narrow viewport."
+                    >
+                      Product number {index + 1} with an unreasonably long title
+                    </NavigationMenuLink>
+                  </li>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button', { name: /Products and everything/ })).toBeVisible();
   },
 };

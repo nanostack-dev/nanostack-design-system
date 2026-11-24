@@ -420,6 +420,31 @@ export const KeyboardShortcut: Story = {
   },
 };
 
+export const ShortcutIgnoredInInput: Story = {
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const sidebar = sidebarElement(canvasElement);
+    await userEvent.click(canvas.getByRole('textbox', { name: 'Search the navigation' }));
+    await userEvent.keyboard('{Control>}b{/Control}');
+    await expect(sidebar).toHaveAttribute('data-state', 'expanded');
+    await userEvent.keyboard('{Meta>}b{/Meta}');
+    await expect(sidebar).toHaveAttribute('data-state', 'expanded');
+  },
+};
+
+export const ActiveLinkIsCurrentPage: Story = {
+  play: async ({ canvasElement }) => {
+    const active = canvasElement.querySelectorAll(
+      '[data-slot="sidebar-menu-button"][data-active], [data-slot="sidebar-menu-sub-button"][data-active]',
+    );
+    await expect(active.length).toBeGreaterThan(0);
+    for (const element of active) await expect(element).toHaveAttribute('aria-current', 'page');
+    const inactive = canvasElement.querySelectorAll(
+      '[data-slot="sidebar-menu-button"]:not([data-active])',
+    );
+    for (const element of inactive) await expect(element).not.toHaveAttribute('aria-current');
+  },
+};
+
 export const KeyboardTrigger: Story = {
   play: async ({ canvasElement, userEvent }) => {
     const trigger = sidebarTrigger(canvasElement);

@@ -203,6 +203,39 @@ export const LongContent: Story = {
   },
 };
 
+export const WorstCase: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="w-52">
+        <StatCard role="group" aria-label="Not configured">
+          <StatCardLabel>Webhook endpoint</StatCardLabel>
+          <StatCardValue>Not configured</StatCardValue>
+          <StatCardDescription>Add an endpoint to receive events.</StatCardDescription>
+        </StatCard>
+      </div>
+      <div className="w-52">
+        <StatCard role="group" aria-label="Huge number">
+          <StatCardLabel>Requests</StatCardLabel>
+          <StatCardValue>123,456,789,012,345,678,901,234,567,890</StatCardValue>
+          <StatCardTrend direction="up">+999,999%</StatCardTrend>
+        </StatCard>
+      </div>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const word = canvas.getByText('Not configured', { selector: '[data-slot="stat-card-value"]' });
+    // The value wraps between words, never inside one: it fits on two lines.
+    await expect(word.scrollWidth).toBeLessThanOrEqual(word.clientWidth);
+    await expect(word.getBoundingClientRect().height).toBeLessThan(
+      2.5 * parseFloat(getComputedStyle(word).lineHeight),
+    );
+    await expect(word.textContent).toBe('Not configured');
+    const huge = canvas.getByRole('group', { name: 'Huge number' });
+    await expect(huge.scrollWidth).toBeLessThanOrEqual(huge.clientWidth);
+    await expect(trendOf(huge)).toBeVisible();
+  },
+};
+
 export const Dark: Story = {
   globals: { theme: 'dark' },
   play: async ({ canvas }) => {

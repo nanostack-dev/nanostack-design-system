@@ -146,3 +146,20 @@ export const Keyboard: Story = {
     await expect(toggle).toHaveAttribute('aria-pressed', 'false');
   },
 };
+
+export const WorstCase: Story = {
+  parameters: {
+    docs: { description: { story: 'A long label in a narrow container.' } },
+  },
+  args: {
+    children: 'Pin this panel to the sidebar so it stays open between visits and sessions',
+  },
+  render: (args) => (
+    <div className="w-48">
+      <Toggle {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button')).toBeVisible();
+  },
+};

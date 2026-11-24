@@ -21,7 +21,7 @@ export function TextLink({ tone = 'brand', external = false, ...props }: TextLin
   const linkProps: LinkComponentProps & { 'data-slot': string } = {
     'data-slot': 'text-link',
     className: cn(
-      'rounded-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/30',
+      'rounded-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring',
       tone === 'brand' ? 'text-primary' : 'text-foreground underline',
     ),
     ...(external ? { target: '_blank', rel: 'noreferrer' } : {}),

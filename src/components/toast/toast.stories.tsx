@@ -28,7 +28,7 @@ The options are the whole API. There is no \`className\` or \`style\` on a toast
 | --- | --- |
 | no type | A neutral note with no icon. |
 | \`success\` | An action finished: saved, created, launched. |
-| \`error\` | An action failed. Say what failed and what to do next in \`description\`. |
+| \`error\` | An action failed. Say what failed and what to do next in \`description\`. It defaults to \`priority: 'high'\`, so a screen reader announces it at once. Set \`priority: 'low'\` to keep it polite. |
 | \`warning\` | An action finished, but with a problem the person should know about. |
 | \`info\` | A tip or a state change that the person did not start. |
 | \`loading\` | Work in progress. Update the same toast with \`toast.update(id, …)\` or use \`toast.promise()\`. |
@@ -123,7 +123,13 @@ export const Types: Story = {
     for (const type of types) {
       await userEvent.click(canvas.getByRole('button', { name: type }));
     }
-    const failed = await screen.findByRole('dialog', { name: 'A error toast' });
+    // Error toasts default to high priority: an alertdialog the viewport announces assertively.
+    const failed = await waitFor(() => {
+      const element = document.querySelector<HTMLElement>('[data-slot="toast"][data-type="error"]');
+      expect(element).not.toBeNull();
+      return element!;
+    });
+    await expect(failed).toHaveAttribute('role', 'alertdialog');
     await waitFor(() =>
       expect(failed.querySelector('[data-slot="toast-icon"]')).toHaveAttribute(
         'data-tone',
@@ -135,6 +141,7 @@ export const Types: Story = {
       'data-tone',
       'success',
     );
+    await expect(success).toHaveAttribute('role', 'dialog');
     await userEvent.hover(screen.getByRole('dialog', { name: 'A loading toast' }));
   },
 };

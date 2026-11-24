@@ -3,6 +3,7 @@ import { Questionnaire as QuestionnairePrimitive } from '@shadcn/react/questionn
 import type { ComponentProps, ComponentPropsWithRef } from 'react';
 
 import { buttonStyles } from '@/components/button/button';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -103,7 +104,7 @@ export function QuestionnaireChoice({ children, ...props }: QuestionnaireChoiceP
       <span
         aria-hidden="true"
         data-slot="questionnaire-choice-indicator"
-        className="pointer-events-none relative flex size-4 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-[5px] border border-transparent bg-input/90 group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[type=radio]/questionnaire-choice:rounded-full group-data-checked/questionnaire-choice:border-primary group-data-checked/questionnaire-choice:bg-primary group-data-checked/questionnaire-choice:text-primary-foreground dark:group-data-checked/questionnaire-choice:bg-primary"
+        className="pointer-events-none relative flex size-4 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-[5px] border border-control-edge bg-card group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[type=radio]/questionnaire-choice:rounded-full group-data-checked/questionnaire-choice:border-primary group-data-checked/questionnaire-choice:bg-primary group-data-checked/questionnaire-choice:text-primary-foreground dark:group-data-checked/questionnaire-choice:bg-primary"
       >
         <span
           data-slot="questionnaire-choice-indicator-dot"
@@ -139,6 +140,7 @@ export function QuestionnaireChoiceDescription(props: QuestionnaireChoiceDescrip
 }
 
 export function QuestionnaireInput(props: QuestionnaireInputProps) {
+  const material = useMaterialAttributes();
   return (
     <div
       data-slot="questionnaire-input-wrapper"
@@ -147,6 +149,7 @@ export function QuestionnaireInput(props: QuestionnaireInputProps) {
       <QuestionnairePrimitive.Input
         data-slot="questionnaire-input"
         className="h-9 min-h-11 w-full min-w-0 rounded-3xl border border-transparent bg-input/50 px-3 py-1 text-base transition-[color,box-shadow,background-color] outline-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 sm:min-h-0 md:text-sm dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
+        {...material}
         {...props}
       />
     </div>

@@ -1,5 +1,6 @@
 export {
   Drawer,
+  DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
@@ -7,6 +8,7 @@ export {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  type DrawerBodyProps,
   type DrawerCloseProps,
   type DrawerContentProps,
   type DrawerDescriptionProps,

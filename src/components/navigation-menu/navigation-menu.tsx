@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -66,7 +67,7 @@ export function NavigationMenuItem(props: NavigationMenuItemProps) {
 }
 
 const navigationMenuTriggerStyle = cva(
-  'group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center rounded-3xl px-4.5 py-2.5 text-sm font-medium transition-[color,background-color,border-color,box-shadow,opacity] outline-none hover:bg-muted focus:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-popup-open:bg-muted/50 data-popup-open:hover:bg-muted data-open:bg-muted/50 data-open:hover:bg-muted data-open:focus:bg-muted',
+  'group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center rounded-3xl px-4.5 py-2.5 text-sm font-medium transition-[color,background-color,border-color,box-shadow,opacity] outline-none hover:bg-muted focus:bg-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 data-popup-open:bg-muted/50 data-popup-open:hover:bg-muted data-open:bg-muted/50 data-open:hover:bg-muted data-open:focus:bg-muted',
 );
 
 export type NavigationMenuTriggerProps = ClosedProps<NavigationMenuPrimitive.Trigger.Props>;
@@ -98,7 +99,7 @@ export function NavigationMenuContent({ children, ...props }: NavigationMenuCont
   return (
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
-      className="data-ending-style:data-activation-direction=left:translate-x-[50%] data-ending-style:data-activation-direction=right:translate-x-[-50%] data-starting-style:data-activation-direction=left:translate-x-[-50%] data-starting-style:data-activation-direction=right:translate-x-[50%] h-full w-auto p-2.5 pr-3 transition-[opacity,transform,translate] group-data-[viewport=false]/navigation-menu:rounded-3xl group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:shadow-lg group-data-[viewport=false]/navigation-menu:ring-1 group-data-[viewport=false]/navigation-menu:ring-foreground/5 data-ending-style:opacity-0 data-starting-style:opacity-0 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none group-data-[viewport=false]/navigation-menu:dark:ring-foreground/10"
+      className="data-ending-style:data-activation-direction=left:translate-x-[50%] data-ending-style:data-activation-direction=right:translate-x-[-50%] data-starting-style:data-activation-direction=left:translate-x-[-50%] data-starting-style:data-activation-direction=right:translate-x-[50%] h-full w-auto p-2.5 pr-3 transition-[opacity,transform,translate] group-data-[viewport=false]/navigation-menu:rounded-3xl group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:shadow-lg group-data-[viewport=false]/navigation-menu:ring-1 group-data-[viewport=false]/navigation-menu:ring-foreground/5 data-ending-style:opacity-0 data-starting-style:opacity-0 group-data-[viewport=false]/navigation-menu:dark:ring-foreground/10"
       {...props}
       {...motion}
     >
@@ -109,6 +110,7 @@ export function NavigationMenuContent({ children, ...props }: NavigationMenuCont
 
 function NavigationMenuPositioner({ align }: { align: NavigationMenuAlign }) {
   const motion = useMotionAttributes();
+  const material = useMaterialAttributes();
   return (
     <NavigationMenuPrimitive.Portal>
       <NavigationMenuPrimitive.Positioner
@@ -123,6 +125,7 @@ function NavigationMenuPositioner({ align }: { align: NavigationMenuAlign }) {
         <NavigationMenuPrimitive.Popup
           data-slot="navigation-menu-popup"
           {...motion}
+          {...material}
           className="data-[ending-style]:easing-[ease] xs:w-(--popup-width) relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin) rounded-3xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 transition-[opacity,transform,width,height,scale,translate] outline-none data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0 dark:ring-foreground/10"
         >
           <NavigationMenuPrimitive.Viewport className="relative size-full overflow-hidden" />
@@ -133,7 +136,7 @@ function NavigationMenuPositioner({ align }: { align: NavigationMenuAlign }) {
 }
 
 const navigationMenuLinkClasses =
-  "flex items-center gap-1.5 rounded-3xl p-3 text-sm transition-[color,background-color,border-color,box-shadow,opacity] outline-none hover:bg-muted focus:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-1 in-data-[slot=navigation-menu-content]:rounded-2xl data-[active=true]:bg-muted/50 data-[active=true]:hover:bg-muted data-[active=true]:focus:bg-muted [&_svg:not([class*='size-'])]:size-4";
+  "flex items-center gap-1.5 rounded-3xl p-3 text-sm transition-[color,background-color,border-color,box-shadow,opacity] outline-none hover:bg-muted focus:bg-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring focus-visible:ring-3 focus-visible:ring-ring/30 in-data-[slot=navigation-menu-content]:rounded-2xl data-active:bg-muted/50 data-active:hover:bg-muted data-active:focus:bg-muted [&_svg:not([class*='size-'])]:size-4";
 
 export type NavigationMenuLinkProps = ClosedProps<
   Omit<NavigationMenuPrimitive.Link.Props, 'render' | 'href'>

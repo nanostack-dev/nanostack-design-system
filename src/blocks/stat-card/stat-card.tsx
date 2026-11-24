@@ -66,7 +66,7 @@ export function StatCardValue(props: StatCardValueProps) {
   return (
     <Box
       data-slot="stat-card-value"
-      className="font-heading text-3xl font-semibold tabular-nums wrap-anywhere"
+      className="font-heading text-3xl font-semibold min-w-0 tabular-nums wrap-break-word text-balance"
       {...props}
     />
   );

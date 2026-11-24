@@ -122,3 +122,22 @@ export const Vertical: Story = {
     await expect(request).toBeGreaterThan(response);
   },
 };
+
+export const WorstCase: Story = {
+  render: (args) => (
+    <div className="flex h-48 w-80 rounded-lg border">
+      <ResizablePanelGroup {...args}>
+        <ResizablePanel id="a" defaultSize="50%" minSize="20%">
+          <div className="p-3 text-sm break-words">
+            Navigation with an extremely long label that must wrap inside a narrow panel
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle aria-label="Resize panels" />
+        <ResizablePanel id="b" defaultSize="50%" />
+      </ResizablePanelGroup>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('separator', { name: 'Resize panels' })).toBeVisible();
+  },
+};

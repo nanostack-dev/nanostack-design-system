@@ -11,7 +11,7 @@ export type SearchButtonSize = 'sm' | 'md' | 'lg';
 export type SearchButtonWidth = 'auto' | 'fill';
 
 const searchButtonClasses = cva(
-  'group/search-button inline-flex min-w-0 shrink-0 items-center gap-2 rounded-4xl border border-border bg-background bg-clip-padding text-sm font-normal whitespace-nowrap text-muted-foreground transition-colors outline-none select-none hover:bg-muted/60 hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30 dark:hover:bg-input/50 [&>svg]:pointer-events-none [&>svg]:size-4 [&>svg]:shrink-0',
+  'group/search-button inline-flex min-w-0 shrink-0 items-center gap-2 rounded-4xl border border-control-edge bg-background bg-clip-padding text-sm font-normal whitespace-nowrap text-muted-foreground transition-colors outline-none select-none hover:bg-muted/60 hover:text-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30 dark:hover:bg-input/50 [&>svg]:pointer-events-none [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
       size: {

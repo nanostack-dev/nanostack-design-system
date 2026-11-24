@@ -158,3 +158,18 @@ export const Disabled: Story = {
     await expect(args.onClick).not.toHaveBeenCalled();
   },
 };
+
+export const WorstCase: Story = {
+  render: () => (
+    <div className="w-64">
+      <SearchButton
+        width="fill"
+        label="Search every deployment, incident, billing change and access request across all workspaces"
+        shortcut={['⌘', 'K']}
+      />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('button')).toBeVisible();
+  },
+};

@@ -198,3 +198,31 @@ export const Keyboard: Story = {
     await expect(canvas.getByRole('radio', { name: /Question prompts/ })).toBeChecked();
   },
 };
+
+export const WorstCase: Story = {
+  render: (args) => (
+    <div className="w-72">
+      <Questionnaire {...args}>
+        <QuestionnaireItem name="direction" required>
+          <QuestionnaireTitle>
+            Which of the many possible directions should the whole team prototype next quarter?
+          </QuestionnaireTitle>
+          <QuestionnaireChoices>
+            <QuestionnaireChoice value="delegation">
+              Sub-agent delegation with a deliberately long title that has to wrap
+              <QuestionnaireChoiceDescription>
+                A long description that explains when work is delegated, what comes back and how
+                every failure is reported to the people who started it.
+              </QuestionnaireChoiceDescription>
+            </QuestionnaireChoice>
+            <QuestionnaireChoice value="questions">Q</QuestionnaireChoice>
+            <QuestionnaireInput aria-label="Another direction" aria-invalid />
+          </QuestionnaireChoices>
+        </QuestionnaireItem>
+      </Questionnaire>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByRole('radio')).toHaveLength(2);
+  },
+};
