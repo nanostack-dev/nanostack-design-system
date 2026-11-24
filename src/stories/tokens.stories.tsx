@@ -70,7 +70,7 @@ const colorGroups = [
       'info-on-tint',
     ],
   },
-  { name: 'Lines', tokens: ['border', 'border-strong', 'input', 'ring'] },
+  { name: 'Lines', tokens: ['border', 'border-strong', 'control-edge', 'input', 'ring'] },
   {
     name: 'Charts',
     tokens: [

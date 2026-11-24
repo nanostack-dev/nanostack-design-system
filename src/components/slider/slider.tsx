@@ -48,7 +48,7 @@ function SliderRoot({ defaultValue, value, min = 0, max = 100, ...props }: Slide
           <SliderPrimitive.Thumb
             data-slot="slider-thumb"
             key={index}
-            className="block h-4 w-6 shrink-0 rounded-full bg-card shadow-md border border-control-edge ring-0 dark:bg-foreground transition-[color,box-shadow,background-color] select-none not-dark:bg-clip-padding hover:ring-4 hover:ring-ring/30 focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 data-vertical:h-6 data-vertical:w-4"
+            className="block h-4 w-6 shrink-0 rounded-full bg-card shadow-md border border-control-edge ring-0 dark:bg-foreground transition-[color,box-shadow,background-color] select-none not-dark:bg-clip-padding hover:ring-4 hover:ring-ring/30 has-focus-visible:ring-4 has-focus-visible:ring-ring/30 has-focus-visible:outline-2 has-focus-visible:outline-solid has-focus-visible:outline-offset-2 has-focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 data-vertical:h-6 data-vertical:w-4"
             {...motion}
           />
         ))}

@@ -130,6 +130,40 @@ export const Invalid: Story = {
   },
 };
 
+export const InvalidFromRoot: Story = {
+  args: { value: '000000', 'aria-invalid': true, 'aria-describedby': 'root-code-error' },
+  render: ({ children: _children, ...args }) => (
+    <div className="w-fit">
+      <Field invalid>
+        <FieldLabel htmlFor={args.id}>Verification code</FieldLabel>
+        <InputOTP {...args}>
+          <InputOTPGroup>
+            {[0, 1, 2, 3, 4, 5].map((index) => (
+              <InputOTPSlot key={index} index={index} />
+            ))}
+          </InputOTPGroup>
+        </InputOTP>
+        <FieldError id="root-code-error">This code has expired.</FieldError>
+      </Field>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const slots = canvasElement.querySelectorAll<HTMLElement>('[data-slot="input-otp-slot"]');
+    await expect(slots).toHaveLength(6);
+    const destructive = getComputedStyle(document.documentElement)
+      .getPropertyValue('--destructive')
+      .trim();
+    const probe = document.createElement('div');
+    probe.style.color = destructive;
+    document.body.append(probe);
+    const expected = getComputedStyle(probe).color;
+    probe.remove();
+    for (const slot of slots) {
+      await expect(getComputedStyle(slot).borderTopColor).toBe(expected);
+    }
+  },
+};
+
 export const WithDescription: Story = {
   args: { maxLength: 4, 'aria-describedby': 'code-description' },
   render: ({ children: _children, ...args }) => (

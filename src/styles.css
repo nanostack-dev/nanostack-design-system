@@ -407,6 +407,17 @@
   --app-shell-header-offset: 0px;
 }
 
+/* A translucent surface lets the backdrop through, so the control edge is
+   stronger inside glass: 3:1 or more against the worst measured backdrop pixel
+   (light 3.37 on the sidebar, dark 3.13 on popups). */
+[data-ns-material='glass'] {
+  --control-edge: hsl(218 12% 48%);
+}
+
+.dark [data-ns-material='glass'] {
+  --control-edge: hsl(222 20% 54%);
+}
+
 [data-slot='sidebar-wrapper'][data-ns-material='glass'] {
   background: var(--glass-grain), var(--glass-backdrop), var(--background);
   background-attachment: fixed;
@@ -628,6 +639,13 @@
   pointer-events: none;
 }
 
+@media (width < 48rem) {
+  [data-slot='app-shell-header'][data-ns-material='glass']::before {
+    inset-inline: -0.5rem;
+    height: 0.5rem;
+  }
+}
+
 [data-slot='app-shell-content-start'][data-ns-material='glass'] {
   height: var(--app-shell-header-offset);
 }
@@ -739,8 +757,11 @@
 }
 
 /* An outline empty state is a dashed edge only. Under glass it needs the data
-   surface fill, or the backdrop shows through and the edge disappears. */
-[data-slot='empty'][data-variant='outline'][data-ns-material='glass'] {
+   surface fill, or the backdrop shows through and the edge disappears. Inside a
+   card or data table frame the surface is already there. */
+[data-slot='empty'][data-variant='outline'][data-ns-material='glass']:not(
+    :is([data-slot='card'], [data-slot='stat-card'], [data-slot='data-table-frame']) *
+  ) {
   background: var(--glass-surface-strong);
 }
 
