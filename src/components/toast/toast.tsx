@@ -60,42 +60,14 @@ export type ToasterProps = {
 
 const toastManager = ToastPrimitive.createToastManager();
 
-/** An error toast interrupts a screen reader (`aria-live="assertive"`); other types stay polite. */
-function withPriority<Options extends { type?: ToastType; priority?: 'low' | 'high' }>(
-  options: Options,
-): Options {
-  if (options.priority !== undefined || options.type !== 'error') return options;
-  return { ...options, priority: 'high' };
-}
-
-function promiseStage<Args extends unknown[]>(
-  stage: string | ToastUpdateOptions | ((...args: Args) => string | ToastUpdateOptions),
-  type: ToastType,
-) {
-  const withType = (value: string | ToastUpdateOptions): ToastUpdateOptions =>
-    typeof value === 'string' ? { title: value, type } : { type, ...value };
-  if (typeof stage === 'function') {
-    return (...args: Args) => withPriority(withType(stage(...args)));
-  }
-  return withPriority(withType(stage));
-}
-
 /**
- * The toast manager. `type: 'error'` toasts default to `priority: 'high'`, so a
- * screen reader announces them at once (assertive). Pass `priority: 'low'` to keep
- * an error polite. Every other type defaults to polite.
+ * The toast manager. Every toast, `type: 'error'` included, defaults to
+ * `priority: 'low'` (polite). Base UI renders a `priority: 'high'` toast as an
+ * `alertdialog` that is `aria-hidden` until it is focused but stays in the tab
+ * order, which fails axe `aria-hidden-focus`. Opt in only for a failure the user
+ * must hear at once, and check that screen with axe.
  */
-export const toast: ToastManager = {
-  add: (options) => toastManager.add(withPriority(options)),
-  close: (id) => toastManager.close(id),
-  update: (id, options) => toastManager.update(id, withPriority(options)),
-  promise: (promise, options) =>
-    toastManager.promise(promise, {
-      loading: options.loading,
-      success: options.success,
-      error: promiseStage(options.error, 'error'),
-    }),
-};
+export const toast: ToastManager = toastManager;
 
 type ToastTone = 'neutral' | 'critical' | 'success' | 'warning' | 'info';
 

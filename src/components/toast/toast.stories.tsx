@@ -28,7 +28,7 @@ The options are the whole API. There is no \`className\` or \`style\` on a toast
 | --- | --- |
 | no type | A neutral note with no icon. |
 | \`success\` | An action finished: saved, created, launched. |
-| \`error\` | An action failed. Say what failed and what to do next in \`description\`. It defaults to \`priority: 'high'\`, so a screen reader announces it at once. Set \`priority: 'low'\` to keep it polite. |
+| \`error\` | An action failed. Say what failed and what to do next in \`description\`. It is polite by default, like every type. \`priority: 'high'\` makes it an \`alertdialog\` that Base UI hides from screen readers until it is focused while it stays in the tab order, which fails axe \`aria-hidden-focus\`. |
 | \`warning\` | An action finished, but with a problem the person should know about. |
 | \`info\` | A tip or a state change that the person did not start. |
 | \`loading\` | Work in progress. Update the same toast with \`toast.update(id, …)\` or use \`toast.promise()\`. |
@@ -123,13 +123,13 @@ export const Types: Story = {
     for (const type of types) {
       await userEvent.click(canvas.getByRole('button', { name: type }));
     }
-    // Error toasts default to high priority: an alertdialog the viewport announces assertively.
+    // Error toasts stay polite by default: a dialog, not an aria-hidden alertdialog.
     const failed = await waitFor(() => {
       const element = document.querySelector<HTMLElement>('[data-slot="toast"][data-type="error"]');
       expect(element).not.toBeNull();
       return element!;
     });
-    await expect(failed).toHaveAttribute('role', 'alertdialog');
+    await expect(failed).toHaveAttribute('role', 'dialog');
     await waitFor(() =>
       expect(failed.querySelector('[data-slot="toast-icon"]')).toHaveAttribute(
         'data-tone',
@@ -275,5 +275,37 @@ export const Stacked: Story = {
     );
     const viewport = screen.getByRole('region');
     await expect(viewport.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth);
+  },
+};
+
+/**
+ * An error toast at rest, with no hover or focus on the stack, when the a11y addon runs axe.
+ * A high-priority toast is `aria-hidden` while it keeps `tabindex="0"`, which fails axe
+ * `aria-hidden-focus`. Error toasts therefore stay polite unless the caller opts in.
+ */
+export const ErrorAtRest: Story = {
+  args: { timeout: 0 },
+  render: (args) => (
+    <Toaster {...args}>
+      <Button
+        onClick={() =>
+          toast.add({
+            type: 'error',
+            title: 'Could not save changes',
+            description: 'The server did not respond. Try again.',
+          })
+        }
+      >
+        Save changes
+      </Button>
+    </Toaster>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const trigger = canvas.getByRole('button', { name: 'Save changes' });
+    await userEvent.click(trigger);
+    const failed = await screen.findByRole('dialog', { name: 'Could not save changes' });
+    await waitFor(() => expect(failed).toBeVisible());
+    await expect(failed).not.toHaveAttribute('aria-hidden');
+    await userEvent.unhover(trigger);
   },
 };
