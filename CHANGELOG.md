@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.10
+
+- Error toasts are polite again, like every other type. The 0.3.9 default of `priority: 'high'` made Base UI render each error toast as an `alertdialog` that is `aria-hidden` until it is focused while it stays in the tab order. Axe reports that as `aria-hidden-focus`, so any product that checks its toasts with axe failed. Base UI 1.9.0 behaves the same.
+- New `ErrorAtRest` story: an error toast with no hover or focus on the stack, checked by axe.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.3.10`. No API change. Pass `priority: 'high'` only for a failure the user must hear at once, and check that screen with axe.
+
 ## 0.3.9
 
 - Unfilled controls reach 3:1 against their surface (WCAG 1.4.11). New token `--control-edge` (light `hsl(218 12% 54%)`, dark `hsl(222 20% 46%)`, stronger inside glass; utilities `border-control-edge`, `bg-control-edge`) draws the edge of an unchecked Checkbox, RadioGroup item, Switch track and thumb, Questionnaire choice, InputOTP slot, Slider track and thumb, SearchButton and the Resizable grip. They were about 1.3:1. `--border` does not change, so dividers look the same.
