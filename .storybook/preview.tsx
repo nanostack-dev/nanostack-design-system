@@ -102,7 +102,7 @@ const preview: Preview = {
   initialGlobals: {
     theme: defaultTheme(),
     material: 'solid',
-    palette: 'tide',
+    palette: import.meta.env.VITE_STORYBOOK_PALETTE ?? 'tide',
     contrast: 'standard',
   },
   tags: ['autodocs'],

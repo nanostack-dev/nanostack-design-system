@@ -286,6 +286,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Colors: Story = {
+  // The swatches and their checks read the default palette's values from styles.css.
+  globals: { palette: 'tide' },
   render: () => <ColorTokens />,
   play: async ({ canvasElement }) => {
     const listed = colorGroups.flatMap((group) => group.tokens);

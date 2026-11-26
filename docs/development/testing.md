@@ -18,6 +18,8 @@ CI runs them as Dagger checks (`dagger check`, [dagger.toml](../../dagger.toml))
 
 During iteration, select the affected component with `pnpm exec vitest run src/components/<name>`. Overlay content renders in portals, so query it through `screen` and async role/name lookups. Cover keyboard, focus return and observable callbacks rather than implementation details. Stories and blocks import public barrels.
 
+Every story runs in the default palette (Tide). Run the suite in another palette with `STORYBOOK_PALETTE=<id> pnpm test` before a release that changes tokens or a palette ([theming](../technical/theming.md)).
+
 ## Token and contrast checks
 
 `pnpm lint` also runs three scripts, so CI and release verification run them too.

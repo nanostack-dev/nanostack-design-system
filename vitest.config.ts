@@ -12,7 +12,13 @@ function storybookProject(theme: 'light' | 'dark'): TestProjectInlineConfigurati
   return {
     extends: true,
     plugins: [storybookTest({ configDir })],
-    define: { 'import.meta.env.VITE_STORYBOOK_THEME': JSON.stringify(theme) },
+    define: {
+      'import.meta.env.VITE_STORYBOOK_THEME': JSON.stringify(theme),
+      // STORYBOOK_PALETTE=ember pnpm test runs every story in another palette.
+      'import.meta.env.VITE_STORYBOOK_PALETTE': JSON.stringify(
+        process.env.STORYBOOK_PALETTE ?? 'tide',
+      ),
+    },
     test: {
       name: theme === 'light' ? 'storybook' : 'storybook-dark',
       browser: {
