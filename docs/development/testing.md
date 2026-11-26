@@ -20,12 +20,13 @@ During iteration, select the affected component with `pnpm exec vitest run src/c
 
 ## Token and contrast checks
 
-`pnpm lint` also runs two scripts, so CI and release verification run them too.
+`pnpm lint` also runs three scripts, so CI and release verification run them too.
 
-| Script                            | Data file             | Fails when                                                                                                                              |
-| --------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `node scripts/check-tokens.mjs`   | `tokens.lock.json`    | A `:root` token has no `.dark` value (theme-independent ones are listed in the script); a locked token is gone; a new token is unlocked |
-| `node scripts/check-contrast.mjs` | `contrast-pairs.json` | A named token pair is below its minimum in light or dark                                                                                |
+| Script                                     | Data file                        | Fails when                                                                                                                                                                                                                                           |
+| ------------------------------------------ | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node scripts/check-tokens.mjs`            | `tokens.lock.json`               | A `:root` token has no `.dark` value (theme-independent ones are listed in the script); a palette block lacks a token the reference block has; a locked token is gone; a new token is unlocked; `palettes.ts` and `palettes.json` list different ids |
+| `node scripts/check-contrast.mjs`          | `contrast-pairs.json`            | A named token pair is below its minimum in any palette, mode or contrast level                                                                                                                                                                       |
+| `node scripts/generate-themes.mjs --check` | `src/blocks/theme/palettes.json` | The generated theme region of `src/styles.css` differs from what the inputs produce ([theming](../technical/theming.md))                                                                                                                             |
 
 - A new token: run `node scripts/check-tokens.mjs --write` and commit the lock. The lock holds sorted names, so a value change does not touch it.
 - A removed token is a breaking change. Follow the [deprecation path](../research/versioning-and-deprecation-proposal.md). Run `--write` only for a removal that `CHANGELOG.md` records.

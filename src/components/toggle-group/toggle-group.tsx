@@ -42,7 +42,11 @@ export function ToggleGroup({
       data-spacing={spacing}
       data-orientation={orientation}
       orientation={orientation}
-      className="group/toggle-group flex w-fit flex-row items-center data-[spacing=0]:data-[variant=outline]:rounded-3xl data-[spacing=2]:gap-2 data-vertical:flex-col data-vertical:items-stretch"
+      className={cn(
+        'group/toggle-group flex w-fit flex-row items-center data-[spacing=2]:gap-2 data-vertical:flex-col data-vertical:items-stretch',
+        // Outline is a segmented control: the items sit on one track.
+        'data-[variant=outline]:gap-0.5 data-[variant=outline]:rounded-full data-[variant=outline]:bg-segment data-[variant=outline]:p-0.5 data-[variant=outline]:inset-ring data-[variant=outline]:inset-ring-segment-edge data-vertical:data-[variant=outline]:rounded-2xl',
+      )}
       {...props}
     >
       <ToggleGroupContext.Provider value={{ variant, size }}>
@@ -64,8 +68,12 @@ export function ToggleGroupItem(props: ToggleGroupItemProps) {
       data-size={size}
       data-spacing={variant === 'outline' ? 0 : 2}
       className={cn(
-        'shrink-0 group-data-[spacing=0]/toggle-group:rounded-none group-data-[spacing=0]/toggle-group:px-3 group-data-[spacing=0]/toggle-group:shadow-none focus:z-10 focus-visible:z-10 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-end]:pr-2.5 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-start]:pl-2.5 group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-3xl group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-3xl group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-3xl group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-3xl data-[state=on]:bg-muted group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0 group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:border-t-0 group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-l group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-t',
         toggleStyles({ variant, size }),
+        'shrink-0 focus:z-10 focus-visible:z-10',
+        // A segment: no edge of its own, muted until pressed, then a raised
+        // thumb in strong ink with its icon in the accent.
+        'data-[variant=outline]:rounded-full data-[variant=outline]:border-0 data-[variant=outline]:text-muted-foreground data-[variant=outline]:hover:bg-segment-thumb/50 data-[variant=outline]:hover:text-foreground group-data-vertical/toggle-group:data-[variant=outline]:rounded-xl',
+        'data-[variant=outline]:aria-pressed:bg-segment-thumb data-[variant=outline]:aria-pressed:text-foreground data-[variant=outline]:aria-pressed:shadow-segment-thumb data-[variant=outline]:aria-pressed:[&_svg]:text-primary',
       )}
       {...props}
       {...motion}

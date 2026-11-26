@@ -30,6 +30,7 @@ const colorGroups = [
   {
     name: 'Surfaces',
     tokens: [
+      'ground',
       'background',
       'foreground',
       'card',
@@ -38,6 +39,7 @@ const colorGroups = [
       'popover-foreground',
       'surface-subtle',
       'surface-elevated',
+      'segment-thumb',
     ],
   },
   {
@@ -70,7 +72,10 @@ const colorGroups = [
       'info-on-tint',
     ],
   },
-  { name: 'Lines', tokens: ['border', 'border-strong', 'control-edge', 'input', 'ring'] },
+  {
+    name: 'Lines',
+    tokens: ['border', 'border-strong', 'control-edge', 'control-edge-glass', 'input', 'ring'],
+  },
   {
     name: 'Charts',
     tokens: [
@@ -297,11 +302,11 @@ export const Colors: Story = {
 
     const lightPrimary = canvasElement.querySelector('[data-token="primary"][data-theme="light"]');
     await expect(getComputedStyle(lightPrimary as Element).backgroundColor).toBe(
-      'rgb(31, 91, 189)',
+      'rgb(36, 86, 211)',
     );
     const darkPrimary = canvasElement.querySelector('[data-token="primary"][data-theme="dark"]');
     await expect(getComputedStyle(darkPrimary as Element).backgroundColor).toBe(
-      'rgb(160, 227, 59)',
+      'rgb(169, 224, 67)',
     );
   },
 };

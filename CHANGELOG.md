@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.0
+
+- Four colour themes: Tide (the default: cobalt in light, lime in dark), Lagoon (teal), Aurora (violet) and Ember (burnt orange), each with a high-contrast level. Their tokens are generated from a few inputs per palette on one OKLCH lightness ladder per mode (`src/blocks/theme/palettes.json`, `scripts/generate-themes.mjs`), so every palette has the same lightness steps. `pnpm lint` checks 39 contrast pairs in each palette, mode and contrast level. See `docs/technical/theming.md` and ADR 0004.
+- Neutrals are tinted with the palette hue. Light text, borders and surfaces shift slightly in Tide too.
+- `ThemeProvider` also stores the palette and the contrast level (under `<storageKey>-palette` and `<storageKey>-contrast`) and writes `data-ns-palette` and `data-ns-contrast` on `<html>`. New props `defaultPalette` and `defaultContrast`. `useTheme()` returns `palette`, `setPalette`, `contrast` and `setContrast`.
+- New blocks: `ThemePicker`, an icon button that opens mode, palette and contrast in a popover, and `ThemeSettings`, the same controls inline. Both take a `labels` object for translation.
+- New tokens: `--ground` (the page ground under the backdrop; `--background` stays the lightest control surface), `--segment`, `--segment-thumb`, `--segment-edge`, `--segment-thumb-shadow` and `--control-edge-glass`. Utilities `bg-ground`, `bg-segment`, `bg-segment-thumb`, `inset-ring-segment-edge`, `shadow-segment-thumb`.
+- The segmented control is a track and a thumb: `ToggleGroup variant="outline"` and `TabsList` draw a translucent track, and the pressed item or active tab is a solid raised thumb with its icon in `--primary`. The items no longer share a border.
+- Soft fields (`Input`, `Select`, `NativeSelect`, `Combobox`, `InputGroup`, `Textarea`, the Questionnaire input) are `--background` with a `--control-edge` border, instead of a grey `--input` fill. A ghost `Input` or `Select` shows `--muted` on hover and `--background` while focused or open.
+- The table header is a `--border-strong` line, without a grey band. A checked choice card (`FieldLabel` around a `Field`) is tinted with `--primary`.
+- Dark `--chart-2-on-tint` is `hsl(217 91% 68%)` and dark `--destructive-on-tint` is `hsl(0 88% 77%)`, because dark cards and muted panels are lighter. New contrast pairs check soft critical and soft brand buttons on a muted panel.
+- The Storybook manager theme follows the Tide tokens.
+- `scripts/measure-glass-contrast.mjs` measures every palette (`PALETTES=` limits them).
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.4.0`. No breaking API change. Render `ThemePicker` where the product offered `ThemeToggle`, or keep `ThemeToggle`. A product with a pre-paint theme script also reads `<storageKey>-palette` and `<storageKey>-contrast` and sets `data-ns-palette` and `data-ns-contrast` on `<html>`. Recheck product visuals built on `bg-background` as a page colour: use `bg-ground` for the page.
+
 ## 0.3.10
 
 - Error toasts are polite again, like every other type. The 0.3.9 default of `priority: 'high'` made Base UI render each error toast as an `alertdialog` that is `aria-hidden` until it is focused while it stays in the tab order. Axe reports that as `aria-hidden-focus`, so any product that checks its toasts with axe failed. Base UI 1.9.0 behaves the same.

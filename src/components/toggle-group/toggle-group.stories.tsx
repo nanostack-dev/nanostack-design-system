@@ -23,7 +23,7 @@ The props are the whole API. The parts do not accept \`className\` or \`style\`.
 | Value | Use it for |
 | --- | --- |
 | \`ghost\` | The default. Separate items with a gap, in a toolbar next to \`ghost\` buttons. |
-| \`outline\` | A segmented control: the items touch and share one border. Use it for a view mode or a time range above a list or a chart. |
+| \`outline\` | A segmented control: the items sit in one track and the pressed item is a raised thumb. Use it for a view mode or a time range above a list or a chart. |
 
 ## size
 
@@ -114,7 +114,8 @@ export const Outline: Story = {
   parameters: {
     docs: {
       description: {
-        story: '`outline` makes a segmented control: the items touch and share one border.',
+        story:
+          '`outline` makes a segmented control: the items sit in one track, and the pressed item is a raised thumb.',
       },
     },
   },
@@ -123,11 +124,20 @@ export const Outline: Story = {
     const items = ['Daily', 'Weekly', 'Monthly'].map((name) =>
       canvas.getByRole('button', { name }),
     );
+    const track = canvas.getByRole('group').getBoundingClientRect();
     for (const [index, item] of items.entries()) {
+      const box = item.getBoundingClientRect();
+      await expect(box.top).toBeGreaterThanOrEqual(track.top);
+      await expect(box.bottom).toBeLessThanOrEqual(track.bottom);
       if (index === 0) continue;
-      const previous = items[index - 1].getBoundingClientRect();
-      await expect(item.getBoundingClientRect().left).toBeCloseTo(previous.right, 0);
+      const gap = box.left - items[index - 1].getBoundingClientRect().right;
+      await expect(gap).toBeLessThanOrEqual(4);
     }
+    const [pressed, resting] = items;
+    await expect(pressed).toHaveAttribute('aria-pressed', 'true');
+    await expect(getComputedStyle(pressed).backgroundColor).not.toBe(
+      getComputedStyle(resting).backgroundColor,
+    );
   },
 };
 

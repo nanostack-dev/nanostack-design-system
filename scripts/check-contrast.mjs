@@ -1,5 +1,7 @@
 /**
- * Checks WCAG 2.x contrast of named token pairs in both themes.
+ * Checks WCAG 2.x contrast of named token pairs in every theme: each palette
+ * of src/blocks/theme/palettes.json, light and dark, standard and high
+ * contrast (scripts/generate-themes.mjs writes them).
  *
  *   node scripts/check-contrast.mjs
  *
@@ -11,7 +13,7 @@
  * value so a pair cannot pass by being skipped. Exit 1 on any failure.
  */
 import { readFileSync } from 'node:fs';
-import { readThemes } from './lib/css-tokens.mjs';
+import { readPaletteThemes } from './lib/css-tokens.mjs';
 
 function parseColor(value, name) {
   const text = value.trim().toLowerCase();
@@ -63,14 +65,11 @@ function ratio(a, b) {
 }
 
 const pairs = JSON.parse(readFileSync('contrast-pairs.json', 'utf8')).pairs;
-const themes = readThemes();
 const rows = [];
 let failures = 0;
 
-for (const [theme, tokens] of [
-  ['light', themes.light],
-  ['dark', themes.dark],
-]) {
+for (const { palette, mode, contrast, tokens } of readPaletteThemes()) {
+  const theme = `${palette} ${mode}${contrast === 'high' ? ' high' : ''}`;
   const color = (token) => {
     const raw = tokens.get(`--${token}`);
     if (raw === undefined) throw new Error(`${theme}: --${token} is not defined`);
