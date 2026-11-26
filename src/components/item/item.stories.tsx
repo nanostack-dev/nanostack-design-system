@@ -32,7 +32,7 @@ The props are the whole API. The parts do not accept \`className\` or \`style\`.
 | Value | Use it for |
 | --- | --- |
 | \`ghost\` | The default. Rows in a list that already sits on a surface, such as a card or a menu. |
-| \`outline\` | A row that stands alone on the page, or a grid of links. |
+| \`outline\` | A row that stands alone on the page, or a grid of links. It draws the card surface under its edge. |
 | \`soft\` | A row to set apart from its neighbours, such as the current plan or a pinned item. |
 
 ## size
@@ -118,6 +118,11 @@ export const Variants: Story = {
     await expect(border('outline')).not.toBe(border('ghost'));
     await expect(getComputedStyle(canvas.getByTestId('soft')).backgroundColor).not.toBe(
       getComputedStyle(canvas.getByTestId('ghost')).backgroundColor,
+    );
+    // An outline row stands alone on the page: it draws a surface, not only an
+    // edge, because light --border nearly matches --ground.
+    await expect(getComputedStyle(canvas.getByTestId('outline')).backgroundColor).not.toBe(
+      'rgba(0, 0, 0, 0)',
     );
   },
 };

@@ -54,7 +54,16 @@ Never edit the generated region by hand. Change the inputs or the ladder, then r
 
 ## Contrast
 
-`pnpm lint` checks 40 token pairs in 4 palettes × 2 modes × 2 contrast levels. Text pairs need 4.5:1 and edge pairs 3:1. Glass surfaces are measured from real renders per palette ([material](material.md#contrast)).
+`pnpm lint` checks 41 token pairs in 4 palettes × 2 modes × 2 contrast levels. Text pairs need 4.5:1 and edge pairs 3:1. Glass surfaces are measured from real renders per palette ([material](material.md#contrast)).
+
+### Edges on the ground
+
+In light, `--ground` sits just below `--border` on the ladder: `--border` is about 1.06:1 against `--ground` in every palette (1.45:1 in dark). An edge with nothing inside it disappears on the page ground. Two rules follow:
+
+- A container on the ground draws a surface: a `Card`, an outline `Item` (it takes `--card`, or `--glass-surface-strong` under glass, since 0.4.1) or an outline `Empty`. A product does not draw a bordered list or card without a fill on the page.
+- A divider on the ground uses `--border-strong` (about 1.29:1 in light, 1.86:1 in dark). The pair `border-strong on ground` (minimum 1.2) guards it. `--border` stays the divider inside a surface (1.32:1 on `--card`).
+
+Raising `--border` instead would make every divider inside a card as heavy as the high-contrast level (about 1.5:1 on `--card`).
 
 ## Known limitations
 

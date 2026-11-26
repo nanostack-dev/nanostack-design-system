@@ -66,6 +66,7 @@ import {
 import { Field, FieldLabel } from '@/components/field';
 import { Heading } from '@/components/heading';
 import { Input } from '@/components/input';
+import { Item, ItemContent, ItemDescription, ItemTitle } from '@/components/item';
 import {
   Popover,
   PopoverContent,
@@ -530,7 +531,7 @@ export const DataSurfaces: Story = {
     docs: {
       description: {
         story:
-          'Cards, a bare table and fields are near-opaque. A table inside a card does not draw a second surface.',
+          'Cards, a bare table, an outline item and fields are near-opaque. A table inside a card does not draw a second surface. An outline item on the backdrop takes the data surface: its edge alone disappears on the light ground.',
       },
     },
   },
@@ -554,6 +555,12 @@ export const DataSurfaces: Story = {
           </Stack>
         </CardContent>
       </Card>
+      <Item variant="outline" data-testid="outline-item">
+        <ItemContent>
+          <ItemTitle>Members</ItemTitle>
+          <ItemDescription>Invite people and change their role.</ItemDescription>
+        </ItemContent>
+      </Item>
       <Table aria-label="Recent requests">
         <TableHeader>
           <TableRow>
@@ -579,6 +586,11 @@ export const DataSurfaces: Story = {
     await expect(getComputedStyle(table!).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
     const input = canvasElement.querySelector<HTMLElement>('[data-slot=input]');
     await expect(input).toHaveAttribute('data-variant', 'soft');
+    const item = canvasElement.querySelector<HTMLElement>('[data-testid=outline-item]');
+    await expect(item).toHaveAttribute('data-ns-material', 'glass');
+    const fill = getComputedStyle(item!).backgroundColor;
+    await expect(fill).not.toBe('rgba(0, 0, 0, 0)');
+    await expect(fill).not.toBe(getComputedStyle(document.body).backgroundColor);
   },
 };
 

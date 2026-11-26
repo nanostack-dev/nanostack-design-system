@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { Separator } from '@/components/separator/separator';
+import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
@@ -23,7 +24,7 @@ const itemClasses = cva(
     variants: {
       variant: {
         ghost: 'border-transparent',
-        outline: 'border-border',
+        outline: 'border-border bg-card',
         soft: 'border-transparent bg-muted/50',
       },
       size: {
@@ -60,6 +61,7 @@ export type ItemHeaderProps = DivProps;
 export type ItemFooterProps = DivProps;
 
 export function Item({ variant = 'ghost', size = 'md', ...props }: ItemProps) {
+  const material = useMaterialAttributes();
   const motion = useMotionAttributes();
   return (
     <div
@@ -68,6 +70,7 @@ export function Item({ variant = 'ghost', size = 'md', ...props }: ItemProps) {
       data-size={size}
       className={cn(itemClasses({ variant, size }))}
       {...props}
+      {...material}
       {...motion}
     />
   );
@@ -75,12 +78,14 @@ export function Item({ variant = 'ghost', size = 'md', ...props }: ItemProps) {
 
 export function ItemLink({ variant = 'ghost', size = 'md', ...props }: ItemLinkProps) {
   const linkComponent = useLinkComponent();
+  const material = useMaterialAttributes();
   const linkProps: LinkComponentProps & Record<`data-${string}`, string> = {
     'data-slot': 'item',
     'data-variant': variant,
     'data-size': size,
     className: cn(itemClasses({ variant, size, link: true })),
     ...props,
+    ...material,
   };
   return createElement(linkComponent, linkProps);
 }

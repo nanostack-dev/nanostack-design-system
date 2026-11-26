@@ -264,6 +264,12 @@
       "reason": "info badge on a selected table row (base at 10% over accent)",
       "bgAlpha": 0.1,
       "over": "accent"
+    },
+    {
+      "fg": "border-strong",
+      "bg": "ground",
+      "min": 1.2,
+      "reason": "A divider drawn on the page ground. --border is about 1.06:1 there in light, so a line on the ground uses --border-strong"
     }
   ]
 }

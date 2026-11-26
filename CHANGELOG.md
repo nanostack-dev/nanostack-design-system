@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1
+
+- An outline `Item` draws a surface under its edge: `--card`, or `--glass-surface-strong` under glass outside a card or data table frame, like an outline `Card` and an outline `Empty`. In light, `--border` is about 1.06:1 against `--ground`, so an outline item on the page showed as text with no edge. `Item` and `ItemLink` now carry `data-ns-material`.
+- New contrast pair `border-strong on ground` (minimum 1.2:1). A divider drawn on the page ground uses `--border-strong`; see "Edges on the ground" in `docs/technical/theming.md`.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.4.1`. No API change. Replace bordered containers without a fill that sit on the page with `Card` or an outline `Item`, and draw dividers on the page with `border-border-strong`.
+
 ## 0.4.0
 
 - Four colour themes: Tide (the default: cobalt in light, lime in dark), Lagoon (teal), Aurora (violet) and Ember (burnt orange), each with a high-contrast level. Their tokens are generated from a few inputs per palette on one OKLCH lightness ladder per mode (`src/blocks/theme/palettes.json`, `scripts/generate-themes.mjs`), so every palette has the same lightness steps. `pnpm lint` checks 40 contrast pairs in each palette, mode and contrast level. See `docs/technical/theming.md` and ADR 0004.
