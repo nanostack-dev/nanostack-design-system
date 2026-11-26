@@ -19,7 +19,7 @@ export function isPalette(value: unknown): value is Palette {
   return palettes.some((palette) => palette.id === value);
 }
 
-/** Standard, or high: darker ink and stronger rules and edges in every palette. */
+/** Standard, or high: more text contrast and stronger rules and edges in every palette. */
 export type Contrast = 'standard' | 'high';
 
 export function isContrast(value: unknown): value is Contrast {

@@ -46,7 +46,6 @@ const LADDER = {
     inkMuted: [0.47, 2], // [11]
     wash: [0.955, 0.28], // accent wash, share of the accent chroma
     washInk: [0.44, 0.85],
-    tintInk: [0.46, 1], // chart-1 text on its tint
     sidebarAccent: [0.97, 0.15],
     segment: [0.975, 1.2, 0.62], // segmented track: lightness, chroma, alpha
     segmentThumb: [1, 0],
@@ -70,7 +69,6 @@ const LADDER = {
     inkMuted: [0.745, 1.1],
     wash: [0.3, 0.3],
     washInk: [0.86, 0.6],
-    tintInk: [0.84, 1],
     sidebarAccent: [0.28, 1.6],
     segment: [1, 0, 0.06],
     segmentThumb: [0.3, 1.6],
@@ -149,9 +147,6 @@ function tokens(palette, mode, contrast) {
     'muted-foreground': neutral(ladder.inkMuted),
     accent: accent(ladder.wash[0], ladder.wash[1]),
     'accent-foreground': accentForeground,
-    info: primary,
-    'info-foreground': onPrimary,
-    'info-on-tint': accentForeground,
     border,
     'border-strong': neutral(ladder.borderStrong),
     'control-edge': neutral(ladder.edge),
@@ -160,8 +155,6 @@ function tokens(palette, mode, contrast) {
     ring: primary,
     'surface-subtle': neutral(ladder.subtle),
     'surface-elevated': neutral(ladder.elevated),
-    'chart-1': primary,
-    'chart-1-on-tint': accent(ladder.tintInk[0], ladder.tintInk[1]),
     sidebar: card,
     'sidebar-foreground': foreground,
     'sidebar-primary': primary,

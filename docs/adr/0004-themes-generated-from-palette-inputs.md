@@ -11,11 +11,11 @@ The tokens were hand-written per mode: about 80 values in `:root` and 80 in `.da
 ## Decision
 
 1. **A palette is a set of inputs.** Neutral hue and chroma, an accent per mode, three glow hues. `src/blocks/theme/palettes.json` holds them.
-2. **One OKLCH lightness ladder per mode, plus a high-contrast delta.** `scripts/generate-themes.mjs` combines the ladder with each palette's inputs and writes literal `hsl()` values into a generated region of `src/styles.css`. The values ship as plain CSS: no runtime colour maths, no `oklch()` or `color-mix()` dependence in consumers.
+2. **One OKLCH lightness ladder per mode, plus a high-contrast delta.** `scripts/generate-themes.mjs` combines the ladder with each palette's inputs and writes literal `hsl()` values into a generated region of `src/styles.css`. The generated tokens ship as literal values: no runtime colour maths and no `oklch()` in consumers.
 3. **The choices are attributes on `<html>`.** `data-ns-palette` and `data-ns-contrast`, written by `ThemeProvider` next to the existing `dark` class and stored under the provider's key. A palette attribute on any element re-themes its subtree.
 4. **`--ground` is separate from `--background`.** The backdrop paints the ground; `--background` stays the lightest control surface, so fields and selected segments stand out from the page.
 5. **The segmented control is a track and a thumb.** `ToggleGroup variant="outline"` and `TabsList` draw a translucent `--segment` track with a solid raised `--segment-thumb`. This changes the look of an existing variant, not the API.
-6. **The picker is a block.** `ThemePicker` (popover) and `ThemeSettings` (inline) compose public components only.
+6. **The picker is a block.** `ThemePicker` (popover) and `ThemeSettings` (inline) compose public components; the palette thumbnails are drawn with tokens.
 7. **Tide is the default** and also answers to `:root` and `.dark`, so a product that sets no attribute keeps working.
 
 ## Alternatives
@@ -28,6 +28,6 @@ The tokens were hand-written per mode: about 80 values in `:root` and 80 in `.da
 ## Consequences
 
 - `pnpm lint` fails when the generated region is stale, and the contrast check runs every pair in each palette, mode and contrast level.
-- Status colours and `--chart-2..5` are still hand-written and shared by every palette.
+- Status colours, info and `--chart-1..5` stay hand-written and shared by every palette, so their meaning does not change with the accent.
 - A product that paints before React mounts reads the two new storage keys too.
 - Products that styled against the old joined-border segmented look see the new track. The product API does not change.

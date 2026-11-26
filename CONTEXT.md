@@ -36,7 +36,7 @@ The design system owns visual primitives that Nanostack products can use unchang
 
 **Palette:** A colour theme: the neutral hue, the accent and the backdrop glows, chosen by the person (Tide, Lagoon, Aurora or Ember). Tide is the default. Not a material: glass and solid apply to every palette.
 
-**Contrast level:** `standard` or `high`. High darkens text and strengthens borders and control edges in every palette.
+**Contrast level:** `standard` or `high`. High raises text contrast (darker text in light mode, brighter in dark) and strengthens borders and control edges in every palette.
 
 **Ground:** The page colour under the backdrop. It sits below `--background`, which is the lightest control surface.
 

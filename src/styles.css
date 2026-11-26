@@ -24,6 +24,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Info and chart-1 stay fixed in every palette, so info never looks like
+     success or warning and chart-1 stays apart from chart-2..5. */
+  --info: hsl(217 72% 43%);
+  --info-foreground: hsl(0 0% 100%);
+  --info-on-tint: hsl(217 72% 36%);
+  --chart-1: hsl(217 72% 43%);
+  --chart-1-on-tint: hsl(217 72% 43%);
   color-scheme: light;
   --destructive: hsl(0 72% 46%);
   --destructive-foreground: hsl(0 0% 100%);
@@ -71,6 +78,11 @@
 }
 
 .dark {
+  --info: hsl(217 91% 60%);
+  --info-foreground: hsl(222 47% 7%);
+  --info-on-tint: hsl(217 91% 72%);
+  --chart-1: hsl(84 75% 56%);
+  --chart-1-on-tint: hsl(84 75% 56%);
   color-scheme: dark;
   --destructive: hsl(0 84% 70%);
   --destructive-foreground: hsl(222 47% 7%);
@@ -125,9 +137,6 @@
   --muted-foreground: hsl(214.5 15.8% 36.9%);
   --accent: hsl(219.7 92.4% 95.6%);
   --accent-foreground: hsl(222.8 69.9% 40.3%);
-  --info: hsl(223 70.7% 48.4%);
-  --info-foreground: hsl(0 0% 100%);
-  --info-on-tint: hsl(222.8 69.9% 40.3%);
   --border: hsl(214.5 50% 89%);
   --border-strong: hsl(214.5 32.8% 81.5%);
   --control-edge: hsl(214.5 12.8% 51.7%);
@@ -136,8 +145,6 @@
   --ring: hsl(223 70.7% 48.4%);
   --surface-subtle: hsl(214.6 89.6% 96.6%);
   --surface-elevated: hsl(0 0% 100%);
-  --chart-1: hsl(223 70.7% 48.4%);
-  --chart-1-on-tint: hsl(223.5 77.2% 43.6%);
   --sidebar: hsl(0 0% 100%);
   --sidebar-foreground: hsl(214.3 52.8% 10%);
   --sidebar-primary: hsl(223 70.7% 48.4%);
@@ -215,9 +222,6 @@
   --muted-foreground: hsl(214.6 11.4% 68.4%);
   --accent: hsl(82.9 49.7% 13.3%);
   --accent-foreground: hsl(84.9 56.5% 71.3%);
-  --info: hsl(81 71.8% 57%);
-  --info-foreground: hsl(214.5 34.8% 6.5%);
-  --info-on-tint: hsl(84.9 56.5% 71.3%);
   --border: hsl(214.5 21.7% 19.3%);
   --border-strong: hsl(214.5 16.9% 26%);
   --control-edge: hsl(214.5 10.4% 46.8%);
@@ -226,8 +230,6 @@
   --ring: hsl(81 71.8% 57%);
   --surface-subtle: hsl(214.4 47.3% 9%);
   --surface-elevated: hsl(214.4 31% 14.6%);
-  --chart-1: hsl(81 71.8% 57%);
-  --chart-1-on-tint: hsl(81 71.8% 57%);
   --sidebar: hsl(214.4 37.4% 11.7%);
   --sidebar-foreground: hsl(214.6 42.3% 95.9%);
   --sidebar-primary: hsl(81 71.8% 57%);
@@ -294,9 +296,6 @@
   --muted-foreground: hsl(186.2 17.6% 33.1%);
   --accent: hsl(176.2 61.4% 91.4%);
   --accent-foreground: hsl(178.6 96.1% 19.1%);
-  --info: hsl(178.6 94.9% 21.1%);
-  --info-foreground: hsl(0 0% 100%);
-  --info-on-tint: hsl(178.6 96.1% 19.1%);
   --border: hsl(186.1 36.3% 85.6%);
   --border-strong: hsl(186.2 26.1% 77.7%);
   --control-edge: hsl(186.2 12.7% 47.8%);
@@ -305,8 +304,6 @@
   --ring: hsl(178.6 94.9% 21.1%);
   --surface-subtle: hsl(186.1 60.4% 94.6%);
   --surface-elevated: hsl(0 0% 100%);
-  --chart-1: hsl(178.6 94.9% 21.1%);
-  --chart-1-on-tint: hsl(178.6 92.9% 20.6%);
   --sidebar: hsl(0 0% 100%);
   --sidebar-foreground: hsl(186.1 100% 6%);
   --sidebar-primary: hsl(178.6 94.9% 21.1%);
@@ -384,9 +381,6 @@
   --muted-foreground: hsl(186.1 10.1% 66.2%);
   --accent: hsl(172.6 39.5% 14.5%);
   --accent-foreground: hsl(171.6 54% 74.4%);
-  --info: hsl(173.6 63.2% 57%);
-  --info-foreground: hsl(186.3 45.7% 5%);
-  --info-on-tint: hsl(171.6 54% 74.4%);
   --border: hsl(186.2 25.9% 16.6%);
   --border-strong: hsl(186.2 19% 23.1%);
   --control-edge: hsl(186.2 10.8% 43.7%);
@@ -395,8 +389,6 @@
   --ring: hsl(173.6 63.2% 57%);
   --surface-subtle: hsl(186.2 79.5% 5.9%);
   --surface-elevated: hsl(186.1 43.3% 11.3%);
-  --chart-1: hsl(173.6 63.2% 57%);
-  --chart-1-on-tint: hsl(173.3 71.5% 62.7%);
   --sidebar: hsl(185.9 58.7% 8.4%);
   --sidebar-foreground: hsl(186.1 31.3% 94.8%);
   --sidebar-primary: hsl(173.6 63.2% 57%);
@@ -463,9 +455,6 @@
   --muted-foreground: hsl(252.9 10.2% 38.2%);
   --accent: hsl(245.2 93.5% 96.6%);
   --accent-foreground: hsl(256.2 50.3% 43.7%);
-  --info: hsl(256.7 56.4% 52.4%);
-  --info-foreground: hsl(0 0% 100%);
-  --info-on-tint: hsl(256.2 50.3% 43.7%);
   --border: hsl(251.9 37.5% 90.2%);
   --border-strong: hsl(252.1 23.6% 82.8%);
   --control-edge: hsl(252.5 8.8% 53.1%);
@@ -474,8 +463,6 @@
   --ring: hsl(256.7 56.4% 52.4%);
   --surface-subtle: hsl(251.6 91.8% 97.5%);
   --surface-elevated: hsl(0 0% 100%);
-  --chart-1: hsl(256.7 56.4% 52.4%);
-  --chart-1-on-tint: hsl(258.1 57.1% 47.1%);
   --sidebar: hsl(0 0% 100%);
   --sidebar-foreground: hsl(255.5 31.1% 11.2%);
   --sidebar-primary: hsl(256.7 56.4% 52.4%);
@@ -553,9 +540,6 @@
   --muted-foreground: hsl(251.8 7.8% 69.2%);
   --accent: hsl(254.7 21.9% 20.8%);
   --accent-foreground: hsl(253.4 97.7% 89%);
-  --info: hsl(255.2 98.4% 82.6%);
-  --info-foreground: hsl(253.6 21.4% 7%);
-  --info-on-tint: hsl(253.4 97.7% 89%);
   --border: hsl(253.3 13.7% 20.3%);
   --border-strong: hsl(252.9 10.9% 26.9%);
   --control-edge: hsl(252.4 6.8% 47.9%);
@@ -564,8 +548,6 @@
   --ring: hsl(255.2 98.4% 82.6%);
   --surface-subtle: hsl(254.9 28.2% 10%);
   --surface-elevated: hsl(254 19.2% 15.6%);
-  --chart-1: hsl(255.2 98.4% 82.6%);
-  --chart-1-on-tint: hsl(253.8 98.5% 87.5%);
   --sidebar: hsl(254.4 22.8% 12.7%);
   --sidebar-foreground: hsl(251.4 31.1% 96.2%);
   --sidebar-primary: hsl(255.2 98.4% 82.6%);
@@ -632,9 +614,6 @@
   --muted-foreground: hsl(31.6 17.9% 34.2%);
   --accent: hsl(16.5 96.4% 94.7%);
   --accent-foreground: hsl(21.1 98.4% 27.5%);
-  --info: hsl(21.6 98.1% 32.8%);
-  --info-foreground: hsl(0 0% 100%);
-  --info-on-tint: hsl(21.1 98.4% 27.5%);
   --border: hsl(31.4 42.3% 86.5%);
   --border-strong: hsl(31.4 29.7% 78.7%);
   --control-edge: hsl(31.5 13.3% 48.8%);
@@ -643,8 +622,6 @@
   --ring: hsl(21.6 98.1% 32.8%);
   --surface-subtle: hsl(31.3 73.9% 95.1%);
   --surface-elevated: hsl(0 0% 100%);
-  --chart-1: hsl(21.6 98.1% 32.8%);
-  --chart-1-on-tint: hsl(21.3 98.3% 29.2%);
   --sidebar: hsl(0 0% 100%);
   --sidebar-foreground: hsl(32.4 76.5% 7.4%);
   --sidebar-primary: hsl(21.6 98.1% 32.8%);
@@ -722,9 +699,6 @@
   --muted-foreground: hsl(31.3 11.3% 66.8%);
   --accent: hsl(22.8 42% 17.3%);
   --accent-foreground: hsl(22.4 98.2% 80.9%);
-  --info: hsl(23.4 97.6% 67.9%);
-  --info-foreground: hsl(31.6 43.4% 5.5%);
-  --info-on-tint: hsl(22.4 98.2% 80.9%);
   --border: hsl(31.8 25.5% 17.4%);
   --border-strong: hsl(31.7 19.3% 23.9%);
   --control-edge: hsl(31.5 11.4% 44.5%);
@@ -733,8 +707,6 @@
   --ring: hsl(23.4 97.6% 67.9%);
   --surface-subtle: hsl(32.2 65.4% 6.9%);
   --surface-elevated: hsl(32.2 39% 12.4%);
-  --chart-1: hsl(23.4 97.6% 67.9%);
-  --chart-1-on-tint: hsl(22.5 98.6% 77.9%);
   --sidebar: hsl(32.4 49.5% 9.6%);
   --sidebar-foreground: hsl(31.2 36.7% 95.1%);
   --sidebar-primary: hsl(23.4 97.6% 67.9%);
@@ -795,7 +767,6 @@
   --secondary-foreground: hsl(216.4 75.4% 6.3%);
   --muted-foreground: hsl(214.5 19.1% 29.3%);
   --accent-foreground: hsl(223.6 82% 33.3%);
-  --info-on-tint: hsl(223.6 82% 33.3%);
   --border: hsl(214.5 32.4% 83.2%);
   --border-strong: hsl(214.5 20.3% 70.8%);
   --control-edge: hsl(214.5 14.7% 40.2%);
@@ -828,7 +799,6 @@
   --secondary-foreground: hsl(214.6 81.1% 98.9%);
   --muted-foreground: hsl(214.6 18.9% 80.3%);
   --accent-foreground: hsl(85.1 77.9% 79%);
-  --info-on-tint: hsl(85.1 77.9% 79%);
   --border: hsl(214.5 16.4% 27%);
   --border-strong: hsl(214.5 12.7% 36.7%);
   --control-edge: hsl(214.5 13.1% 60.9%);
@@ -853,7 +823,6 @@
   --secondary-foreground: hsl(187.7 100% 3.8%);
   --muted-foreground: hsl(186.2 22.3% 25.6%);
   --accent-foreground: hsl(178.6 98.4% 15.2%);
-  --info-on-tint: hsl(178.6 98.4% 15.2%);
   --border: hsl(186.1 25.7% 79.9%);
   --border-strong: hsl(186.2 17.3% 67.2%);
   --control-edge: hsl(186.2 16.1% 36.4%);
@@ -885,7 +854,6 @@
   --secondary-foreground: hsl(186 85.3% 98.1%);
   --muted-foreground: hsl(186.1 15.9% 78%);
   --accent-foreground: hsl(171.5 77.9% 82.1%);
-  --info-on-tint: hsl(171.5 77.9% 82.1%);
   --border: hsl(186.2 18.3% 24.1%);
   --border-strong: hsl(186.2 13.6% 33.7%);
   --control-edge: hsl(186.2 11.6% 57.7%);
@@ -910,7 +878,6 @@
   --secondary-foreground: hsl(256.8 46.4% 7.1%);
   --muted-foreground: hsl(253.2 12.2% 30.6%);
   --accent-foreground: hsl(258.6 61.1% 36%);
-  --info-on-tint: hsl(258.6 61.1% 36%);
   --border: hsl(252 23.2% 84.4%);
   --border-strong: hsl(252.2 14.2% 72.1%);
   --control-edge: hsl(252.8 9.5% 41.5%);
@@ -942,7 +909,6 @@
   --secondary-foreground: hsl(251.3 65.8% 99.1%);
   --muted-foreground: hsl(251.7 13.1% 81.1%);
   --accent-foreground: hsl(252.4 96.4% 93.7%);
-  --info-on-tint: hsl(252.4 96.4% 93.7%);
   --border: hsl(252.9 10.5% 28%);
   --border-strong: hsl(252.6 8.2% 37.7%);
   --control-edge: hsl(252.2 9% 62%);
@@ -967,7 +933,6 @@
   --secondary-foreground: hsl(26.6 100% 4.4%);
   --muted-foreground: hsl(31.8 22.2% 26.7%);
   --accent-foreground: hsl(20.1 100% 22.4%);
-  --info-on-tint: hsl(20.1 100% 22.4%);
   --border: hsl(31.4 29.3% 80.7%);
   --border-strong: hsl(31.4 19.3% 68.1%);
   --control-edge: hsl(31.6 16.6% 37.5%);
@@ -999,7 +964,6 @@
   --secondary-foreground: hsl(31.2 86.8% 98.4%);
   --muted-foreground: hsl(31.3 18% 78.6%);
   --accent-foreground: hsl(22 98.7% 89.4%);
-  --info-on-tint: hsl(22 98.7% 89.4%);
   --border: hsl(31.6 18.6% 24.9%);
   --border-strong: hsl(31.5 14.2% 34.5%);
   --control-edge: hsl(31.4 12.9% 58.5%);

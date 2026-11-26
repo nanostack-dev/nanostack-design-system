@@ -58,7 +58,7 @@ const defaultLabels: ThemePickerLabels = {
   system: 'System',
   palette: 'Theme',
   contrast: 'Increase contrast',
-  contrastDescription: 'Darker text and stronger edges.',
+  contrastDescription: 'Stronger text and edges.',
 };
 
 const modes: { value: Theme; icon: typeof SunIcon; label: keyof ThemeSettingsLabels }[] = [
@@ -101,6 +101,7 @@ export function ThemeSettings({ labels }: ThemeSettingsProps) {
   const text = { ...defaultLabels, ...labels };
   const id = useId();
   const contrastId = `${id}-contrast`;
+  const contrastDescriptionId = `${id}-contrast-description`;
 
   return (
     <FieldGroup>
@@ -152,10 +153,11 @@ export function ThemeSettings({ labels }: ThemeSettingsProps) {
       <Field orientation="horizontal">
         <FieldContent>
           <FieldLabel htmlFor={contrastId}>{text.contrast}</FieldLabel>
-          <FieldDescription>{text.contrastDescription}</FieldDescription>
+          <FieldDescription id={contrastDescriptionId}>{text.contrastDescription}</FieldDescription>
         </FieldContent>
         <Switch
           id={contrastId}
+          aria-describedby={contrastDescriptionId}
           checked={contrast === 'high'}
           onCheckedChange={(checked) => setContrast(checked ? 'high' : 'standard')}
         />

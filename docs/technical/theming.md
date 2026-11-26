@@ -25,11 +25,11 @@ A palette is a set of inputs, not a list of colours: the neutral hue and chroma,
 
 [`scripts/generate-themes.mjs`](../../scripts/generate-themes.mjs) applies one OKLCH lightness ladder per mode to each palette's inputs and writes literal `hsl()` values into the region of `src/styles.css` between `/* @generated themes:start */` and `/* @generated themes:end */`. One ladder means every palette has the same lightness steps, so a contrast ratio that passes in one palette is close in every other. Out-of-gamut colours keep their lightness and hue and lose chroma until they fit ([`scripts/lib/oklch.mjs`](../../scripts/lib/oklch.mjs)).
 
-Each palette gets one block per mode and contrast level. A high-contrast block lists only the tokens the high ladder changes (darker text, stronger borders and control edges, a deeper ground). The selectors live in [`scripts/lib/theme-selectors.mjs`](../../scripts/lib/theme-selectors.mjs), shared by the generator and the token checks:
+Each palette gets one block per mode and contrast level. A high-contrast block lists only the tokens the high ladder changes (more contrast for text, stronger borders and control edges, a deeper ground). The selectors live in [`scripts/lib/theme-selectors.mjs`](../../scripts/lib/theme-selectors.mjs), shared by the generator and the token checks:
 
 - The default palette also answers to `:root` and `.dark`, so a page with no attribute is Tide.
 - A palette set on any element re-themes its subtree in the current mode. The picker's previews use this.
-- Status tokens (`--success`, `--warning`, `--destructive`, `--info` tints), `--chart-2..5`, the radius and the glass blur, sheen and grain stay hand-written, shared by every palette.
+- Status tokens (`--success`, `--warning`, `--destructive`, `--info`, with their foregrounds and tints), `--chart-1..5`, the radius and the glass blur, sheen and grain stay hand-written, shared by every palette. Info and chart colours carry meaning of their own: if they followed the accent, info would look like success in Tide dark and chart-1 would match chart-3 or chart-4 in Lagoon and Aurora.
 
 Never edit the generated region by hand. Change the inputs or the ladder, then run `node scripts/generate-themes.mjs`. `pnpm lint` runs it with `--check` and fails when the region is stale.
 
@@ -54,7 +54,7 @@ Never edit the generated region by hand. Change the inputs or the ladder, then r
 
 ## Contrast
 
-`pnpm lint` checks 39 token pairs in 4 palettes × 2 modes × 2 contrast levels. Text pairs need 4.5:1 and edge pairs 3:1. Glass surfaces are measured from real renders per palette ([material](material.md#contrast)).
+`pnpm lint` checks 40 token pairs in 4 palettes × 2 modes × 2 contrast levels. Text pairs need 4.5:1 and edge pairs 3:1. Glass surfaces are measured from real renders per palette ([material](material.md#contrast)).
 
 ## Known limitations
 

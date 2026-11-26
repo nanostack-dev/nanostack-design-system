@@ -256,6 +256,14 @@
       "reason": "soft brand button on a muted panel (base at 10% over muted)",
       "bgAlpha": 0.1,
       "over": "muted"
+    },
+    {
+      "fg": "info-on-tint",
+      "bg": "info",
+      "min": 4.5,
+      "reason": "info badge on a selected table row (base at 10% over accent)",
+      "bgAlpha": 0.1,
+      "over": "accent"
     }
   ]
 }
