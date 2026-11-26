@@ -12,13 +12,13 @@ export type InputSize = 'sm' | 'md';
 export type InputFont = 'sans' | 'mono';
 
 const inputClasses = cva(
-  'w-full min-w-0 rounded-3xl border border-transparent px-3 py-1 transition-[color,box-shadow,background-color] outline-none file:inline-flex file:border-0 file:bg-transparent file:text-sm file:font-medium file:font-sans file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+  'w-full min-w-0 rounded-3xl border px-3 py-1 transition-[color,box-shadow,background-color] outline-none file:inline-flex file:border-0 file:bg-transparent file:text-sm file:font-medium file:font-sans file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
   {
     variants: {
       variant: {
-        soft: 'bg-input/50',
+        soft: 'border-control-edge bg-background',
         ghost:
-          'bg-transparent hover:bg-input/50 focus-visible:bg-input/50 read-only:hover:bg-transparent',
+          'border-transparent bg-transparent hover:bg-muted focus-visible:bg-background read-only:hover:bg-transparent',
       },
       size: {
         sm: 'h-8 file:h-6',

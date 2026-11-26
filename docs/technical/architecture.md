@@ -2,15 +2,15 @@
 
 This repository publishes a React library and a Storybook site. Applications own routing, data, copy and product-specific visuals; the library owns reusable UI, layout and tokens. [ADR 0001](../adr/0001-own-shadcn-with-a-closed-api.md) records the trade-off behind the current closed API.
 
-| Area                                | Responsibility                                                        |
-| ----------------------------------- | --------------------------------------------------------------------- |
-| `src/components/<name>`             | Owned shadcn-origin component, closed public barrel and usage stories |
-| `src/layout`                        | Box and spacing/layout primitives                                     |
-| `src/blocks`                        | Product-independent compositions of public components                 |
-| `src/provider`                      | Router link adapter, tooltip provider, motion and material context    |
-| `src/styles.css`                    | Semantic tokens, Tailwind mapping and base styles                     |
-| `upstream/ui`, `upstream/lock.json` | Untouched shadcn snapshots used as three-way merge bases              |
-| `scripts`                           | Library packaging, styles, consumer verification and upstream updates |
+| Area                                | Responsibility                                                                           |
+| ----------------------------------- | ---------------------------------------------------------------------------------------- |
+| `src/components/<name>`             | Owned shadcn-origin component, closed public barrel and usage stories                    |
+| `src/layout`                        | Box and spacing/layout primitives                                                        |
+| `src/blocks`                        | Product-independent compositions of public components                                    |
+| `src/provider`                      | Router link adapter, tooltip provider, motion and material context                       |
+| `src/styles.css`                    | Semantic tokens (palette tokens in a generated region), Tailwind mapping and base styles |
+| `upstream/ui`, `upstream/lock.json` | Untouched shadcn snapshots used as three-way merge bases                                 |
+| `scripts`                           | Library packaging, styles, consumer verification and upstream updates                    |
 
 ## Public boundary
 
@@ -18,7 +18,7 @@ Public components accept typed variants, content, behavior, accessibility attrib
 
 Owned components can import internal parts by their source path. Blocks, layout and stories consume public barrels as products do. [package.json](../../package.json) owns exported paths, peer versions and packed files; upstream snapshots are neither built nor exported.
 
-The [DesignSystemProvider](../../src/provider/design-system-provider.tsx) supplies a router link adapter, tooltip context, the motion policy and the surface [material](material.md) (`solid` or `glass`). It defaults to ordinary anchors, allowing consumers without a router. ThemeProvider supplies theme selection separately; the `dark` class selects dark tokens. Consumers import library CSS after Tailwind and point Tailwind's `@source` at the installed `dist` output.
+The [DesignSystemProvider](../../src/provider/design-system-provider.tsx) supplies a router link adapter, tooltip context, the motion policy and the surface [material](material.md) (`solid` or `glass`). It defaults to ordinary anchors, allowing consumers without a router. ThemeProvider supplies theme selection separately: the `dark` class selects dark tokens, and `data-ns-palette` and `data-ns-contrast` select the colour theme and contrast level ([theming](theming.md)). Consumers import library CSS after Tailwind and point Tailwind's `@source` at the installed `dist` output.
 
 ## Build and verification
 

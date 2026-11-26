@@ -3,6 +3,7 @@ import type { Preview } from '@storybook/react-vite';
 
 import { useLayoutEffect } from 'react';
 
+import { palettes } from '../src/blocks/theme';
 import { DesignSystemProvider, type Material } from '../src/provider';
 import { ThemedDocsContainer } from './docs-container';
 import './preview.css';
@@ -24,8 +25,40 @@ function StoryMaterial({ material }: { material: Material }) {
   return null;
 }
 
+// The palette and contrast attributes that ThemeProvider writes, so every
+// story can be reviewed in every theme without mounting the provider.
+function StoryTheme({ palette, contrast }: { palette: string; contrast: string }) {
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.dataset.nsPalette = palette;
+    root.dataset.nsContrast = contrast;
+  }, [palette, contrast]);
+  return null;
+}
+
 const preview: Preview = {
   globalTypes: {
+    palette: {
+      description: 'Colour theme (data-ns-palette)',
+      toolbar: {
+        title: 'Palette',
+        icon: 'paintbrush',
+        items: palettes.map((palette) => ({ value: palette.id, title: palette.label })),
+        dynamicTitle: true,
+      },
+    },
+    contrast: {
+      description: 'Contrast level (data-ns-contrast)',
+      toolbar: {
+        title: 'Contrast',
+        icon: 'contrast',
+        items: [
+          { value: 'standard', title: 'Standard contrast' },
+          { value: 'high', title: 'High contrast' },
+        ],
+        dynamicTitle: true,
+      },
+    },
     material: {
       description: 'DesignSystemProvider material',
       toolbar: {
@@ -43,6 +76,10 @@ const preview: Preview = {
     (Story, context) => (
       <DesignSystemProvider material={context.globals.material as Material}>
         <StoryMaterial material={context.globals.material as Material} />
+        <StoryTheme
+          palette={String(context.globals.palette ?? 'tide')}
+          contrast={String(context.globals.contrast ?? 'standard')}
+        />
         <Story />
       </DesignSystemProvider>
     ),
@@ -62,7 +99,12 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { theme: defaultTheme(), material: 'solid' },
+  initialGlobals: {
+    theme: defaultTheme(),
+    material: 'solid',
+    palette: import.meta.env.VITE_STORYBOOK_PALETTE ?? 'tide',
+    contrast: 'standard',
+  },
   tags: ['autodocs'],
 };
 

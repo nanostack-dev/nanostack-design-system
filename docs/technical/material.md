@@ -57,26 +57,37 @@ Do not add a second line to a glass surface. A lighter border over a translucent
 
 Measured on Chromium renders at 1440 × 900, glass material, with the text inside the surface hidden, pixels next to controls excluded (focus rings and button shadows paint outside them) and pixels within 2 px of a separator line excluded (a table row border is not a background text sits on; 0.3.3 removed a frame border, which moved the rows onto the sample grid and read the 1 px row lines as a 4.84 background). The worst background is the sampled pixel closest in luminance to the text colour. The `WorstCase` story scrolls a `bg-foreground` block (the darkest colour in light, the lightest in dark) under the top bar and opens a popover over it.
 
+Tide, 0.4.0:
+
 | Surface (story)                  | Light muted | Light primary | Dark muted | Dark primary |
 | -------------------------------- | ----------- | ------------- | ---------- | ------------ |
-| Top bar over content (WorstCase) | 4.90        | 4.79          | 5.14       | 8.50         |
-| Popover over content (WorstCase) | 5.08        | 4.97          | 4.86       | 8.03         |
-| Sidebar                          | 4.83        | 4.73          | 4.81       | 7.95         |
-| Dropdown menu                    | 6.36        | 6.22          | 6.34       | 10.49        |
-| Dialog                           | 6.15        | 6.01          | 6.18       | 10.23        |
-| Alert dialog                     | 6.19        | 6.06          | 6.29       | 10.40        |
-| Sheet                            | 6.13        | 6.00          | 5.91       | 9.77         |
-| Toast                            | 6.40        | 6.26          | 6.37       | 10.53        |
-| Stat card                        | 6.24        | 6.11          | 6.75       | 11.16        |
-| Data table frame                 | 6.29        | 6.15          | 6.83       | 11.30        |
-| Card                             | 6.29        | 6.15          | 6.77       | 11.19        |
-| Table outside a card             | 6.36        | 6.22          | 6.83       | 11.30        |
+| Top bar over content (WorstCase) | 5.35        | 4.93          | 5.64       | 8.17         |
+| Popover over content (WorstCase) | 5.55        | 5.11          | 5.40       | 7.82         |
+| Sidebar                          | 5.24        | 4.83          | 5.43       | 7.87         |
+| Dropdown menu                    | 6.63        | 6.11          | 6.67       | 9.66         |
+| Dialog                           | 6.47        | 5.96          | 6.56       | 9.50         |
+| Alert dialog                     | 6.51        | 6.00          | 6.58       | 9.54         |
+| Sheet                            | 6.45        | 5.95          | 6.22       | 9.00         |
+| Toast                            | 6.62        | 6.10          | 6.75       | 9.78         |
+| Stat card                        | 6.63        | 6.11          | 7.58       | 10.98        |
+| Data table frame                 | 6.63        | 6.11          | 7.65       | 11.09        |
+| Card                             | 6.68        | 6.15          | 7.64       | 11.08        |
+| Table outside a card             | 6.69        | 6.17          | 7.71       | 11.17        |
 
-Light values are 0.3.6 (Tide backdrop); dark values are 0.3.5, except the dark data surfaces, which are 0.3.7, and the sidebar, which is 0.3.8: the liquid sidebar moved light muted text from 5.93 to 4.83 and dark from 5.82 to 4.81, its worst pixel now over the blue light behind the column. Keep it at 4.5 or more when tuning the sidebar surface or the backdrop glows. Against the 0.3.5 mesh the light sidebar rose from 5.14 to 5.93, because its worst pixel was over the violet glow; cards and the data table frame moved by 0.05 to 0.11 (6.24 to 6.36), because the blue wash now sits under the top cards. 0.3.5 lifted the dark data surface (`hsl(222 36% 12% / 0.88)`, was `hsl(222 40% 10% / 0.86)`), which moved dark data-surface text from about 7.1 to 6.8. 0.3.7 lifts it again (`hsl(222 30% 15% / 0.9)`): stat card, data table frame, card and table measure 6.25 to 6.35 muted and 10.34 to 10.5 primary.
+The lowest reading of each palette ([theming](theming.md)), over every surface above:
+
+| Palette | Light muted  | Light primary | Dark muted   | Dark primary |
+| ------- | ------------ | ------------- | ------------ | ------------ |
+| Tide    | 5.24 sidebar | 4.83 sidebar  | 5.40 popover | 7.82 popover |
+| Lagoon  | 5.31 top bar | 5.14 top bar  | 5.39 sidebar | 6.84 sidebar |
+| Aurora  | 5.21 sidebar | 4.96 sidebar  | 5.40 popover | 5.93 popover |
+| Ember   | 5.06 sidebar | 4.71 sidebar  | 5.41 popover | 5.89 popover |
+
+0.4.0 tints the neutrals with the palette hue and lifts the dark card and muted steps, so most readings rose from 0.3.8. The light sidebar stays the tightest surface: its worst pixel sits over the brightest backdrop glow. Keep every palette at 4.5 or more when tuning the sidebar surface, the backdrop glows or a palette's accent.
 
 The prototype's 58% top bar and 72% popovers measured 2.46 and 3.51 for light muted text over the same content. The `select` popup uses the dropdown-menu token and fill; its options cover the sampled area, so it has no separate row.
 
-Repeat the measurement after a glass token change: start `pnpm storybook`, then run `node scripts/measure-glass-contrast.mjs`. It writes the screenshots and `contrast.json` to `.ui-craft/glass/` and prints one line per surface. `GLASS_CSS` tries other token values without editing `styles.css`. The axe check in `pnpm test` cannot see through `backdrop-filter`.
+Repeat the measurement after a glass token or palette change: start `pnpm storybook`, then run `node scripts/measure-glass-contrast.mjs`. It measures every palette (`PALETTES=tide,ember` limits them), writes the screenshots and `contrast.json` to `.ui-craft/glass/` and prints one line per palette, mode and surface. `GLASS_CSS` tries other token values without editing `styles.css`. The axe check in `pnpm test` cannot see through `backdrop-filter`.
 
 ## Edge visibility
 

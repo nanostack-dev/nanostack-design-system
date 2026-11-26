@@ -33,3 +33,11 @@ The design system owns visual primitives that Nanostack products can use unchang
 **Backdrop:** The brand-hued background that the app frame paints under glass, so the translucent chrome has something to show.
 
 **Nanostack mark:** The Nanostack logo symbol, drawn in the current text colour. The sidebar brand slot shows it next to the product name unless the product passes its own mark.
+
+**Palette:** A colour theme: the neutral hue, the accent and the backdrop glows, chosen by the person (Tide, Lagoon, Aurora or Ember). Tide is the default. Not a material: glass and solid apply to every palette.
+
+**Contrast level:** `standard` or `high`. High raises text contrast (darker text in light mode, brighter in dark) and strengthens borders and control edges in every palette.
+
+**Ground:** The page colour under the backdrop. It sits below `--background`, which is the lightest control surface.
+
+**Segment:** The segmented control's track (`--segment`) and its raised thumb for the pressed item (`--segment-thumb`).

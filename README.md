@@ -80,7 +80,7 @@ import { DataTable } from '@nanostackorg/design-system/blocks/data-table';
 - `cn` merges Tailwind classes: `@nanostackorg/design-system/utils`.
 - Compose layout with `Box`, `Stack`, `Inline`, `Columns` and `Spread`. Box is the open primitive for building a product component with tokens; pages and routes use the closed public components and request missing variants here.
 - Supply `DesignSystemProvider linkComponent={RouterLink}` for product router links. Without an adapter, links render ordinary anchors.
-- Dark mode is the `dark` class on `<html>`. `ThemeProvider` and `ThemeToggle` manage it.
+- Dark mode is the `dark` class on `<html>`; the colour theme and contrast level are `data-ns-palette` and `data-ns-contrast`. `ThemeProvider` manages all three, and `ThemePicker` lets people choose them ([theming](docs/technical/theming.md)).
 
 ## Develop
 

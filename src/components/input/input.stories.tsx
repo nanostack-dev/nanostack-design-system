@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, fn } from 'storybook/test';
+import { expect, fn, waitFor } from 'storybook/test';
 
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/field';
 import { Input, type InputFont, type InputSize, type InputVariant } from '@/components/input';
@@ -161,7 +161,9 @@ export const Ghost: Story = {
     await expect(getComputedStyle(input).backgroundColor).toBe('rgba(0, 0, 0, 0)');
     await userEvent.click(input);
     await expect(input).toHaveFocus();
-    await expect(getComputedStyle(input).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+    await waitFor(() =>
+      expect(getComputedStyle(input).backgroundColor).not.toBe('rgba(0, 0, 0, 0)'),
+    );
   },
 };
 

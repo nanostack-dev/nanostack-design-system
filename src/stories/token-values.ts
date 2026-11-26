@@ -4,13 +4,24 @@ export type ThemeName = 'light' | 'dark';
 export type Rgb = readonly [number, number, number];
 export type TokenValues = Record<string, string>;
 
-function declarationsOf(selector: string): TokenValues {
-  const start = stylesSource.indexOf(`\n${selector} {`);
-  if (start < 0) throw new Error(`styles.css has no ${selector} block.`);
+function declarationsAt(start: number): TokenValues {
   const body = stylesSource.slice(start, stylesSource.indexOf('}', start));
   return Object.fromEntries(
     [...body.matchAll(/--([\w-]+):\s*(hsl\([^)]*\))/g)].map(([, name, value]) => [name, value]),
   );
+}
+
+/**
+ * The tokens of one mode in the default palette: the hand-written block
+ * (`:root {` or `.dark {`: status, chart and glass tokens) merged with the
+ * generated block whose selector list starts with the same selector
+ * (docs/technical/theming.md).
+ */
+function declarationsOf(selector: string): TokenValues {
+  const own = stylesSource.indexOf(`\n${selector} {`);
+  const generated = stylesSource.indexOf(`\n${selector},\n`);
+  if (own < 0 || generated < 0) throw new Error(`styles.css has no ${selector} blocks.`);
+  return { ...declarationsAt(own), ...declarationsAt(generated) };
 }
 
 const lightValues = declarationsOf(':root');
@@ -20,11 +31,15 @@ export const tokenValues: Record<ThemeName, TokenValues> = {
   dark: { ...lightValues, ...declarationsOf('.dark') },
 };
 
-// The translucent glass tokens are a material, not opaque colours: Foundations/Glass
-// material shows them, and their contrast is measured on real renders.
-export const colorTokenNames = Object.keys(lightValues).filter(
-  (name) => !name.startsWith('glass-'),
-);
+// Translucent tokens are not opaque colours: the glass material tokens
+// (Foundations/Glass material shows them, and their contrast is measured on
+// real renders) and the segmented-control track and edge (`--segment`,
+// `--segment-edge`, shown in the ToggleGroup and Tabs stories).
+const isOpaque = (name: string) =>
+  !name.startsWith('glass-') &&
+  [lightValues[name], tokenValues.dark[name]].every((value) => value && !value.includes('/'));
+
+export const colorTokenNames = Object.keys(lightValues).filter(isOpaque);
 
 /**
  * Converts a CSS `hsl(H S% L%)` value to sRGB channels from 0 to 255 (CSS Color 4 formula).

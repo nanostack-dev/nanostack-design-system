@@ -50,7 +50,13 @@ export function Table(props: TableProps) {
 }
 
 export function TableHeader(props: TableHeaderProps) {
-  return <thead data-slot="table-header" className="[&_tr]:border-b" {...props} />;
+  return (
+    <thead
+      data-slot="table-header"
+      className="[&_tr]:border-b [&_tr]:border-border-strong"
+      {...props}
+    />
+  );
 }
 
 export function TableBody(props: TableBodyProps) {

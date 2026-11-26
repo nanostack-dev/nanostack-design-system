@@ -209,6 +209,61 @@
       "bg": "popover",
       "min": 3,
       "reason": "Edge of an unfilled control (checkbox, switch, OTP slot) on the popover or menu (WCAG 1.4.11)"
+    },
+    {
+      "fg": "muted-foreground",
+      "bg": "ground",
+      "min": 4.5,
+      "reason": "A page description on the ground under the glass"
+    },
+    {
+      "fg": "muted-foreground",
+      "bg": "segment",
+      "over": "ground",
+      "min": 4.5,
+      "reason": "An idle segment label on the segmented track, over the ground"
+    },
+    {
+      "fg": "foreground",
+      "bg": "segment-thumb",
+      "min": 4.5,
+      "reason": "The selected segment label on its thumb"
+    },
+    {
+      "fg": "primary",
+      "bg": "card",
+      "min": 4.5,
+      "reason": "Accent text (a link, the selected icon) on a card"
+    },
+    {
+      "fg": "primary",
+      "bg": "background",
+      "min": 4.5,
+      "reason": "Accent text on the page"
+    },
+    {
+      "fg": "destructive-on-tint",
+      "bg": "destructive",
+      "min": 4.5,
+      "reason": "soft critical button on a muted panel (base at 20% over muted, the dark rest tint)",
+      "bgAlpha": 0.2,
+      "over": "muted"
+    },
+    {
+      "fg": "primary",
+      "bg": "primary",
+      "min": 4.5,
+      "reason": "soft brand button on a muted panel (base at 10% over muted)",
+      "bgAlpha": 0.1,
+      "over": "muted"
+    },
+    {
+      "fg": "info-on-tint",
+      "bg": "info",
+      "min": 4.5,
+      "reason": "info badge on a selected table row (base at 10% over accent)",
+      "bgAlpha": 0.1,
+      "over": "accent"
     }
   ]
 }

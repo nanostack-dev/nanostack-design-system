@@ -11,6 +11,14 @@ import {
 } from 'react';
 
 import { IconButton } from '@/components/button';
+
+import {
+  type Contrast,
+  defaultPalette as fallbackPalette,
+  isContrast,
+  isPalette,
+  type Palette,
+} from './palettes';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,11 +34,21 @@ export interface ThemeContextValue {
   theme: Theme;
   resolvedTheme: ResolvedTheme;
   setTheme: (theme: Theme) => void;
+  /** The colour theme, written to `<html data-ns-palette>`. */
+  palette: Palette;
+  setPalette: (palette: Palette) => void;
+  /** `high` darkens ink and strengthens rules and edges, written to `<html data-ns-contrast>`. */
+  contrast: Contrast;
+  setContrast: (contrast: Contrast) => void;
 }
 
 export interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
+  defaultPalette?: Palette;
+  defaultContrast?: Contrast;
+  /** Light, dark or system is stored under this key; the palette under
+   * `<key>-palette` and the contrast under `<key>-contrast`. */
   storageKey?: string;
 }
 
@@ -60,21 +78,40 @@ function isTheme(value: unknown): value is Theme {
   return value === 'light' || value === 'dark' || value === 'system';
 }
 
-function readStoredTheme(storageKey: string): Theme | null {
+function readStored<T>(key: string, isValid: (value: unknown) => value is T): T | null {
   try {
-    const value = window.localStorage.getItem(storageKey);
-    return isTheme(value) ? value : null;
+    const value = window.localStorage.getItem(key);
+    return isValid(value) ? value : null;
   } catch {
     return null;
   }
 }
 
-function writeStoredTheme(storageKey: string, theme: Theme) {
+function writeStored(key: string, value: string) {
   try {
-    window.localStorage.setItem(storageKey, theme);
+    window.localStorage.setItem(key, value);
   } catch {
     return;
   }
+}
+
+/** Reads a stored choice once, on the client; the default on the server. */
+function useStoredState<T extends string>(
+  key: string,
+  isValid: (value: unknown) => value is T,
+  fallback: T,
+) {
+  const [value, setValue] = useState<T>(() =>
+    typeof window === 'undefined' ? fallback : (readStored(key, isValid) ?? fallback),
+  );
+  const store = useCallback(
+    (next: T) => {
+      setValue(next);
+      writeStored(key, next);
+    },
+    [key],
+  );
+  return [value, store] as const;
 }
 
 function subscribeToSystemTheme(onChange: () => void) {
@@ -94,10 +131,16 @@ function getServerSystemTheme(): ResolvedTheme {
 export function ThemeProvider({
   children,
   defaultTheme = 'system',
+  defaultPalette = fallbackPalette,
+  defaultContrast = 'standard',
   storageKey = 'nanostack-theme',
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(() =>
-    typeof window === 'undefined' ? defaultTheme : (readStoredTheme(storageKey) ?? defaultTheme),
+  const [theme, setTheme] = useStoredState(storageKey, isTheme, defaultTheme);
+  const [palette, setPalette] = useStoredState(`${storageKey}-palette`, isPalette, defaultPalette);
+  const [contrast, setContrast] = useStoredState(
+    `${storageKey}-contrast`,
+    isContrast,
+    defaultContrast,
   );
   const systemTheme = useSyncExternalStore(
     subscribeToSystemTheme,
@@ -112,17 +155,15 @@ export function ThemeProvider({
     root.style.colorScheme = resolvedTheme;
   }, [resolvedTheme]);
 
-  const setTheme = useCallback(
-    (nextTheme: Theme) => {
-      setThemeState(nextTheme);
-      writeStoredTheme(storageKey, nextTheme);
-    },
-    [storageKey],
-  );
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.nsPalette = palette;
+    root.dataset.nsContrast = contrast;
+  }, [palette, contrast]);
 
   const value = useMemo(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme],
+    () => ({ theme, resolvedTheme, setTheme, palette, setPalette, contrast, setContrast }),
+    [theme, resolvedTheme, setTheme, palette, setPalette, contrast, setContrast],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

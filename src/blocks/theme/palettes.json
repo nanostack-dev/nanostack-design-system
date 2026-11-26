@@ -1,0 +1,97 @@
+{
+  "$comment": "Theme inputs. scripts/generate-themes.mjs derives every colour token from these numbers and its lightness ladder. Hues and chroma are OKLCH. The ids match `palettes` in palettes.ts (checked by scripts/check-tokens.mjs). Edit here, then run `node scripts/generate-themes.mjs`.",
+  "palettes": [
+    {
+      "id": "tide",
+      "neutral": {
+        "hue": 256,
+        "chroma": 0.016
+      },
+      "accent": {
+        "light": {
+          "lightness": 0.5,
+          "chroma": 0.2,
+          "hue": 264
+        },
+        "dark": {
+          "lightness": 0.84,
+          "chroma": 0.19,
+          "hue": 127
+        }
+      },
+      "glow": {
+        "hues": [236, 266, 205],
+        "chroma": 0.11
+      }
+    },
+    {
+      "id": "lagoon",
+      "neutral": {
+        "hue": 205,
+        "chroma": 0.016
+      },
+      "accent": {
+        "light": {
+          "lightness": 0.47,
+          "chroma": 0.1,
+          "hue": 192
+        },
+        "dark": {
+          "lightness": 0.8,
+          "chroma": 0.12,
+          "hue": 185
+        }
+      },
+      "glow": {
+        "hues": [190, 222, 160],
+        "chroma": 0.1
+      }
+    },
+    {
+      "id": "aurora",
+      "neutral": {
+        "hue": 295,
+        "chroma": 0.016
+      },
+      "accent": {
+        "light": {
+          "lightness": 0.5,
+          "chroma": 0.2,
+          "hue": 290
+        },
+        "dark": {
+          "lightness": 0.78,
+          "chroma": 0.14,
+          "hue": 295
+        }
+      },
+      "glow": {
+        "hues": [300, 265, 335],
+        "chroma": 0.11
+      }
+    },
+    {
+      "id": "ember",
+      "neutral": {
+        "hue": 70,
+        "chroma": 0.016
+      },
+      "accent": {
+        "light": {
+          "lightness": 0.5,
+          "chroma": 0.16,
+          "hue": 42
+        },
+        "dark": {
+          "lightness": 0.78,
+          "chroma": 0.14,
+          "hue": 52
+        }
+      },
+      "glow": {
+        "hues": [55, 25, 85],
+        "chroma": 0.1
+      }
+    }
+  ]
+}

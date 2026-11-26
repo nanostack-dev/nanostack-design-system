@@ -47,7 +47,7 @@ export function TabsList({ size = 'md', width = 'auto', ...props }: TabsListProp
       data-size={size}
       data-width={width}
       className={cn(
-        'group/tabs-list inline-flex items-center justify-center rounded-full bg-muted text-muted-foreground group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col group-data-vertical/tabs:rounded-2xl',
+        'group/tabs-list inline-flex items-center justify-center rounded-full bg-segment text-muted-foreground inset-ring inset-ring-segment-edge group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col group-data-vertical/tabs:rounded-2xl',
         listSizeClass[size],
         listWidthClass[width],
       )}
@@ -64,7 +64,7 @@ export function TabsTrigger(props: TabsTriggerProps) {
       className={cn(
         "relative inline-flex h-[calc(100%-1px)] min-w-0 flex-1 items-center justify-center gap-2 rounded-full border border-transparent! px-3 py-1 text-sm font-medium whitespace-nowrap text-muted-foreground transition-[color,background-color,border-color,box-shadow,opacity] group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start group-data-vertical/tabs:rounded-2xl group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5 hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 dark:hover:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         'group-data-[size=sm]/tabs-list:gap-1.5 group-data-[size=sm]/tabs-list:px-2 group-data-[size=sm]/tabs-list:text-xs',
-        'data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground',
+        'data-active:bg-segment-thumb data-active:text-foreground data-active:shadow-segment-thumb data-active:[&_svg]:text-primary',
       )}
       {...props}
       {...motion}
