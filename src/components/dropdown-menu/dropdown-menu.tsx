@@ -1,12 +1,12 @@
 import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { CaretRightIcon, CheckIcon } from '@phosphor-icons/react';
-import { cva } from 'class-variance-authority';
 import { createElement, type ComponentProps } from 'react';
 
 import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
+import { menuItemStyles, menuPopupStyles, menuPositionerClass } from '@/recipes/menu';
 import { useLinkComponent } from '@/provider/design-system-provider';
 
 type PositionerProps = MenuPrimitive.Positioner.Props;
@@ -15,21 +15,6 @@ export type DropdownMenuSide = NonNullable<PositionerProps['side']>;
 export type DropdownMenuAlign = NonNullable<PositionerProps['align']>;
 export type DropdownMenuContentWidth = 'auto' | 'sm' | 'md';
 export type DropdownMenuItemTone = 'neutral' | 'critical';
-
-const menuPopupClasses = cva(
-  'z-50 max-h-(--available-height) max-w-(--available-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-1.5 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none dark:ring-foreground/10 data-closed:overflow-hidden',
-  {
-    variants: {
-      width: {
-        auto: 'w-auto min-w-[max(var(--anchor-width),12rem)]',
-        sm: 'w-56 min-w-(--anchor-width)',
-        md: 'w-64 min-w-(--anchor-width)',
-        submenu: 'w-auto min-w-36',
-      },
-    },
-    defaultVariants: { width: 'auto' },
-  },
-);
 
 type MenuPopupWidth = DropdownMenuContentWidth | 'submenu';
 
@@ -54,7 +39,7 @@ export function MenuPopup({
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
-        className="isolate z-50 outline-none"
+        className={menuPositionerClass}
         align={align}
         alignOffset={alignOffset}
         side={side}
@@ -63,7 +48,7 @@ export function MenuPopup({
         <MenuPrimitive.Popup
           data-slot="dropdown-menu-content"
           data-width={width}
-          className={cn(menuPopupClasses({ width }))}
+          className={menuPopupStyles({ width })}
           {...props}
           {...motion}
           {...material}
@@ -72,20 +57,6 @@ export function MenuPopup({
     </MenuPrimitive.Portal>
   );
 }
-
-const menuItemClasses = cva(
-  "group/dropdown-menu-item relative flex cursor-default items-center gap-2.5 rounded-2xl px-3 py-2 text-sm font-medium outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-9.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      tone: {
-        neutral: 'focus:**:text-accent-foreground',
-        critical:
-          'text-destructive-on-tint focus:bg-destructive/10 focus:text-destructive-on-tint dark:focus:bg-destructive/20 *:[svg]:text-destructive-on-tint',
-      },
-    },
-    defaultVariants: { tone: 'neutral' },
-  },
-);
 
 const menuChoiceItemClasses =
   "relative flex cursor-default items-center gap-2.5 rounded-2xl py-2 pr-8 pl-3 text-sm font-medium outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-9.5 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
@@ -145,7 +116,7 @@ export function DropdownMenuItem({ inset, tone = 'neutral', ...props }: Dropdown
       data-slot="dropdown-menu-item"
       data-inset={inset}
       data-tone={tone}
-      className={cn(menuItemClasses({ tone }))}
+      className={menuItemStyles({ tone })}
       {...props}
     />
   );
@@ -170,7 +141,7 @@ export function DropdownMenuLinkItem({
       data-slot="dropdown-menu-link-item"
       data-inset={inset}
       className={cn(
-        menuItemClasses({ tone: 'neutral' }),
+        menuItemStyles({ tone: 'neutral' }),
         'aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground',
       )}
       closeOnClick={closeOnClick}

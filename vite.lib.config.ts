@@ -44,6 +44,8 @@ export default defineConfig({
         ...publicEntries('blocks'),
         ...publicEntries('layout'),
         'provider/index': `${sourceRoot}/provider/index.ts`,
+        'effect/index': `${sourceRoot}/effect/index.ts`,
+        'recipes/index': `${sourceRoot}/recipes/index.ts`,
       },
     },
     rollupOptions: {

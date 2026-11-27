@@ -7,6 +7,7 @@ Start with [agent rules](../AGENTS.md), [canonical vocabulary](../CONTEXT.md) an
 - [Motion policy](technical/motion.md): timing, frequency, keyboard input, reduced motion and provider inheritance.
 - [Material](technical/material.md): the solid and glass materials, which surfaces are glass, measured contrast and fallbacks. [Light glass backdrops](research/light-glass-backdrops.md) records why the light backdrop is one blue wash (decided).
 - [Theming](technical/theming.md): palettes, contrast levels, the theme generator and the theme picker.
+- [Effect UI entry](technical/effect-ui.md): experimental Effect UI view functions and the framework-neutral class recipes they share with React (`effect` branch only).
 - [Architecture](technical/architecture.md): ownership, public API, tokens, builds and consumer boundaries.
 - [ADR index](adr/README.md), [ADR 0001](adr/0001-own-shadcn-with-a-closed-api.md): owned shadcn source and the closed API, [ADR 0002](adr/0002-glass-material-through-the-provider.md): glass as a provider material, and [ADR 0004](adr/0004-themes-generated-from-palette-inputs.md): themes generated from palette inputs.
 - [0.2.0 migration](migration/0.2.0.md) and [changelog](../CHANGELOG.md).

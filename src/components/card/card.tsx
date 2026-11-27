@@ -1,32 +1,14 @@
 import type { Icon } from '@phosphor-icons/react';
-import { cva } from 'class-variance-authority';
 import type { ComponentPropsWithRef } from 'react';
 
 import type { ClosedProps } from '@/lib/closed-props';
 import { useMaterialAttributes } from '@/lib/material';
 import { cn } from '@/lib/utils';
 
-export type CardVariant = 'solid' | 'outline' | 'soft';
-export type CardSize = 'sm' | 'md';
-export type CardTitleSize = 'sm' | 'md' | 'lg';
+import { cardStyles, type CardSize, type CardVariant } from '@/recipes/card';
 
-const cardClasses = cva(
-  'group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-4xl py-(--card-spacing) text-sm text-card-foreground has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-4xl *:[img:last-child]:rounded-b-4xl',
-  {
-    variants: {
-      variant: {
-        solid: 'bg-card shadow-md ring-1 ring-foreground/5 dark:ring-foreground/10',
-        outline: 'border border-border bg-card',
-        soft: 'bg-muted/50',
-      },
-      size: {
-        sm: '[--card-spacing:--spacing(4)]',
-        md: '[--card-spacing:--spacing(6)]',
-      },
-    },
-    defaultVariants: { variant: 'solid', size: 'md' },
-  },
-);
+export type { CardSize, CardVariant };
+export type CardTitleSize = 'sm' | 'md' | 'lg';
 
 type DivProps = ClosedProps<ComponentPropsWithRef<'div'>>;
 
@@ -48,7 +30,7 @@ export function Card({ variant = 'solid', size = 'md', ...props }: CardProps) {
       data-slot="card"
       data-variant={variant}
       data-size={size}
-      className={cn(cardClasses({ variant, size }))}
+      className={cardStyles({ variant, size })}
       {...props}
       {...material}
     />

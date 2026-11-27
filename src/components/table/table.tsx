@@ -5,17 +5,23 @@ import { useMotionAttributes } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
 
-export type TableCellAlign = 'start' | 'center' | 'end';
-export type TableCellTone = 'default' | 'muted';
-export type TableCellFont = 'sans' | 'mono';
-export type TableHeadWidth = 'auto' | 'min';
-export type TableCaptionSide = 'top' | 'bottom';
+import {
+  tableBodyClass,
+  tableCellStyles,
+  tableClass,
+  tableContainerClass,
+  tableEmptyCellClass,
+  tableHeaderClass,
+  tableHeadStyles,
+  tableRowStyles,
+  type TableCellAlign,
+  type TableCellFont,
+  type TableCellTone,
+  type TableHeadWidth,
+} from '@/recipes/table';
 
-const alignClass: Record<TableCellAlign, string> = {
-  start: 'text-start',
-  center: 'text-center',
-  end: 'text-end',
-};
+export type { TableCellAlign, TableCellFont, TableCellTone, TableHeadWidth };
+export type TableCaptionSide = 'top' | 'bottom';
 
 export type TableProps = ClosedProps<ComponentPropsWithRef<'table'>>;
 export type TableHeaderProps = ClosedProps<ComponentPropsWithRef<'thead'>>;
@@ -43,24 +49,18 @@ export type TableCaptionProps = ClosedProps<ComponentPropsWithRef<'caption'>> & 
 export function Table(props: TableProps) {
   const material = useMaterialAttributes();
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto" {...material}>
-      <table data-slot="table" className="w-full caption-bottom text-sm" {...props} />
+    <div data-slot="table-container" className={tableContainerClass} {...material}>
+      <table data-slot="table" className={tableClass} {...props} />
     </div>
   );
 }
 
 export function TableHeader(props: TableHeaderProps) {
-  return (
-    <thead
-      data-slot="table-header"
-      className="[&_tr]:border-b [&_tr]:border-border-strong"
-      {...props}
-    />
-  );
+  return <thead data-slot="table-header" className={tableHeaderClass} {...props} />;
 }
 
 export function TableBody(props: TableBodyProps) {
-  return <tbody data-slot="table-body" className="[&_tr:last-child]:border-0" {...props} />;
+  return <tbody data-slot="table-body" className={tableBodyClass} {...props} />;
 }
 
 export function TableFooter(props: TableFooterProps) {
@@ -78,10 +78,7 @@ export function TableRow(props: TableRowProps) {
   return (
     <tr
       data-slot="table-row"
-      className={cn(
-        'border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted',
-        props.onClick && 'cursor-pointer',
-      )}
+      className={tableRowStyles({ interactive: Boolean(props.onClick) })}
       {...props}
       {...motion}
     />
@@ -89,17 +86,7 @@ export function TableRow(props: TableRowProps) {
 }
 
 export function TableHead({ align = 'start', width = 'auto', ...props }: TableHeadProps) {
-  return (
-    <th
-      data-slot="table-head"
-      className={cn(
-        'h-12 px-3 align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0',
-        alignClass[align],
-        width === 'min' && 'w-px',
-      )}
-      {...props}
-    />
-  );
+  return <th data-slot="table-head" className={tableHeadStyles({ align, width })} {...props} />;
 }
 
 export function TableCell({
@@ -112,13 +99,7 @@ export function TableCell({
   return (
     <td
       data-slot="table-cell"
-      className={cn(
-        'p-3 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0',
-        alignClass[align ?? (numeric ? 'end' : 'start')],
-        numeric && 'tabular-nums',
-        tone === 'muted' && 'text-muted-foreground',
-        font === 'mono' && 'font-mono text-xs',
-      )}
+      className={tableCellStyles({ align, numeric, tone, font })}
       {...props}
     />
   );
@@ -127,10 +108,7 @@ export function TableCell({
 export function TableEmpty({ colSpan, children, ...props }: TableEmptyProps) {
   return (
     <tr data-slot="table-empty" {...props}>
-      <td
-        colSpan={colSpan}
-        className="h-24 p-3 text-center align-middle whitespace-normal text-muted-foreground"
-      >
+      <td colSpan={colSpan} className={tableEmptyCellClass}>
         {children}
       </td>
     </tr>

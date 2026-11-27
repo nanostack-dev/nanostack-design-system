@@ -8,8 +8,18 @@ import { useMaterialAttributes } from '@/lib/material';
 import { useMotionAttributes, useMotionInput } from '@/lib/motion';
 import type { ClosedProps } from '@/lib/closed-props';
 import { cn } from '@/lib/utils';
+import {
+  dialogBodyClass,
+  dialogDescriptionClass,
+  dialogFooterClass,
+  dialogHeaderClass,
+  dialogOverlayClass,
+  dialogPopupStyles,
+  dialogTitleClass,
+  type DialogSize,
+} from '@/recipes/dialog';
 
-export type DialogSize = 'md' | 'lg' | 'xl';
+export type { DialogSize };
 
 export type DialogProps = DialogPrimitive.Root.Props;
 export type DialogTriggerProps = ClosedProps<DialogPrimitive.Trigger.Props>;
@@ -78,12 +88,6 @@ export function OverlayScrollBody({
   );
 }
 
-const sizeClass: Record<DialogSize, string> = {
-  md: 'sm:max-w-md',
-  lg: 'sm:max-w-2xl',
-  xl: 'sm:max-w-4xl',
-};
-
 function Dialog({ ...props }: DialogProps) {
   useMotionInput();
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -109,7 +113,7 @@ function DialogOverlay({ animated = true }: { animated?: boolean }) {
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       data-palette={!animated || undefined}
-      className="fixed inset-0 isolate z-50 bg-foreground/30 supports-backdrop-filter:backdrop-blur-sm dark:bg-background/60"
+      className={dialogOverlayClass}
       {...motion}
       {...material}
     />
@@ -130,10 +134,7 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         data-size={size}
-        className={cn(
-          'fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-4xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 outline-none dark:ring-foreground/10',
-          sizeClass[size],
-        )}
+        className={dialogPopupStyles({ size })}
         {...props}
         {...motion}
         {...material}
@@ -141,7 +142,7 @@ function DialogContent({
         <OverlayScrollBody
           slot="dialog-body"
           viewportClassName="rounded-[inherit]"
-          contentClassName="grid gap-6 p-6"
+          contentClassName={dialogBodyClass}
         >
           {children}
         </OverlayScrollBody>
@@ -201,7 +202,7 @@ function DialogHeader({ visuallyHidden = false, ...props }: DialogHeaderProps) {
   return (
     <div
       data-slot="dialog-header"
-      className={visuallyHidden ? 'sr-only' : 'flex flex-col gap-1.5'}
+      className={visuallyHidden ? 'sr-only' : dialogHeaderClass}
       {...props}
     />
   );
@@ -209,11 +210,7 @@ function DialogHeader({ visuallyHidden = false, ...props }: DialogHeaderProps) {
 
 function DialogFooter({ showCloseButton = false, children, ...props }: DialogFooterProps) {
   return (
-    <div
-      data-slot="dialog-footer"
-      className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
-      {...props}
-    >
+    <div data-slot="dialog-footer" className={dialogFooterClass} {...props}>
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close className={buttonStyles({ variant: 'outline' })}>
@@ -225,20 +222,14 @@ function DialogFooter({ showCloseButton = false, children, ...props }: DialogFoo
 }
 
 function DialogTitle({ ...props }: DialogTitleProps) {
-  return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className="font-heading text-base leading-none font-medium"
-      {...props}
-    />
-  );
+  return <DialogPrimitive.Title data-slot="dialog-title" className={dialogTitleClass} {...props} />;
 }
 
 function DialogDescription({ ...props }: DialogDescriptionProps) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className="text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground"
+      className={dialogDescriptionClass}
       {...props}
     />
   );

@@ -1,10 +1,11 @@
 import { createElement, type AnchorHTMLAttributes, type ReactNode, type Ref } from 'react';
 
 import type { ClosedProps } from '@/lib/closed-props';
-import { cn } from '@/lib/utils';
 import { useLinkComponent, type LinkComponentProps } from '@/provider/design-system-provider';
 
-export type TextLinkTone = 'brand' | 'neutral';
+import { textLinkStyles, type TextLinkTone } from '@/recipes/text-link';
+
+export type { TextLinkTone };
 
 export type TextLinkProps = ClosedProps<
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'children' | 'color'>
@@ -20,10 +21,7 @@ export function TextLink({ tone = 'brand', external = false, ...props }: TextLin
   const linkComponent = useLinkComponent();
   const linkProps: LinkComponentProps & { 'data-slot': string } = {
     'data-slot': 'text-link',
-    className: cn(
-      'rounded-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-ring',
-      tone === 'brand' ? 'text-primary' : 'text-foreground underline',
-    ),
+    className: textLinkStyles({ tone }),
     ...(external ? { target: '_blank', rel: 'noreferrer' } : {}),
     ...props,
   };
