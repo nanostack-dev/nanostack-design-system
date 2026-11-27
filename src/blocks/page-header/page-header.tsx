@@ -1,7 +1,6 @@
 import type { ComponentPropsWithRef } from 'react';
 
 import { Heading } from '@/components/heading';
-import { Text } from '@/components/text';
 import { Box } from '@/layout/box';
 import type { ClosedProps } from '@/lib/closed-props';
 
@@ -40,14 +39,30 @@ export function PageHeaderContent(props: PageHeaderContentProps) {
   );
 }
 
+// The page title is one step above a level 1 `Heading`: it stands alone on the
+// page ground, often without an eyebrow above it, and has to lead the page. A
+// level 2 title sits under it and keeps the `Heading` size.
 export function PageHeaderTitle({ level = 1, ...props }: PageHeaderTitleProps) {
-  return <Heading data-slot="page-header-title" level={level} {...props} />;
+  if (level === 2) {
+    return <Heading data-slot="page-header-title" level={2} {...props} />;
+  }
+  return (
+    <h1
+      data-slot="page-header-title"
+      className="font-heading text-3xl font-semibold tracking-tight text-balance text-foreground"
+      {...props}
+    />
+  );
 }
 
+// The description is foreground at 75% rather than `--muted-foreground`. On
+// the glass backdrop the muted grey passes contrast but reads as one more grey
+// over a tinted wash; mixing the foreground keeps the palette's own ink, and a
+// high-contrast theme darkens it with the foreground.
 export function PageHeaderDescription(props: PageHeaderDescriptionProps) {
   return (
     <Box data-slot="page-header-description" className="max-w-prose">
-      <Text tone="muted" {...props} />
+      <p data-slot="text" className="font-sans text-sm text-foreground/75" {...props} />
     </Box>
   );
 }

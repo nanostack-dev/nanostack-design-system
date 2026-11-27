@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.2
+
+- A level 1 `PageHeaderTitle` is `text-3xl` (1.875rem), one step above a level 1 `Heading`. A level 2 title does not change.
+- `PageHeaderDescription` is the foreground at 75% instead of `--muted-foreground`. On the glass backdrop the muted grey passed contrast but read as a grey over a tinted wash.
+
+Upgrade: `pnpm add --save-exact @nanostackorg/design-system@0.4.2`. No API change. Recheck page headers that sit beside fixed-height content, because the title is 6 px taller.
+
 ## 0.4.1
 
 - An outline `Item` draws a surface under its edge: `--card`, or `--glass-surface-strong` under glass outside a card or data table frame, like an outline `Card` and an outline `Empty`. In light, `--border` is about 1.06:1 against `--ground`, so an outline item on the page showed as text with no edge. `Item` and `ItemLink` now carry `data-ns-material`.

@@ -30,8 +30,8 @@ The parts are closed. They do not accept \`className\` or \`style\`. The title a
 
 | Value | Use it for |
 | --- | --- |
-| \`1\` | The default. The title of the page. Use one per page. |
-| \`2\` | The title of a section below the page title, when the section has its own actions. |
+| \`1\` | The default. The title of the page, at \`text-3xl\`, one step above a level 1 \`Heading\`. Use one per page. |
+| \`2\` | The title of a section below the page title, when the section has its own actions. It has the size of a level 2 \`Heading\`. |
 
 ## Other parts
 
